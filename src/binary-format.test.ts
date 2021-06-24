@@ -1,0 +1,563 @@
+import BinaryFormat from './binary-format';
+import BinaryFormatter from './binary-formatter';
+
+let buffer: Buffer;
+
+describe('BinaryFormat tests', () => {
+  describe('general tests', () => {
+    test('cannot add step after calling done()', () => {
+      const binaryFormat = new BinaryFormat<{
+        a: string;
+        b: string;
+        c: string;
+        d: string;
+      }>();
+      binaryFormat.string('a', 1);
+      binaryFormat.string('b', 1);
+      binaryFormat.string('c', 1);
+      binaryFormat.done();
+      expect(() => {
+        binaryFormat.string('d', 1);
+      }).toThrowError('cannot add steps. parser has already be created.');
+    });
+    test('calling done multiple times returns the same formatter', () => {
+      const binaryFormat = new BinaryFormat();
+      const bf1 = new BinaryFormatter();
+      const bf2 = binaryFormat.done();
+      const bf3 = binaryFormat.done();
+      expect(bf1).toBe(bf1);
+      expect(bf1).not.toBe(bf2);
+      expect(bf1).not.toBe(bf3);
+      expect(bf2).toBe(bf3);
+    });
+    test('cannot call toArray if there is not a previous step', () => {
+      expect(() => {
+        new BinaryFormat().toArray(5).done();
+      }).toThrowError(
+        'cannot convert previous step to an array because no previous steps exist'
+      );
+    });
+    test('cannot try to add the same key multiple times', () => {
+      expect(() => {
+        new BinaryFormat<{ a: number }>().uint8('a').uint8('a').done();
+      }).toThrowError('cannot add step. the key "a" has alraedy been added.');
+    });
+  });
+
+  describe('"hello world!" tests', () => {
+    beforeEach(() => {
+      buffer = Buffer.from('hello world!');
+    });
+    test('empty format', () => {
+      const bf = new BinaryFormat().done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`Object {}`);
+      expect(r2).toMatchInlineSnapshot(`Buffer<>`);
+    });
+    test('a few numbers', () => {
+      const bf = new BinaryFormat<{
+        a: number;
+        b: number;
+        c: number;
+        d: number;
+      }>()
+        .uint16('a')
+        .int16('b')
+        .int32le('c')
+        .uint32be('d')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": 26725,
+          "b": 27756,
+          "c": 1870078063,
+          "d": 1919706145,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('big ints: uint64be', () => {
+      const bf = new BinaryFormat<{ a: bigint; b: number }>()
+        .uint64be('a')
+        .uint32be('b')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": 7522537965568948079n,
+          "b": 1919706145,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('big ints: uint64le', () => {
+      const bf = new BinaryFormat<{ a: bigint; b: number }>()
+        .uint64le('a')
+        .uint32be('b')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": 8031924123371070824n,
+          "b": 1919706145,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('big ints: uint64 with little endian set', () => {
+      const bf = new BinaryFormat<{ a: bigint; b: number }>()
+        .endianess('little')
+        .uint64('a')
+        .uint32be('b')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": 8031924123371070824n,
+          "b": 1919706145,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('endianess sets default mode', () => {
+      interface TestInterface {
+        a: number;
+        b: number;
+        c: number;
+      }
+      let bf: BinaryFormatter<TestInterface>;
+      bf = new BinaryFormat<TestInterface>()
+        .endianess('big')
+        .uint32('a')
+        .uint32('b')
+        .uint32('c')
+        .done();
+      expect(bf.read(buffer)).toMatchInlineSnapshot(`
+        Object {
+          "a": 1751477356,
+          "b": 1864398703,
+          "c": 1919706145,
+        }
+      `);
+      bf = new BinaryFormat<TestInterface>()
+        .endianess('little')
+        .uint32('a')
+        .uint32('b')
+        .uint32('c')
+        .done();
+      expect(bf.read(buffer)).toMatchInlineSnapshot(`
+        Object {
+          "a": 1819043176,
+          "b": 1870078063,
+          "c": 560229490,
+        }
+      `);
+      bf = new BinaryFormat<TestInterface>()
+        .endianess('little')
+        .uint32('a')
+        .endianess('big')
+        .uint32('b')
+        .endianess('little')
+        .uint32('c')
+        .done();
+      expect(bf.read(buffer)).toMatchInlineSnapshot(`
+        Object {
+          "a": 1819043176,
+          "b": 1864398703,
+          "c": 560229490,
+        }
+      `);
+      expect(() => {
+        bf = new BinaryFormat<TestInterface>()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .endianess('xxx')
+          .uint32('a')
+          .uint32('b')
+          .uint32('c')
+          .done();
+      }).toThrowError('invalid "endianess" value. can be "little" or "big".');
+    });
+    test('string parsing', () => {
+      const bf = new BinaryFormat<{
+        hello: number;
+        space: number;
+        world: number;
+        exclaimation: number;
+      }>()
+        .string('hello', 5)
+        .string('space', 1)
+        .string('world', 5)
+        .string('exclaimation', 1)
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "exclaimation": "!",
+          "hello": "hello",
+          "space": " ",
+          "world": "world",
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('arrays', () => {
+      const bf = new BinaryFormat<{
+        singleChars: Array<string>;
+        twoChars: Array<string>;
+      }>()
+        .string('twoChars', 2)
+        .toArray(3)
+        .string('singleChars', 1)
+        .toArray(6)
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "singleChars": Array [
+            "w",
+            "o",
+            "r",
+            "l",
+            "d",
+            "!",
+          ],
+          "twoChars": Array [
+            "he",
+            "ll",
+            "o ",
+          ],
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('array of arrays', () => {
+      const bf = new BinaryFormat<{
+        chars: Array<Array<string>>;
+      }>()
+        .string('chars', 2)
+        .toArray(3)
+        .toArray(2)
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "chars": Array [
+            Array [
+              "he",
+              "ll",
+              "o ",
+            ],
+            Array [
+              "wo",
+              "rl",
+              "d!",
+            ],
+          ],
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('nested objects', () => {
+      interface TopLevel {
+        hello: string;
+        space: number;
+        world: World;
+        exclaimation: number;
+      }
+      interface World {
+        w: string;
+        o: string;
+        r: string;
+        l: string;
+        d: string;
+      }
+      const world = new BinaryFormat<World>()
+        .string('w', 1)
+        .string('o', 1)
+        .string('r', 1)
+        .string('l', 1)
+        .string('d', 1)
+        .done();
+      const helloWorld = new BinaryFormat<TopLevel>()
+        .string('hello', 5)
+        .uint8('space')
+        .custom('world', world)
+        .uint8('exclaimation')
+        .done();
+      const r1 = helloWorld.read(buffer);
+      const r2 = helloWorld.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "exclaimation": 33,
+          "hello": "hello",
+          "space": 32,
+          "world": Object {
+            "d": "d",
+            "l": "l",
+            "o": "o",
+            "r": "r",
+            "w": "w",
+          },
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+    test('buffers', () => {
+      const bf = new BinaryFormat<{
+        hello: Buffer;
+        space: number;
+        world: Buffer;
+        exclaimation: number;
+      }>()
+        .buffer('hello', 5)
+        .uint8('space')
+        .buffer('world', 5)
+        .uint8('exclaimation')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "exclaimation": 33,
+          "hello": Buffer<68 65 6c 6c 6f>,
+          "space": 32,
+          "world": Buffer<77 6f 72 6c 64>,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+
+    describe('bits', () => {
+      test('normal bits() usage works and defaults to big endian', () => {
+        const bf = new BinaryFormat<{
+          h1: number;
+          h2: number;
+          e1: number;
+          ll: number;
+          o1: number;
+          o2: number;
+          o3: number;
+          space: number;
+          world: Buffer;
+          exclaimation: number;
+        }>()
+          .bits('h1', 4)
+          .bits('h2', 4)
+          .bits('e1', 8)
+          .bits('ll', 16)
+          .bits('o1', 3)
+          .bits('o2', 2)
+          .bits('o3', 3)
+          .uint8('space')
+          .buffer('world', 5)
+          .uint8('exclaimation')
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "e1": 101,
+            "exclaimation": 33,
+            "h1": 6,
+            "h2": 8,
+            "ll": 27756,
+            "o1": 3,
+            "o2": 1,
+            "o3": 7,
+            "space": 32,
+            "world": Buffer<77 6f 72 6c 64>,
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+      test('little endian bits() usage works', () => {
+        const bf = new BinaryFormat<{
+          h1: number;
+          h2: number;
+          e1: number;
+          ll: number;
+          o1: number;
+          o2: number;
+          o3: number;
+          space: number;
+          world: Buffer;
+          exclaimation: number;
+        }>()
+          .endianess('little')
+          .bits('h1', 4)
+          .bits('h2', 4)
+          .bits('e1', 8)
+          .bits('ll', 16)
+          .bits('o1', 3)
+          .bits('o2', 2)
+          .bits('o3', 3)
+          .uint8('space')
+          .buffer('world', 5)
+          .uint8('exclaimation')
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "e1": 101,
+            "exclaimation": 33,
+            "h1": 8,
+            "h2": 6,
+            "ll": 27756,
+            "o1": 7,
+            "o2": 1,
+            "o3": 3,
+            "space": 32,
+            "world": Buffer<77 6f 72 6c 64>,
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+      test('bitN() usage works and defaults to big endian', () => {
+        const bf = new BinaryFormat<{
+          h1: number;
+          h2: number;
+          e1: number;
+          ll: number;
+          o1: number;
+          o2: number;
+          o3: number;
+          space: number;
+          world: Buffer;
+          exclaimation: number;
+        }>()
+          .bit4('h1')
+          .bit4('h2')
+          .bit8('e1')
+          .bit16('ll')
+          .bit3('o1')
+          .bit2('o2')
+          .bit3('o3')
+          .uint8('space')
+          .buffer('world', 5)
+          .uint8('exclaimation')
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "e1": 101,
+            "exclaimation": 33,
+            "h1": 6,
+            "h2": 8,
+            "ll": 27756,
+            "o1": 3,
+            "o2": 1,
+            "o3": 7,
+            "space": 32,
+            "world": Buffer<77 6f 72 6c 64>,
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+
+      test('cannot call toArray() after a bits() call', () => {
+        expect(() => {
+          new BinaryFormat<{
+            a: number;
+          }>()
+            .bits('a', 8)
+            .toArray(1)
+            .done();
+        }).toThrow('cannot convert previous bits() call to an array');
+      });
+      test('cannot call other methods after bits() if you have not reached the end of a byte', () => {
+        expect(() => {
+          new BinaryFormat<{
+            a: number;
+            b: number;
+          }>()
+            .bits('a', 4)
+            .uint8('b')
+            .done();
+        }).toThrow(
+          'your previous bits() call(s) bitSize should be a multiple of 8'
+        );
+      });
+    });
+
+    test('choice', () => {
+      const choiceHello = new BinaryFormat<{
+        endOfHelloAndSpace: string;
+      }>()
+        .string('endOfHelloAndSpace', 5)
+        .done();
+      const choiceWorld = new BinaryFormat<{
+        endOfWorldAndExclaimation: string;
+      }>()
+        .string('endOfWorldAndExclaimation', 5)
+        .done();
+      const choices = {
+        h: choiceHello,
+        w: choiceWorld,
+      };
+      const bf = new BinaryFormat<{
+        choice1Tag: number;
+        choice1Value: number;
+        choice2Tag: number;
+        choice2Value: number;
+      }>()
+        .string('choice1Tag', 1)
+        .choice('choice1Value', 'choice1Tag', choices)
+        .string('choice2Tag', 1)
+        .choice('choice2Value', 'choice2Tag', choices)
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "choice1Tag": "h",
+          "choice1Value": Object {
+            "endOfHelloAndSpace": "ello ",
+          },
+          "choice2Tag": "w",
+          "choice2Value": Object {
+            "endOfWorldAndExclaimation": "orld!",
+          },
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+  });
+});

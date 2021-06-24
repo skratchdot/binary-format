@@ -1,0 +1,4 @@
+.ignore
+coverage
+dist
+node_modules
