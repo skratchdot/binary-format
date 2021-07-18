@@ -1,19 +1,18 @@
 import pkg from './package.json';
 import license from 'rollup-plugin-license';
-// import typescript from '@rollup/plugin-typescript';
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
   input: 'src/index.ts',
   output: [
     {
-      file: pkg.main + '.js',
+      file: pkg.main,
       format: 'cjs',
       exports: 'named',
       // sourcemap: true,
     },
     {
-      file: pkg.module + '.js',
+      file: pkg.module,
       format: 'es',
       exports: 'named',
       // sourcemap: true,
