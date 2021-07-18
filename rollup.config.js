@@ -7,13 +7,13 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: pkg.main,
+      file: pkg.main + '.js',
       format: 'cjs',
       exports: 'named',
       // sourcemap: true,
     },
     {
-      file: pkg.module,
+      file: pkg.module + '.js',
       format: 'es',
       exports: 'named',
       // sourcemap: true,

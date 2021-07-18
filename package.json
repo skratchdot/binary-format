@@ -1,6 +1,6 @@
 {
   "name": "@binary-format/binary-format",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a typescript library for reading and writing binary files to and from plain javascript objects",
   "main": "dist/index",
   "module": "dist/index.es",
