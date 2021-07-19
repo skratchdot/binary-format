@@ -28,6 +28,13 @@ class BinaryFormat<T> {
       throw new Error('cannot add steps. parser has already be created.');
     }
     this.checkStepName(step.name);
+    this.closeBitSteps();
+    this.keys.add(step.name);
+    this.steps.push(step);
+    return this;
+  }
+
+  private closeBitSteps() {
     if (this.bitSteps) {
       if (this.bitSteps.numBits % 8 !== 0) {
         throw new Error(
@@ -40,9 +47,6 @@ class BinaryFormat<T> {
         steps.forEach((step) => this.addStep(step));
       }
     }
-    this.keys.add(step.name);
-    this.steps.push(step);
-    return this;
   }
 
   private checkStepName(name: keyof T): void {
@@ -221,6 +225,7 @@ class BinaryFormat<T> {
   }
   public done(): BinaryFormatter<T> {
     if (this.formatter === undefined) {
+      this.closeBitSteps();
       this.formatter = new BinaryFormatter(this.steps);
     }
     return this.formatter;

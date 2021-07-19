@@ -560,4 +560,59 @@ describe('BinaryFormat tests', () => {
       );
     });
   });
+
+  describe('bit tests', () => {
+    test('can read in 2 nibbles: big endian', () => {
+      buffer = Buffer.from('ab', 'hex');
+      const bf = new BinaryFormat<{
+        a: number;
+        b: number;
+      }>()
+        .endianess('big')
+        .bit4('a')
+        .bit4('b')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": 10,
+          "b": 11,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(`Buffer<ab>`);
+    });
+    test('can read in 2 nibbles: little endian', () => {
+      buffer = Buffer.from('ab', 'hex');
+      const bf = new BinaryFormat<{
+        a: number;
+        b: number;
+      }>()
+        .endianess('little')
+        .bit4('b')
+        .bit4('a')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": 10,
+          "b": 11,
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(`Buffer<ab>`);
+    });
+    test('throw an error if done() is called before ending bitStep accumulation', () => {
+      buffer = Buffer.from('ab', 'hex');
+      expect(() => {
+        const bf = new BinaryFormat<{
+          a: number;
+        }>()
+          .bit4('a')
+          .done();
+      }).toThrow(
+        'your previous bits() call(s) bitSize should be a multiple of 8'
+      );
+    });
+  });
 });
