@@ -561,6 +561,52 @@ describe('BinaryFormat tests', () => {
     });
   });
 
+  describe('string tests', () => {
+    test('can read different string encodings - some of which do not write data back in the same format', () => {
+      buffer = Buffer.from('ffffffffffffffff', 'hex');
+      expect(buffer).toMatchInlineSnapshot(`Buffer<ff ff ff ff ff ff ff ff>`);
+      let bf;
+      let r1;
+      let r2;
+      bf = new BinaryFormat<{ a: number }>().string('a', 8).done();
+      r1 = bf.read(buffer);
+      r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": "��������",
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(`Buffer<ef bf bd ef bf bd ef bf>`);
+      bf = new BinaryFormat<{ a: number }>().string('a', 8, 'utf8').done();
+      r1 = bf.read(buffer);
+      r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": "��������",
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(`Buffer<ef bf bd ef bf bd ef bf>`);
+      bf = new BinaryFormat<{ a: number }>().string('a', 8, 'utf16le').done();
+      r1 = bf.read(buffer);
+      r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": "￿￿￿￿",
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(`Buffer<ff ff ff ff ff ff ff ff>`);
+      bf = new BinaryFormat<{ a: number }>().string('a', 8, 'latin1').done();
+      r1 = bf.read(buffer);
+      r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "a": "ÿÿÿÿÿÿÿÿ",
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(`Buffer<ff ff ff ff ff ff ff ff>`);
+    });
+  });
+
   describe('bit tests', () => {
     test('can read in 2 nibbles: big endian', () => {
       buffer = Buffer.from('ab', 'hex');

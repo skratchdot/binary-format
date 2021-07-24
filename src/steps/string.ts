@@ -33,10 +33,9 @@ export const stringWrite = (
 ): WriteFunction => {
   if (typeof length === 'number') {
     return (binaryBuffer: BinaryBuffer, value: unknown): void => {
-      const expectedEnd = binaryBuffer.rw.writeOffset + length;
-      binaryBuffer.rw.writeString(String(value).slice(0, length), encoding);
-      while (binaryBuffer.rw.writeOffset < expectedEnd) {
-        binaryBuffer.rw.writeInt8(0);
+      const buffer = Buffer.from(String(value), encoding);
+      for (let i = 0; i < length; i++) {
+        binaryBuffer.rw.writeUInt8(i < buffer.length ? buffer.readUInt8(i) : 0);
       }
     };
   } else if (length === 'eof') {
