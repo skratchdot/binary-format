@@ -62,3 +62,6 @@ export type ArrayLengthParams = {
 };
 
 export type ArrayLengthOption = number | 'eof' | ArrayLengthFunction;
+
+export type ChoiceKeyFunction = ReadFunction;
+export type ChoiceKeyOrFunction<T> = keyof T | ReadFunction;

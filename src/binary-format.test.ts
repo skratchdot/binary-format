@@ -625,49 +625,96 @@ describe('BinaryFormat tests', () => {
       });
     });
 
-    test('choice', () => {
-      const choiceHello = new BinaryFormat<{
-        endOfHelloAndSpace: string;
-      }>()
-        .string('endOfHelloAndSpace', 5)
-        .done();
-      const choiceWorld = new BinaryFormat<{
-        endOfWorldAndExclaimation: string;
-      }>()
-        .string('endOfWorldAndExclaimation', 5)
-        .done();
-      const choices = {
-        h: choiceHello,
-        w: choiceWorld,
-      };
-      const bf = new BinaryFormat<{
-        choice1Tag: number;
-        choice1Value: number;
-        choice2Tag: number;
-        choice2Value: number;
-      }>()
-        .string('choice1Tag', 1)
-        .choice('choice1Value', 'choice1Tag', choices)
-        .string('choice2Tag', 1)
-        .choice('choice2Value', 'choice2Tag', choices)
-        .done();
-      const r1 = bf.read(buffer);
-      const r2 = bf.write(r1);
-      expect(r1).toMatchInlineSnapshot(`
-        Object {
-          "choice1Tag": "h",
-          "choice1Value": Object {
-            "endOfHelloAndSpace": "ello ",
-          },
-          "choice2Tag": "w",
-          "choice2Value": Object {
-            "endOfWorldAndExclaimation": "orld!",
-          },
-        }
-      `);
-      expect(r2).toMatchInlineSnapshot(
-        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
-      );
+    describe('choice', () => {
+      test('choice with choiceKey as string', () => {
+        const choiceHello = new BinaryFormat<{
+          endOfHelloAndSpace: string;
+        }>()
+          .string('endOfHelloAndSpace', 5)
+          .done();
+        const choiceWorld = new BinaryFormat<{
+          endOfWorldAndExclaimation: string;
+        }>()
+          .string('endOfWorldAndExclaimation', 5)
+          .done();
+        const choices = {
+          h: choiceHello,
+          w: choiceWorld,
+        };
+        const bf = new BinaryFormat<{
+          choice1Tag: number;
+          choice1Value: number;
+          choice2Tag: number;
+          choice2Value: number;
+        }>()
+          .string('choice1Tag', 1)
+          .choice('choice1Value', 'choice1Tag', choices)
+          .string('choice2Tag', 1)
+          .choice('choice2Value', 'choice2Tag', choices)
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "choice1Tag": "h",
+            "choice1Value": Object {
+              "endOfHelloAndSpace": "ello ",
+            },
+            "choice2Tag": "w",
+            "choice2Value": Object {
+              "endOfWorldAndExclaimation": "orld!",
+            },
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+
+      test('choice with choiceKey as function', () => {
+        const choiceHello = new BinaryFormat<{
+          endOfHelloAndSpace: string;
+        }>()
+          .string('endOfHelloAndSpace', 5)
+          .done();
+        const choiceWorld = new BinaryFormat<{
+          endOfWorldAndExclaimation: string;
+        }>()
+          .string('endOfWorldAndExclaimation', 5)
+          .done();
+        const choices = {
+          h: choiceHello,
+          w: choiceWorld,
+        };
+        const bf = new BinaryFormat<{
+          choice1Tag: number;
+          choice1Value: number;
+          choice2Tag: number;
+          choice2Value: number;
+        }>()
+          .string('choice1Tag', 1)
+          .choice('choice1Value', () => 'h', choices)
+          .string('choice2Tag', 1)
+          .choice('choice2Value', () => 'w', choices)
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "choice1Tag": "h",
+            "choice1Value": Object {
+              "endOfHelloAndSpace": "ello ",
+            },
+            "choice2Tag": "w",
+            "choice2Value": Object {
+              "endOfWorldAndExclaimation": "orld!",
+            },
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
     });
   });
 

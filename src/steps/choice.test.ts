@@ -1,12 +1,13 @@
 import BinaryFormat from '..';
+import { CustomFormatter } from '../types';
 import createBinaryBuffer from '../util/create-binary-buffer';
-import { choiceHelper, choiceStep } from './choice';
+import { choiceHelper, choiceStep, fromChoiceKey } from './choice';
 
 describe('choice tests', () => {
   describe('choiceHelper', () => {
     test('returns undefined by default', () => {
       const bb = createBinaryBuffer('hello world');
-      const result = choiceHelper(bb, () => 42, 'foo', {});
+      const result = choiceHelper(bb, () => 42, fromChoiceKey('foo'), {});
       expect(result).toMatchInlineSnapshot(`undefined`);
     });
     test('returns undefined when no choice is found, and no defaultChoice is passed', () => {
@@ -14,14 +15,18 @@ describe('choice tests', () => {
       bb.data = {
         foo: 42,
       };
-      const fooFormatter = new BinaryFormat<{
-        foo: number;
-      }>()
+      const fooFormatter = new BinaryFormat<{ foo: number }>()
         .uint8('foo')
         .done();
-      const result = choiceHelper(bb, () => 'mock-helper-result', 'foo', {
-        invalidChoice: fooFormatter,
-      });
+      const result = choiceHelper(
+        bb,
+        (_customFormatter: CustomFormatter<{ foo: number }>) =>
+          'mock-helper-result',
+        fromChoiceKey('foo'),
+        {
+          invalidChoice: fooFormatter,
+        }
+      );
       expect(result).toMatchInlineSnapshot(`undefined`);
     });
     test('finds correct choice when choiceValue is a string', () => {
@@ -34,9 +39,15 @@ describe('choice tests', () => {
       }>()
         .uint8('foo')
         .done();
-      const result = choiceHelper(bb, () => 'mock-helper-result', 'foo', {
-        'mock-foo-value': fooFormatter,
-      });
+      const result = choiceHelper(
+        bb,
+        (_customFormatter: CustomFormatter<{ foo: number }>) =>
+          'mock-helper-result',
+        fromChoiceKey('foo'),
+        {
+          'mock-foo-value': fooFormatter,
+        }
+      );
       expect(result).toMatchInlineSnapshot(`"mock-helper-result"`);
     });
     test('finds correct choice when choiceValue is a number', () => {
@@ -49,9 +60,15 @@ describe('choice tests', () => {
       }>()
         .uint8('foo')
         .done();
-      const result = choiceHelper(bb, () => 'mock-helper-result', 'foo', {
-        42: fooFormatter,
-      });
+      const result = choiceHelper(
+        bb,
+        (_customFormatter: CustomFormatter<{ foo: number }>) =>
+          'mock-helper-result',
+        fromChoiceKey('foo'),
+        {
+          42: fooFormatter,
+        }
+      );
       expect(result).toMatchInlineSnapshot(`"mock-helper-result"`);
     });
     test('uses defaultChoice when no choice is found, and defaultChoice is passed', () => {
@@ -71,8 +88,9 @@ describe('choice tests', () => {
         .done();
       const result = choiceHelper(
         bb,
-        () => 'mock-helper-result',
-        'foo',
+        (_customFormatter: CustomFormatter<{ foo: number }>) =>
+          'mock-helper-result',
+        fromChoiceKey('foo'),
         {
           invalidChoice: fooFormatter,
         },
@@ -91,7 +109,7 @@ describe('choice tests', () => {
         write: jest.fn(),
       };
       const mockWriteValue = jest.fn();
-      const result = choiceStep('tag', {
+      const result = choiceStep(fromChoiceKey('tag'), {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         1: mockFormatter as any,
       });

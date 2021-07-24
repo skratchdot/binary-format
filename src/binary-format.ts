@@ -7,13 +7,14 @@ import {
 import { bigIntStep } from './steps/bigint';
 import { BitStepAccumulator } from './steps/bits';
 import { bufferStep } from './steps/buffer';
-import { choiceStep } from './steps/choice';
+import { choiceStep, fromChoiceKey } from './steps/choice';
 import { numberStep } from './steps/number';
 import { stringStep } from './steps/string';
 import {
   ArrayLengthFunction,
   ArrayLengthOption,
   BigIntKey,
+  ChoiceKeyOrFunction,
   ChoiceOptions,
   CustomFormatter,
   LengthOption,
@@ -224,13 +225,16 @@ class BinaryFormat<T> {
   // Choice / Switch
   public choice = (
     name: keyof T,
-    choiceKey: keyof T,
+    choiceKeyOrFunction: ChoiceKeyOrFunction<T>,
     choiceOptions: ChoiceOptions<T>,
     defaultChoice?: CustomFormatter<T>
   ): BinaryFormat<T> => {
+    if (typeof choiceKeyOrFunction !== 'function') {
+      choiceKeyOrFunction = fromChoiceKey(choiceKeyOrFunction);
+    }
     return this.custom(
       name,
-      choiceStep(choiceKey, choiceOptions, defaultChoice)
+      choiceStep(choiceKeyOrFunction, choiceOptions, defaultChoice)
     );
   };
 
