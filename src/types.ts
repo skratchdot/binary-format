@@ -52,3 +52,13 @@ export type LengthOption = number | EOF | NT;
 export type CustomFormatter<T> = BinaryFormatter<Exclude<any, T>>;
 
 export type ChoiceOptions<T> = Record<string | number, CustomFormatter<T>>;
+
+export type ArrayLengthFunction = (params: ArrayLengthParams) => boolean;
+
+export type ArrayLengthParams = {
+  binaryBuffer: BinaryBuffer;
+  index: number;
+  array: Array<unknown>;
+};
+
+export type ArrayLengthOption = number | 'eof' | ArrayLengthFunction;

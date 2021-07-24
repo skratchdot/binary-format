@@ -1,5 +1,9 @@
 import BinaryFormatter from './binary-formatter';
-import { arrayStep } from './steps/array';
+import {
+  arrayFunctionEof,
+  arrayFunctionLength,
+  arrayStep,
+} from './steps/array';
 import { bigIntStep } from './steps/bigint';
 import { BitStepAccumulator } from './steps/bits';
 import { bufferStep } from './steps/buffer';
@@ -7,6 +11,8 @@ import { choiceStep } from './steps/choice';
 import { numberStep } from './steps/number';
 import { stringStep } from './steps/string';
 import {
+  ArrayLengthFunction,
+  ArrayLengthOption,
   BigIntKey,
   ChoiceOptions,
   CustomFormatter,
@@ -181,7 +187,10 @@ class BinaryFormat<T> {
   ): BinaryFormat<T> => this.custom(name, stringStep(length, encoding));
 
   // Arrays
-  public toArray = (length: number): BinaryFormat<T> => {
+  public toArray = (
+    lengthOption: ArrayLengthOption,
+    confirmLength?: number
+  ): BinaryFormat<T> => {
     if (this.bitSteps) {
       throw new Error('cannot convert previous bits() call to an array');
     }
@@ -192,7 +201,20 @@ class BinaryFormat<T> {
       );
     }
     this.keys.delete(step.name);
-    return this.custom(step.name, arrayStep(length, step.read, step.write));
+
+    let arrayLengthFunction: ArrayLengthFunction;
+    if (typeof lengthOption === 'number') {
+      arrayLengthFunction = arrayFunctionLength(lengthOption);
+    } else if (lengthOption === 'eof') {
+      arrayLengthFunction = arrayFunctionEof();
+    } else {
+      arrayLengthFunction = lengthOption;
+    }
+
+    return this.custom(
+      step.name,
+      arrayStep(arrayLengthFunction, step.read, step.write, confirmLength)
+    );
   };
 
   // Buffers

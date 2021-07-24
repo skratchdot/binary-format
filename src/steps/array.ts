@@ -1,38 +1,74 @@
 import BinaryBuffer from '../binary-buffer';
-import { ReadAndWrite, ReadFunction, WriteFunction } from '../types';
+import {
+  ArrayLengthFunction,
+  ArrayLengthParams,
+  ReadAndWrite,
+  ReadFunction,
+  WriteFunction,
+} from '../types';
+
+export const arrayFunctionLength =
+  (length: number): ArrayLengthFunction =>
+  ({ index }: ArrayLengthParams): boolean =>
+    index < length;
+
+export const arrayFunctionEof =
+  (): ArrayLengthFunction =>
+  ({ binaryBuffer, index, array }: ArrayLengthParams): boolean => {
+    if (binaryBuffer.isReader) {
+      return binaryBuffer.rw.readOffset < binaryBuffer.rw.length;
+    } else {
+      return index < array.length;
+    }
+  };
 
 export const arrayRead =
-  <R>(length: number, fn: (binaryBuffer: BinaryBuffer) => R) =>
-  (binaryBuffer: BinaryBuffer): R[] => {
-    const arr = [];
-    for (let i = 0; i < length; i++) {
-      arr.push(fn(binaryBuffer));
+  (
+    arrayLengthFunction: ArrayLengthFunction,
+    readFunction: (binaryBuffer: BinaryBuffer) => unknown
+  ) =>
+  (binaryBuffer: BinaryBuffer): Array<unknown> => {
+    const array: Array<unknown> = [];
+    let index = 0;
+    while (arrayLengthFunction({ binaryBuffer, index, array })) {
+      array.push(readFunction(binaryBuffer));
+      index++;
     }
-    return arr;
+    return array;
   };
 
 export const arrayWrite =
-  (length: number, fn: (binaryBuffer: BinaryBuffer, value: unknown) => void) =>
+  (
+    arrayLengthFunction: ArrayLengthFunction,
+    writeFunction: (binaryBuffer: BinaryBuffer, value: unknown) => void,
+    confirmLength?: number
+  ) =>
   (binaryBuffer: BinaryBuffer, value: unknown): void => {
     if (!Array.isArray(value)) {
       throw new Error(
         `cannot write an array since value passed is not an array: "${value}"`
       );
-    } else if (value.length !== length) {
+    } else if (
+      typeof confirmLength === 'number' &&
+      value.length !== confirmLength
+    ) {
       throw new Error(
-        `expected an array of length ${length}, but was passed an array with length ${value.length}`
+        `expected an array of length ${confirmLength}, but was passed an array with length ${value.length}`
       );
     }
-    for (let i = 0; i < length; i++) {
-      fn(binaryBuffer, value[i]);
+    let index = 0;
+    while (arrayLengthFunction({ binaryBuffer, index, array: value })) {
+      writeFunction(binaryBuffer, value[index]);
+      index++;
     }
   };
 
 export const arrayStep = (
-  length: number,
+  arrayLengthFunction: ArrayLengthFunction,
   read: ReadFunction,
-  write: WriteFunction
+  write: WriteFunction,
+  confirmLength?: number
 ): ReadAndWrite => ({
-  read: arrayRead(length, read),
-  write: arrayWrite(length, write),
+  read: arrayRead(arrayLengthFunction, read),
+  write: arrayWrite(arrayLengthFunction, write, confirmLength),
 });

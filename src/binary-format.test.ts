@@ -218,68 +218,178 @@ describe('BinaryFormat tests', () => {
         `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
       );
     });
-    test('arrays', () => {
-      const bf = new BinaryFormat<{
-        singleChars: Array<string>;
-        twoChars: Array<string>;
-      }>()
-        .string('twoChars', 2)
-        .toArray(3)
-        .string('singleChars', 1)
-        .toArray(6)
-        .done();
-      const r1 = bf.read(buffer);
-      const r2 = bf.write(r1);
-      expect(r1).toMatchInlineSnapshot(`
-        Object {
-          "singleChars": Array [
-            "w",
-            "o",
-            "r",
-            "l",
-            "d",
-            "!",
-          ],
-          "twoChars": Array [
-            "he",
-            "ll",
-            "o ",
-          ],
-        }
-      `);
-      expect(r2).toMatchInlineSnapshot(
-        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
-      );
-    });
-    test('array of arrays', () => {
-      const bf = new BinaryFormat<{
-        chars: Array<Array<string>>;
-      }>()
-        .string('chars', 2)
-        .toArray(3)
-        .toArray(2)
-        .done();
-      const r1 = bf.read(buffer);
-      const r2 = bf.write(r1);
-      expect(r1).toMatchInlineSnapshot(`
-        Object {
-          "chars": Array [
-            Array [
+    describe('toArray', () => {
+      test('arrays', () => {
+        const bf = new BinaryFormat<{
+          singleChars: Array<string>;
+          twoChars: Array<string>;
+        }>()
+          .string('twoChars', 2)
+          .toArray(3)
+          .string('singleChars', 1)
+          .toArray(6)
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "singleChars": Array [
+              "w",
+              "o",
+              "r",
+              "l",
+              "d",
+              "!",
+            ],
+            "twoChars": Array [
               "he",
               "ll",
               "o ",
             ],
-            Array [
-              "wo",
-              "rl",
-              "d!",
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+      test('array of arrays', () => {
+        const bf = new BinaryFormat<{
+          chars: Array<Array<string>>;
+        }>()
+          .string('chars', 2)
+          .toArray(3)
+          .toArray(2)
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "chars": Array [
+              Array [
+                "he",
+                "ll",
+                "o ",
+              ],
+              Array [
+                "wo",
+                "rl",
+                "d!",
+              ],
             ],
-          ],
-        }
-      `);
-      expect(r2).toMatchInlineSnapshot(
-        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
-      );
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+      test('toArray(number) works', () => {
+        const bf = new BinaryFormat<{
+          a: Array<string>;
+          b: Array<string>;
+        }>()
+          .string('a', 1)
+          .toArray(6)
+          .string('b', 1)
+          .toArray(6)
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "a": Array [
+              "h",
+              "e",
+              "l",
+              "l",
+              "o",
+              " ",
+            ],
+            "b": Array [
+              "w",
+              "o",
+              "r",
+              "l",
+              "d",
+              "!",
+            ],
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+      test('toArray("eof") works', () => {
+        const bf = new BinaryFormat<{
+          a: Array<string>;
+          b: Array<string>;
+        }>()
+          .string('a', 1)
+          .toArray(2)
+          .string('b', 1)
+          .toArray('eof')
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "a": Array [
+              "h",
+              "e",
+            ],
+            "b": Array [
+              "l",
+              "l",
+              "o",
+              " ",
+              "w",
+              "o",
+              "r",
+              "l",
+              "d",
+              "!",
+            ],
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
+      test('toArray(function) works', () => {
+        const bf = new BinaryFormat<{
+          a: Array<string>;
+          b: Array<string>;
+        }>()
+          .string('a', 1)
+          .toArray(({ index }) => index < 4)
+          .string('b', 1)
+          .toArray(({ index }) => index < 8)
+          .done();
+        const r1 = bf.read(buffer);
+        const r2 = bf.write(r1);
+        expect(r1).toMatchInlineSnapshot(`
+          Object {
+            "a": Array [
+              "h",
+              "e",
+              "l",
+              "l",
+            ],
+            "b": Array [
+              "o",
+              " ",
+              "w",
+              "o",
+              "r",
+              "l",
+              "d",
+              "!",
+            ],
+          }
+        `);
+        expect(r2).toMatchInlineSnapshot(
+          `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+        );
+      });
     });
     test('nested objects', () => {
       interface TopLevel {
@@ -651,7 +761,7 @@ describe('BinaryFormat tests', () => {
     test('throw an error if done() is called before ending bitStep accumulation', () => {
       buffer = Buffer.from('ab', 'hex');
       expect(() => {
-        const bf = new BinaryFormat<{
+        new BinaryFormat<{
           a: number;
         }>()
           .bit4('a')

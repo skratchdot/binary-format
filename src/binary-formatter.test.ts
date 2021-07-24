@@ -1,5 +1,5 @@
 import BinaryFormatter from './binary-formatter';
-import { arrayStep } from './steps/array';
+import { arrayFunctionLength, arrayStep } from './steps/array';
 import { numberStep } from './steps/number';
 import { stringStep } from './steps/string';
 
@@ -39,7 +39,7 @@ describe('BinaryFormatter', () => {
     const binaryFormatter = new BinaryFormatter<TestInterface>([
       {
         name: 'foo',
-        ...arrayStep(4, rw.read, rw.write),
+        ...arrayStep(arrayFunctionLength(4), rw.read, rw.write, 4),
       },
     ]);
     expect(binaryFormatter.read(buffer)).toMatchInlineSnapshot(`
