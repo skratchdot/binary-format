@@ -465,6 +465,45 @@ describe('BinaryFormat tests', () => {
       );
     });
 
+    test('plainarrays', () => {
+      const bf = new BinaryFormat<{
+        hello: Array<number>;
+        space: number;
+        world: Array<number>;
+        exclaimation: number;
+      }>()
+        .plainarray('hello', 5)
+        .uint8('space')
+        .plainarray('world', 5)
+        .uint8('exclaimation')
+        .done();
+      const r1 = bf.read(buffer);
+      const r2 = bf.write(r1);
+      expect(r1).toMatchInlineSnapshot(`
+        Object {
+          "exclaimation": 33,
+          "hello": Array [
+            104,
+            101,
+            108,
+            108,
+            111,
+          ],
+          "space": 32,
+          "world": Array [
+            119,
+            111,
+            114,
+            108,
+            100,
+          ],
+        }
+      `);
+      expect(r2).toMatchInlineSnapshot(
+        `Buffer<68 65 6c 6c 6f 20 77 6f 72 6c 64 21>`
+      );
+    });
+
     describe('bits', () => {
       test('normal bits() usage works and defaults to big endian', () => {
         const bf = new BinaryFormat<{

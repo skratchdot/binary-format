@@ -9,6 +9,7 @@ import { BitStepAccumulator } from './steps/bits';
 import { bufferStep } from './steps/buffer';
 import { choiceStep, fromChoiceKey } from './steps/choice';
 import { numberStep } from './steps/number';
+import { plainArrayStep } from './steps/plain-array';
 import { stringStep } from './steps/string';
 import {
   ArrayLengthFunction,
@@ -221,6 +222,10 @@ class BinaryFormat<T> {
   // Buffers
   public buffer = (name: keyof T, length: LengthOption): BinaryFormat<T> =>
     this.custom(name, bufferStep(length));
+
+  // Plain Array
+  public plainarray = (name: keyof T, length: LengthOption): BinaryFormat<T> =>
+    this.custom(name, plainArrayStep(length));
 
   // Choice / Switch
   public choice = (
