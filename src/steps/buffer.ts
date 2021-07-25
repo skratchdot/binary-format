@@ -6,6 +6,17 @@ import {
   WriteFunction,
 } from '../types';
 
+export const validateBuffer = (buffer: unknown, length?: number): Buffer => {
+  if (!Buffer.isBuffer(buffer)) {
+    throw new Error(`"${buffer}" is not a invalid buffer`);
+  } else if (length && buffer.length !== length) {
+    throw new Error(
+      `buffer has incorrect length. buffer.length=${buffer.length} but wanted length=${length}`
+    );
+  }
+  return buffer;
+};
+
 export const bufferRead = (length: LengthOption): ReadFunction => {
   if (typeof length === 'number') {
     return (binaryBuffer: BinaryBuffer): Buffer =>
@@ -46,14 +57,3 @@ export const bufferStep = (length: LengthOption): ReadAndWrite => ({
   read: bufferRead(length),
   write: bufferWrite(length),
 });
-
-export const validateBuffer = (buffer: unknown, length?: number): Buffer => {
-  if (!Buffer.isBuffer(buffer)) {
-    throw new Error(`"${buffer}" is not a invalid buffer`);
-  } else if (length && buffer.length !== length) {
-    throw new Error(
-      `buffer has incorrect length. buffer.length=${buffer.length} but wanted length=${length}`
-    );
-  }
-  return buffer;
-};
