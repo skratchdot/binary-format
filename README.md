@@ -88,6 +88,7 @@ export const stringWithLength = (length: number): ReadAndWrite => ({
 - https://github.com/thi-ng/umbrella/tree/develop/packages/bitstream
 - https://github.com/conekt/bitsandbytes
 - https://www.npmjs.com/package/bits-bytes (pack and unpack)
+- https://github.com/francisrstokes/construct-js
 
 ## todos
 
