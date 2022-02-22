@@ -91,7 +91,7 @@ describe('buffer tests', () => {
     test('throw error when a buffer is not passed in', () => {
       expect(() => {
         validateBuffer(false);
-      }).toThrowError('"false" is not a invalid buffer');
+      }).toThrowError('"false" is not a valid buffer: Buffer.isBuffer() fails');
     });
     test('throw error when buffer length is not correct', () => {
       expect(() => {
