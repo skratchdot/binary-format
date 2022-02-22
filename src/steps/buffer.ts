@@ -8,9 +8,14 @@ import {
 
 export const validateBuffer = (buffer: unknown, length?: number): Buffer => {
   if (!Buffer.isBuffer(buffer)) {
-    throw new Error(
-      `"${buffer}" is not a valid buffer: Buffer.isBuffer() fails`
-    );
+    // try to coerce to buffer
+    try {
+      return Buffer.from(buffer as Buffer);
+    } catch (err) {
+      throw new Error(
+        `"${buffer}" is not a valid buffer: Buffer.isBuffer() fails and cannot convert`
+      );
+    }
   } else if (length && buffer.length !== length) {
     throw new Error(
       `buffer has incorrect length. buffer.length=${buffer.length} but wanted length=${length}`
