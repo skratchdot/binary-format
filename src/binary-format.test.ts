@@ -52,7 +52,7 @@ describe('BinaryFormat tests', () => {
       const bf = new BinaryFormat().done();
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
-      expect(r1).toMatchInlineSnapshot(`Object {}`);
+      expect(r1).toMatchInlineSnapshot(`{}`);
       expect(r2).toMatchInlineSnapshot(`Buffer<>`);
     });
     test('a few numbers', () => {
@@ -70,7 +70,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 26725,
           "b": 27756,
           "c": 1870078063,
@@ -89,7 +89,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 7522537965568948079n,
           "b": 1919706145,
         }
@@ -106,7 +106,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 8031924123371070824n,
           "b": 1919706145,
         }
@@ -124,7 +124,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 8031924123371070824n,
           "b": 1919706145,
         }
@@ -147,7 +147,7 @@ describe('BinaryFormat tests', () => {
         .uint32('c')
         .done();
       expect(bf.read(buffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 1751477356,
           "b": 1864398703,
           "c": 1919706145,
@@ -160,7 +160,7 @@ describe('BinaryFormat tests', () => {
         .uint32('c')
         .done();
       expect(bf.read(buffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 1819043176,
           "b": 1870078063,
           "c": 560229490,
@@ -175,7 +175,7 @@ describe('BinaryFormat tests', () => {
         .uint32('c')
         .done();
       expect(bf.read(buffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 1819043176,
           "b": 1864398703,
           "c": 560229490,
@@ -207,7 +207,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "exclaimation": "!",
           "hello": "hello",
           "space": " ",
@@ -232,8 +232,8 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
-            "singleChars": Array [
+          {
+            "singleChars": [
               "w",
               "o",
               "r",
@@ -241,7 +241,7 @@ describe('BinaryFormat tests', () => {
               "d",
               "!",
             ],
-            "twoChars": Array [
+            "twoChars": [
               "he",
               "ll",
               "o ",
@@ -263,14 +263,14 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
-            "chars": Array [
-              Array [
+          {
+            "chars": [
+              [
                 "he",
                 "ll",
                 "o ",
               ],
-              Array [
+              [
                 "wo",
                 "rl",
                 "d!",
@@ -295,8 +295,8 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
-            "a": Array [
+          {
+            "a": [
               "h",
               "e",
               "l",
@@ -304,7 +304,7 @@ describe('BinaryFormat tests', () => {
               "o",
               " ",
             ],
-            "b": Array [
+            "b": [
               "w",
               "o",
               "r",
@@ -331,12 +331,12 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
-            "a": Array [
+          {
+            "a": [
               "h",
               "e",
             ],
-            "b": Array [
+            "b": [
               "l",
               "l",
               "o",
@@ -367,14 +367,14 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
-            "a": Array [
+          {
+            "a": [
               "h",
               "e",
               "l",
               "l",
             ],
-            "b": Array [
+            "b": [
               "o",
               " ",
               "w",
@@ -421,11 +421,11 @@ describe('BinaryFormat tests', () => {
       const r1 = helloWorld.read(buffer);
       const r2 = helloWorld.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "exclaimation": 33,
           "hello": "hello",
           "space": 32,
-          "world": Object {
+          "world": {
             "d": "d",
             "l": "l",
             "o": "o",
@@ -453,7 +453,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "exclaimation": 33,
           "hello": Buffer<68 65 6c 6c 6f>,
           "space": 32,
@@ -480,9 +480,9 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "exclaimation": 33,
-          "hello": Array [
+          "hello": [
             104,
             101,
             108,
@@ -490,7 +490,7 @@ describe('BinaryFormat tests', () => {
             111,
           ],
           "space": 32,
-          "world": Array [
+          "world": [
             119,
             111,
             114,
@@ -532,7 +532,7 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
+          {
             "e1": 101,
             "exclaimation": 33,
             "h1": 6,
@@ -577,7 +577,7 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
+          {
             "e1": 101,
             "exclaimation": 33,
             "h1": 8,
@@ -621,7 +621,7 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
+          {
             "e1": 101,
             "exclaimation": 33,
             "h1": 6,
@@ -694,13 +694,13 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
+          {
             "choice1Tag": "h",
-            "choice1Value": Object {
+            "choice1Value": {
               "endOfHelloAndSpace": "ello ",
             },
             "choice2Tag": "w",
-            "choice2Value": Object {
+            "choice2Value": {
               "endOfWorldAndExclaimation": "orld!",
             },
           }
@@ -739,13 +739,13 @@ describe('BinaryFormat tests', () => {
         const r1 = bf.read(buffer);
         const r2 = bf.write(r1);
         expect(r1).toMatchInlineSnapshot(`
-          Object {
+          {
             "choice1Tag": "h",
-            "choice1Value": Object {
+            "choice1Value": {
               "endOfHelloAndSpace": "ello ",
             },
             "choice2Tag": "w",
-            "choice2Value": Object {
+            "choice2Value": {
               "endOfWorldAndExclaimation": "orld!",
             },
           }
@@ -768,7 +768,7 @@ describe('BinaryFormat tests', () => {
       r1 = bf.read(buffer);
       r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": "��������",
         }
       `);
@@ -777,7 +777,7 @@ describe('BinaryFormat tests', () => {
       r1 = bf.read(buffer);
       r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": "��������",
         }
       `);
@@ -786,7 +786,7 @@ describe('BinaryFormat tests', () => {
       r1 = bf.read(buffer);
       r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": "￿￿￿￿",
         }
       `);
@@ -795,7 +795,7 @@ describe('BinaryFormat tests', () => {
       r1 = bf.read(buffer);
       r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": "ÿÿÿÿÿÿÿÿ",
         }
       `);
@@ -817,7 +817,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 10,
           "b": 11,
         }
@@ -837,7 +837,7 @@ describe('BinaryFormat tests', () => {
       const r1 = bf.read(buffer);
       const r2 = bf.write(r1);
       expect(r1).toMatchInlineSnapshot(`
-        Object {
+        {
           "a": 10,
           "b": 11,
         }

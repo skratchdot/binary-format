@@ -8,7 +8,7 @@ test('tcp', () => {
   const r1 = TcpFormat.read(buffer);
   const r2 = TcpFormat.write(r1);
   expect(r1).toMatchInlineSnapshot(`
-    Object {
+    {
       "ack": 1025537387,
       "checksum": 65,
       "dataOffset": 8,

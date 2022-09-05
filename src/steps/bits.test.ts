@@ -11,26 +11,26 @@ describe('BitStepAccumulator tests', () => {
       bitSteps.addStep('foo', 4, false);
       bitSteps.addStep('bar', 1, true);
       expect(bitSteps.keys).toMatchInlineSnapshot(`
-Set {
-  "foo",
-  "bar",
-}
-`);
+        Set {
+          "foo",
+          "bar",
+        }
+      `);
       expect(bitSteps.numBits).toMatchInlineSnapshot(`5`);
       expect(bitSteps.steps).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "littleEndian": false,
-    "name": "foo",
-    "numBits": 4,
-  },
-  Object {
-    "littleEndian": true,
-    "name": "bar",
-    "numBits": 1,
-  },
-]
-`);
+        [
+          {
+            "littleEndian": false,
+            "name": "foo",
+            "numBits": 4,
+          },
+          {
+            "littleEndian": true,
+            "name": "bar",
+            "numBits": 1,
+          },
+        ]
+      `);
     });
   });
   describe('toBinaryFormatSteps', () => {

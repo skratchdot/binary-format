@@ -9,15 +9,15 @@ test('bmp (bitmap)', async () => {
   const r1 = BitmapFormat.read(buffer);
   const r2 = BitmapFormat.write(r1);
   expect(r1).toMatchInlineSnapshot(`
-    Object {
-      "fileHeader": Object {
+    {
+      "fileHeader": {
         "offBits": 54,
         "reserved1": 0,
         "reserved2": 0,
         "size": 46182,
         "type": "BM",
       },
-      "infoHeader": Object {
+      "infoHeader": {
         "bitCount": 24,
         "clrImportant": 0,
         "clrUsed": 0,

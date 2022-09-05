@@ -5,9 +5,9 @@ test('ip', () => {
   const r1 = IpFormat.read(buffer);
   const r2 = IpFormat.write(r1);
   expect(r1).toMatchInlineSnapshot(`
-    Object {
+    {
       "checksum": 61336,
-      "dst": Array [
+      "dst": [
         133,
         1,
         134,
@@ -19,7 +19,7 @@ test('ip', () => {
       "offset": 0,
       "packetLength": 709,
       "protocol": 6,
-      "src": Array [
+      "src": [
         173,
         194,
         79,

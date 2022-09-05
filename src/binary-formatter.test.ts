@@ -7,7 +7,7 @@ describe('BinaryFormatter', () => {
   test('no steps', () => {
     const buffer = Buffer.from('deadbeef', 'hex');
     const binaryFormatter = new BinaryFormatter();
-    expect(binaryFormatter.read(buffer)).toMatchInlineSnapshot(`Object {}`);
+    expect(binaryFormatter.read(buffer)).toMatchInlineSnapshot(`{}`);
     expect(binaryFormatter.write({})).toMatchInlineSnapshot(`Buffer<>`);
   });
   test('buffer with 1 number step', () => {
@@ -21,7 +21,7 @@ describe('BinaryFormatter', () => {
       },
     ]);
     expect(binaryFormatter.read(buffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "foo": 222,
       }
     `);
@@ -43,8 +43,8 @@ describe('BinaryFormatter', () => {
       },
     ]);
     expect(binaryFormatter.read(buffer)).toMatchInlineSnapshot(`
-      Object {
-        "foo": Array [
+      {
+        "foo": [
           222,
           173,
           190,
@@ -79,7 +79,7 @@ describe('BinaryFormatter', () => {
       },
     ]);
     expect(binaryFormatter.read(buffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "bar": "llo",
         "foo": "he",
       }

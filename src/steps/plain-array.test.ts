@@ -9,7 +9,7 @@ describe('plain-array', () => {
       const step = plainArrayStep(5);
       const result = step.read(bb);
       expect(result).toMatchInlineSnapshot(`
-        Array [
+        [
           104,
           101,
           108,
@@ -21,7 +21,7 @@ describe('plain-array', () => {
     test('returns an empty array if not called with a buffer', () => {
       const bb = createBinaryBuffer('hello world');
       const result = plainArrayRead(() => 42)(bb);
-      expect(result).toMatchInlineSnapshot(`Array []`);
+      expect(result).toMatchInlineSnapshot(`[]`);
     });
   });
   describe('plainArrayWrite', () => {

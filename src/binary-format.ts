@@ -1,16 +1,3 @@
-import BinaryFormatter from './binary-formatter';
-import {
-  arrayFunctionEof,
-  arrayFunctionLength,
-  arrayStep,
-} from './steps/array';
-import { bigIntStep } from './steps/bigint';
-import { BitStepAccumulator } from './steps/bits';
-import { bufferStep } from './steps/buffer';
-import { choiceStep, fromChoiceKey } from './steps/choice';
-import { numberStep } from './steps/number';
-import { plainArrayStep } from './steps/plain-array';
-import { stringStep } from './steps/string';
 import {
   ArrayLengthFunction,
   ArrayLengthOption,
@@ -23,6 +10,20 @@ import {
   ReadAndWrite,
   Step,
 } from './types';
+import {
+  arrayFunctionEof,
+  arrayFunctionLength,
+  arrayStep,
+} from './steps/array';
+import { choiceStep, fromChoiceKey } from './steps/choice';
+
+import BinaryFormatter from './binary-formatter';
+import { BitStepAccumulator } from './steps/bits';
+import { bigIntStep } from './steps/bigint';
+import { bufferStep } from './steps/buffer';
+import { numberStep } from './steps/number';
+import { plainArrayStep } from './steps/plain-array';
+import { stringStep } from './steps/string';
 
 class BinaryFormat<T> {
   private formatter: BinaryFormatter<T> | undefined;
@@ -63,7 +64,7 @@ class BinaryFormat<T> {
       (this.bitSteps && this.bitSteps.keys.has(name))
     ) {
       throw new Error(
-        `cannot add step. the key "${name}" has alraedy been added.`
+        `cannot add step. the key "${String(name)}" has alraedy been added.`
       );
     }
   }

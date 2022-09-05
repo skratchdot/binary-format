@@ -1,4 +1,3 @@
-import BinaryBuffer from '../binary-buffer';
 import {
   BigIntKey,
   BigIntKeyRead,
@@ -6,9 +5,11 @@ import {
   ReadAndWrite,
 } from '../types';
 
+import BinaryBuffer from '../binary-buffer';
+
 export const bigIntRead =
   (fnName: BigIntKeyRead) =>
-  (binaryBuffer: BinaryBuffer): BigInt =>
+  (binaryBuffer: BinaryBuffer): bigint =>
     binaryBuffer.rw[fnName]();
 
 export const bigIntWrite =
