@@ -1,5 +1,5 @@
-import pkg from './package.json';
 import license from 'rollup-plugin-license';
+import pkg from './package.json' assert { type: 'json' };
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
