@@ -120,7 +120,7 @@ In prior versions of SmartBuffer, .writeXXX(value, offset) calls would insert da
 **SmartBuffer v3**:
 
 ```javascript
-const buff = SmartBuffer.fromBuffer(new Buffer([1, 2, 3, 4, 5, 6]));
+const buff = SmartBuffer.fromBuffer(Buffer.from([1, 2, 3, 4, 5, 6]));
 buff.writeInt8(7, 2);
 console.log(buff.toBuffer());
 
@@ -130,7 +130,7 @@ console.log(buff.toBuffer());
 **SmartBuffer v4**:
 
 ```javascript
-const buff = SmartBuffer.fromBuffer(new Buffer([1, 2, 3, 4, 5, 6]));
+const buff = SmartBuffer.fromBuffer(Buffer.from([1, 2, 3, 4, 5, 6]));
 buff.writeInt8(7, 2);
 console.log(buff.toBuffer());
 
@@ -140,7 +140,7 @@ console.log(buff.toBuffer());
 To insert you instead should use:
 
 ```javascript
-const buff = SmartBuffer.fromBuffer(new Buffer([1, 2, 3, 4, 5, 6]));
+const buff = SmartBuffer.fromBuffer(Buffer.from([1, 2, 3, 4, 5, 6]));
 buff.insertInt8(7, 2);
 console.log(buff.toBuffer());
 

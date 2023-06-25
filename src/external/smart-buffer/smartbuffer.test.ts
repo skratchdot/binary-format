@@ -13,7 +13,7 @@ import { assert } from 'chai';
 
 describe('Constructing a SmartBuffer', () => {
   describe('Constructing with an existing Buffer', () => {
-    const buff = new Buffer([
+    const buff = Buffer.from([
       0xaa, 0xbb, 0xcc, 0xdd, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
       0x77, 0x88, 0x99,
     ]);
@@ -29,7 +29,7 @@ describe('Constructing a SmartBuffer', () => {
   });
 
   describe('Constructing with an existing Buffer and setting the encoding', () => {
-    const buff = new Buffer([
+    const buff = Buffer.from([
       0xaa, 0xbb, 0xcc, 0xdd, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
       0x77, 0x88, 0x99,
     ]);
@@ -177,7 +177,7 @@ describe('Constructing a SmartBuffer', () => {
   });
 
   describe('Constructing with factory methods', () => {
-    const originalBuffer = new Buffer(10);
+    const originalBuffer = Buffer.alloc(10);
 
     const sbuff1 = SmartBuffer.fromBuffer(originalBuffer);
 
@@ -248,8 +248,8 @@ describe('Reading/Writing To/From SmartBuffer', () => {
     iReader.insertDoubleBE(0x6699, 0);
     iReader.insertDoubleLE(0x6699, 0);
     iReader.writeStringNT('h', 2);
-    iReader.insertBuffer(new Buffer('he'), 2);
-    iReader.insertBufferNT(new Buffer('he'), 2);
+    iReader.insertBuffer(Buffer.from('he'), 2);
+    iReader.insertBufferNT(Buffer.from('he'), 2);
     iReader.readInt8(0);
 
     it('should equal the correct values that were written above', () => {
@@ -622,7 +622,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
   describe('Buffer Values', () => {
     describe('Writing buffer to position 0', () => {
       let buff = new SmartBuffer();
-      let frontBuff = new Buffer([1, 2, 3, 4, 5, 6]);
+      let frontBuff = Buffer.from([1, 2, 3, 4, 5, 6]);
       buff.writeStringNT('hello');
       buff.writeBuffer(frontBuff, 0);
 
@@ -634,7 +634,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
 
     describe('Writing null terminated buffer to position 0', () => {
       let buff = new SmartBuffer();
-      let frontBuff = new Buffer([1, 2, 3, 4, 5, 6]);
+      let frontBuff = Buffer.from([1, 2, 3, 4, 5, 6]);
       buff.writeStringNT('hello');
       buff.writeBufferNT(frontBuff, 0);
 
@@ -645,7 +645,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
     });
 
     describe('Explicit lengths', () => {
-      let buff = new Buffer([0x01, 0x02, 0x04, 0x08, 0x16, 0x32, 0x64]);
+      let buff = Buffer.from([0x01, 0x02, 0x04, 0x08, 0x16, 0x32, 0x64]);
       let reader = new SmartBuffer();
       reader.writeBuffer(buff);
 
@@ -655,7 +655,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
     });
 
     describe('Implicit lengths', () => {
-      let buff = new Buffer([0x01, 0x02, 0x04, 0x08, 0x16, 0x32, 0x64]);
+      let buff = Buffer.from([0x01, 0x02, 0x04, 0x08, 0x16, 0x32, 0x64]);
       let reader = new SmartBuffer();
       reader.writeBuffer(buff);
 
@@ -667,7 +667,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
     describe('Null Terminated Buffer Reading', () => {
       let buff = new SmartBuffer();
       buff.writeBuffer(
-        new Buffer([0x01, 0x02, 0x03, 0x04, 0x00, 0x01, 0x02, 0x03])
+        Buffer.from([0x01, 0x02, 0x03, 0x04, 0x00, 0x01, 0x02, 0x03])
       );
 
       let read1 = buff.readBufferNT();
@@ -684,7 +684,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
 
     describe('Null Terminated Buffer Writing', () => {
       let buff = new SmartBuffer();
-      buff.writeBufferNT(new Buffer([0x01, 0x02, 0x03, 0x04]));
+      buff.writeBufferNT(Buffer.from([0x01, 0x02, 0x03, 0x04]));
 
       let read1 = buff.readBufferNT();
 
@@ -725,7 +725,7 @@ describe('Reading/Writing To/From SmartBuffer', () => {
     describe('Adding more data to the buffer than the internal buffer currently allows.', () => {
       it('Should automatically adjust internal buffer size when needed', () => {
         let writer = new SmartBuffer();
-        let largeBuff = new Buffer(10000);
+        let largeBuff = Buffer.alloc(10000);
 
         writer.writeBuffer(largeBuff);
 
@@ -812,7 +812,7 @@ describe('Automatic internal buffer resizing', () => {
 
   it('Should not throw an error when adding data that is larger than current buffer size (internal resize algo succeeds)', () => {
     writer = SmartBuffer.fromSize(100);
-    let buff = new Buffer(105);
+    let buff = Buffer.alloc(105);
 
     writer.writeBuffer(buff);
 
@@ -836,7 +836,7 @@ describe('Clearing the buffer', () => {
 });
 
 describe('Displaying the buffer as a string', () => {
-  let buff = new Buffer([1, 2, 3, 4]);
+  let buff = Buffer.from([1, 2, 3, 4]);
   let sbuff = SmartBuffer.fromBuffer(buff);
 
   let str = buff.toString();
