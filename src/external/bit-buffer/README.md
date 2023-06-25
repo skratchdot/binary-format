@@ -9,7 +9,7 @@ BitBuffer provides two objects, `BitView` and `BitStream`. `BitView` is a wrappe
 ### Attributes
 
 ```javascript
-bb.buffer  // Underlying ArrayBuffer.
+bb.buffer; // Underlying ArrayBuffer.
 ```
 
 ```javascript
@@ -54,18 +54,17 @@ Coerces a float32 to uint32 and sets at `offset`.
 
 Coerces a float64 to two uint32s and sets at `offset`.
 
-
 ## BitStream
 
 ### Attributes
 
 ```javascript
 bb.byteIndex; // Get current index in bytes.
-bb.byteIndex = 0;  // Set current index in bytes.
+bb.byteIndex = 0; // Set current index in bytes.
 ```
 
 ```javascript
-bb.view;  // Underlying BitView
+bb.view; // Underlying BitView
 ```
 
 ```javascript
@@ -78,7 +77,7 @@ bb.bitsLeft; // The number of bits left in the stream
 
 ```javascript
 bb.index; // Get the current index in bits
-bb.index = 0// Set the current index in bits
+bb.index = 0; // Set the current index in bits
 ```
 
 ```javascript
@@ -104,11 +103,11 @@ Returns `bits` numbers of bits from the view at the current index, updating the 
 Sets `bits` numbers of bits from `value` in the view at the current index, updating the index.
 
 #### readUint8(), readUint16(), readUint32(), readInt8(), readInt16(), readInt32()
- 
+
 Read a 8, 16 or 32 bits (unsigned) integer at the current index, updating the index.
 
 #### writeUint8(value), writeUint16(value), writeUint32(value), writeInt8(value), writeInt16(value), writeInt32(value)
- 
+
 Write 8, 16 or 32 bits from `value` as (unsigned) integer at the current index, updating the index.
 
 #### readFloat32(), readFloat64()
@@ -129,7 +128,7 @@ Write a single bit to the view at the current index, updating the index.
 
 #### readASCIIString(optional bytes), readUTF8String(optional bytes)
 
-Reads bytes from the underlying view at the current index until either `bytes` count is reached or a 0x00 terminator is reached. 
+Reads bytes from the underlying view at the current index until either `bytes` count is reached or a 0x00 terminator is reached.
 
 #### writeASCIIString(string, optional bytes), writeUTF8String(string, optional bytes)
 
