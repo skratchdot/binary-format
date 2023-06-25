@@ -3,9 +3,10 @@ import { BitStream, BitView } from './bit-buffer';
 import { assert } from 'chai';
 
 describe('BitBuffer', function () {
-  var array, bv, bsw, bsr;
+  let array: any, bv: any, bsw: any, bsr: any;
 
-  setup(function () {
+  // todo: was previously setup
+  beforeEach(function () {
     array = new ArrayBuffer(64);
     bv = new BitView(array);
     bsw = new BitStream(bv);
@@ -14,7 +15,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max signed 5 bits', function () {
-    var signed_max = (1 << 4) - 1;
+    const signed_max = (1 << 4) - 1;
 
     bsw.writeBits(signed_max, 5);
     bsw.writeBits(-signed_max - 1, 5);
@@ -23,7 +24,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max unsigned 5 bits', function () {
-    var unsigned_max = (1 << 5) - 1;
+    const unsigned_max = (1 << 5) - 1;
 
     bsw.writeBits(unsigned_max, 5);
     bsw.writeBits(-unsigned_max, 5);
@@ -32,7 +33,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max int8', function () {
-    var signed_max = 0x7f;
+    const signed_max = 0x7f;
 
     bsw.writeInt8(signed_max);
     bsw.writeInt8(-signed_max - 1);
@@ -41,7 +42,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max uint8', function () {
-    var unsigned_max = 0xff;
+    const unsigned_max = 0xff;
 
     bsw.writeUint8(unsigned_max);
     bsw.writeUint8(-unsigned_max);
@@ -50,7 +51,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max int16', function () {
-    var signed_max = 0x7fff;
+    const signed_max = 0x7fff;
 
     bsw.writeInt16(signed_max);
     bsw.writeInt16(-signed_max - 1);
@@ -59,7 +60,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max uint16', function () {
-    var unsigned_max = 0xffff;
+    const unsigned_max = 0xffff;
 
     bsw.writeUint16(unsigned_max);
     bsw.writeUint16(-unsigned_max);
@@ -68,7 +69,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max int32', function () {
-    var signed_max = 0x7fffffff;
+    const signed_max = 0x7fffffff;
 
     bsw.writeInt32(signed_max);
     bsw.writeInt32(-signed_max - 1);
@@ -77,7 +78,7 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max uint32', function () {
-    var unsigned_max = 0xffffffff;
+    const unsigned_max = 0xffffffff;
 
     bsw.writeUint32(unsigned_max);
     bsw.writeUint32(-unsigned_max);
@@ -96,13 +97,13 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max float32 (normal values)', function () {
-    var scratch = new DataView(new ArrayBuffer(8));
+    const scratch = new DataView(new ArrayBuffer(8));
 
     scratch.setUint32(0, 0x00800000);
     scratch.setUint32(4, 0x7f7fffff);
 
-    var min = scratch.getFloat32(0);
-    var max = scratch.getFloat32(4);
+    const min = scratch.getFloat32(0);
+    const max = scratch.getFloat32(4);
 
     bsw.writeFloat32(min);
     bsw.writeFloat32(max);
@@ -112,15 +113,15 @@ describe('BitBuffer', function () {
   });
 
   test('Min / max float64 (normal values)', function () {
-    var scratch = new DataView(new ArrayBuffer(16));
+    const scratch = new DataView(new ArrayBuffer(16));
 
     scratch.setUint32(0, 0x00100000);
     scratch.setUint32(4, 0x00000000);
     scratch.setUint32(8, 0x7fefffff);
     scratch.setUint32(12, 0xffffffff);
 
-    var min = scratch.getFloat64(0);
-    var max = scratch.getFloat64(8);
+    const min = scratch.getFloat64(0);
+    const max = scratch.getFloat64(8);
 
     bsw.writeFloat64(min);
     bsw.writeFloat64(max);
@@ -137,8 +138,8 @@ describe('BitBuffer', function () {
   });
 
   test('Read / write ASCII string, fixed length', function () {
-    var str = 'foobar';
-    var len = 16;
+    const str = 'foobar';
+    const len = 16;
 
     bsw.writeASCIIString(str, len);
     assert.equal(bsw.byteIndex, len);
@@ -148,7 +149,7 @@ describe('BitBuffer', function () {
   });
 
   test('Read / write ASCII string, unknown length', function () {
-    var str = 'foobar';
+    const str = 'foobar';
 
     bsw.writeASCIIString(str);
     assert.equal(bsw.byteIndex, str.length + 1); // +1 for 0x00
@@ -158,7 +159,7 @@ describe('BitBuffer', function () {
   });
 
   test('Read ASCII string, 0 length', function () {
-    var str = 'foobar';
+    const str = 'foobar';
 
     bsw.writeASCIIString(str);
     assert.equal(bsw.byteIndex, str.length + 1); // +1 for 0x00
@@ -168,7 +169,7 @@ describe('BitBuffer', function () {
   });
 
   test('Read overflow', function () {
-    var exception = false;
+    let exception = false;
 
     try {
       bsr.readASCIIString(128);
@@ -180,7 +181,7 @@ describe('BitBuffer', function () {
   });
 
   test('Write overflow', function () {
-    var exception = false;
+    let exception = false;
 
     try {
       bsw.writeASCIIString('foobar', 128);
@@ -226,7 +227,7 @@ describe('BitBuffer', function () {
   });
 
   test('Read / write UTF8 string, only ASCII characters', function () {
-    var str = 'foobar';
+    const str = 'foobar';
 
     bsw.writeUTF8String(str);
     assert(bsw.byteIndex === str.length + 1); // +1 for 0x00
@@ -236,13 +237,13 @@ describe('BitBuffer', function () {
   });
 
   test('Read / write UTF8 string, non ASCII characters', function () {
-    var str = '日本語';
+    const str = '日本語';
 
-    var bytes = [0xe6, 0x97, 0xa5, 0xe6, 0x9c, 0xac, 0xe8, 0xaa, 0x9e];
+    const bytes = [0xe6, 0x97, 0xa5, 0xe6, 0x9c, 0xac, 0xe8, 0xaa, 0x9e];
 
     bsw.writeUTF8String(str);
 
-    for (var i = 0; i < bytes.length; i++) {
+    for (let i = 0; i < bytes.length; i++) {
       assert.equal(bytes[i], bv.getBits(i * 8, 8));
     }
 
@@ -256,7 +257,7 @@ describe('BitBuffer', function () {
     bsw.writeBits(0xf0, 8); //0b11110000
     bsw.writeBits(0xf1, 8); //0b11110001
     bsr.readBits(3); //offset
-    var slice = bsr.readBitStream(8);
+    const slice = bsr.readBitStream(8);
     assert.equal(slice.readBits(6), 0x3e); //0b111110
     assert.equal(9, slice._index);
     assert.equal(6, slice.index);
@@ -271,9 +272,9 @@ describe('BitBuffer', function () {
     bsw.writeBits(0xf0, 8); //0b11110000
     bsw.writeBits(0xf1, 8); //0b11110001
     bsr.readBits(3); //offset
-    var slice = bsr.readBitStream(4);
+    const slice = bsr.readBitStream(4);
 
-    var exception = false;
+    let exception = false;
 
     try {
       slice.readUint8();
@@ -285,8 +286,8 @@ describe('BitBuffer', function () {
   });
 
   test('writeBitStream', function () {
-    var buf = new ArrayBuffer(64);
-    var sourceStream = new BitStream(buf);
+    const buf = new ArrayBuffer(64);
+    const sourceStream = new BitStream(buf);
 
     sourceStream.writeBits(0xf0, 8); //0b11110000
     sourceStream.writeBits(0xf1, 8); //0b11110001
@@ -298,14 +299,14 @@ describe('BitBuffer', function () {
     assert.equal(bsr.readBits(6), 0x3e); //0b00111110
     assert.equal(11, sourceStream.index);
 
-    var bin = new Uint8Array(buf);
+    const bin = new Uint8Array(buf);
     assert.equal(bin[0], 0xf0);
     assert.equal(bin[1], 0xf1);
   });
 
   test('writeBitStream Buffer', function () {
-    var buf = Buffer.alloc(64);
-    var sourceStream = new BitStream(buf);
+    const buf = Buffer.alloc(64);
+    const sourceStream = new BitStream(buf);
 
     sourceStream.writeBits(0xf0, 8); //0b11110000
     sourceStream.writeBits(0xf1, 8); //0b11110001
@@ -317,13 +318,13 @@ describe('BitBuffer', function () {
     assert.equal(bsr.readBits(6), 0x3e); //0b00111110
     assert.equal(11, sourceStream.index);
 
-    var bin = new Uint8Array(buf.buffer);
+    const bin = new Uint8Array(buf.buffer);
     assert.equal(bin[0], 0xf0);
     assert.equal(bin[1], 0xf1);
   });
 
   test('writeBitStream long', function () {
-    var sourceStream = new BitStream(new ArrayBuffer(64));
+    const sourceStream = new BitStream(new ArrayBuffer(64));
 
     sourceStream.writeBits(0xf0, 8);
     sourceStream.writeBits(0xf1, 8);
@@ -346,7 +347,7 @@ describe('BitBuffer', function () {
     bsw.writeBits(0xf0, 8); //0b11110000
     bsr.readBits(3); //offset
 
-    var buffer = bsr.readArrayBuffer(2);
+    const buffer = bsr.readArrayBuffer(2);
 
     assert.equal(0x3e, buffer[0]); //0b00111110
     assert.equal(0x1e, buffer[1]); //0b00011110
@@ -355,7 +356,7 @@ describe('BitBuffer', function () {
   });
 
   test('writeArrayBuffer', function () {
-    var source = new Uint8Array(4);
+    const source = new Uint8Array(4);
     source[0] = 0xf0;
     source[1] = 0xf1;
     source[2] = 0xf1;
@@ -371,7 +372,7 @@ describe('BitBuffer', function () {
 
   test('Get buffer from view', function () {
     bv.setBits(0, 0xffffffff, 32);
-    var buffer = bv.buffer;
+    const buffer = bv.buffer;
 
     assert.equal(64, buffer.length);
     assert.equal(0xffff, buffer.readUInt16LE(0));
@@ -379,7 +380,7 @@ describe('BitBuffer', function () {
 
   test('Get buffer from stream', function () {
     bsw.writeBits(0xffffffff, 32);
-    var buffer = bsr.buffer;
+    const buffer = bsr.buffer;
 
     assert.equal(64, buffer.length);
     assert.equal(0xffff, buffer.readUInt16LE(0));
@@ -387,9 +388,10 @@ describe('BitBuffer', function () {
 });
 
 describe('Reading big/little endian', function () {
-  var array, u8, bv, bsw, bsr;
+  let array: ArrayBuffer, u8: Uint8Array, bv, bsw, bsr: BitStream;
 
-  setup(function () {
+  // todo: was previously setup
+  beforeEach(function () {
     array = new ArrayBuffer(64);
     u8 = new Uint8Array(array);
     u8[0] = 0x01;
@@ -401,7 +403,7 @@ describe('Reading big/little endian', function () {
   test('4b, little-endian', function () {
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(4));
     result.push(bsr.readBits(4));
     result.push(bsr.readBits(4));
@@ -415,7 +417,7 @@ describe('Reading big/little endian', function () {
   test('8b, little-endian', function () {
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(8));
     result.push(bsr.readBits(8));
 
@@ -427,7 +429,7 @@ describe('Reading big/little endian', function () {
   test('10b, little-endian', function () {
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(10));
 
     // 0000 0001  0000 0010  [01 02]
@@ -438,7 +440,7 @@ describe('Reading big/little endian', function () {
   test('16b, little-endian', function () {
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(16));
 
     // 0000 0001  0000 0010  [01 02]
@@ -450,7 +452,7 @@ describe('Reading big/little endian', function () {
     u8[2] = 0x03;
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(24));
 
     // 0000 0001  0000 0010  0000 0011  [01 02 03]
@@ -462,7 +464,7 @@ describe('Reading big/little endian', function () {
     bsr.bigEndian = true;
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(4));
     result.push(bsr.readBits(4));
     result.push(bsr.readBits(4));
@@ -477,7 +479,7 @@ describe('Reading big/little endian', function () {
     bsr.bigEndian = true;
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(8));
     result.push(bsr.readBits(8));
 
@@ -490,7 +492,7 @@ describe('Reading big/little endian', function () {
     bsr.bigEndian = true;
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(10));
     result.push(bsr.readBits(6));
 
@@ -503,7 +505,7 @@ describe('Reading big/little endian', function () {
     bsr.bigEndian = true;
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(16));
 
     // 0000 0001  0000 0010  [01 02]
@@ -516,7 +518,7 @@ describe('Reading big/little endian', function () {
     bsr.bigEndian = true;
     assert.equal(bsr.index, 0, "BitStream didn't init at offset 0");
 
-    var result = [];
+    const result = [];
     result.push(bsr.readBits(24));
 
     // 0000 0001  0000 0010  0000 0011  [01 02 03]
@@ -526,9 +528,10 @@ describe('Reading big/little endian', function () {
 });
 
 describe('Writing big/little endian', function () {
-  var array, u8, bv, bsw, bsr;
+  let array: ArrayBuffer, u8: Uint8Array, bv: BitView, bsw: BitStream, bsr;
 
-  setup(function () {
+  // todo: was previously setup
+  beforeEach(function () {
     array = new ArrayBuffer(2);
     u8 = new Uint8Array(array);
     bv = new BitView(array);
