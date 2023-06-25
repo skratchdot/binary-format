@@ -1,5 +1,5 @@
-import { BitStream, BitView } from './bit-buffer';
-
+import { BitStream } from './bit-stream';
+import { BitView } from './bit-view';
 import { assert } from 'chai';
 
 describe('BitBuffer', function () {

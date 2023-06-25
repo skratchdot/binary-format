@@ -1,4 +1,4 @@
-import { BitStream } from './external/bit-buffer/bit-buffer';
+import { BitStream } from './external/bit-buffer/bit-stream';
 import { Buffer } from 'buffer';
 
 const getByteString = (char: string) =>
