@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { TcpFormat } from './tcp';
 
 test('tcp', () => {

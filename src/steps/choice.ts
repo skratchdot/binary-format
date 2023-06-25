@@ -1,10 +1,11 @@
-import BinaryBuffer from '../binary-buffer';
 import {
   ChoiceKeyFunction,
   ChoiceOptions,
   CustomFormatter,
   ReadAndWrite,
 } from '../types';
+
+import BinaryBuffer from '../binary-buffer';
 
 export const fromChoiceKey =
   <T>(choiceKey: keyof T): ChoiceKeyFunction =>

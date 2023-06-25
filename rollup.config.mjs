@@ -31,5 +31,5 @@ export default {
       ].join('\n'),
     }),
   ],
-  external: ['bit-buffer', 'smart-buffer'],
+  external: ['buffer'],
 };

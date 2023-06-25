@@ -1,4 +1,5 @@
-import { SmartBuffer } from 'smart-buffer';
+import { Buffer } from 'buffer';
+import { SmartBuffer } from './external/smart-buffer/smartbuffer';
 
 type BinaryBufferType = 'reader' | 'writer';
 

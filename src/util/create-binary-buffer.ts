@@ -1,4 +1,5 @@
 import BinaryBuffer from '../binary-buffer';
+import { Buffer } from 'buffer';
 
 const createBinaryBuffer = (
   str: string,

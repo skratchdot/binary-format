@@ -1,6 +1,7 @@
+import { plainArrayRead, plainArrayStep } from './plain-array';
+
 import BinaryBuffer from '../binary-buffer';
 import createBinaryBuffer from '../util/create-binary-buffer';
-import { plainArrayRead, plainArrayStep } from './plain-array';
 
 describe('plain-array', () => {
   describe('plainArrayRead', () => {

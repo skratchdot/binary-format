@@ -1,5 +1,6 @@
 import BinaryBuffer from '../binary-buffer';
 import { BitStepAccumulator } from './bits';
+import { Buffer } from 'buffer';
 
 describe('BitStepAccumulator tests', () => {
   describe('addStep', () => {

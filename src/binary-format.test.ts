@@ -1,5 +1,6 @@
 import BinaryFormat from './binary-format';
 import BinaryFormatter from './binary-formatter';
+import { Buffer } from 'buffer';
 
 let buffer: Buffer;
 

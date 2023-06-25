@@ -1,5 +1,6 @@
-import { BitStream } from 'bit-buffer';
 import BinaryBuffer from '../binary-buffer';
+import { BitStream } from '../external/bit-buffer/bit-buffer';
+import { Buffer } from 'buffer';
 import { Step } from '../types';
 
 interface BitStepHelper<T> {

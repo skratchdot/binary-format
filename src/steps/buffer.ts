@@ -1,10 +1,12 @@
-import BinaryBuffer from '../binary-buffer';
 import {
+  LengthOption,
   ReadAndWrite,
   ReadFunction,
-  LengthOption,
   WriteFunction,
 } from '../types';
+
+import BinaryBuffer from '../binary-buffer';
+import { Buffer } from 'buffer';
 
 export const validateBuffer = (buffer: unknown, length?: number): Buffer => {
   if (!Buffer.isBuffer(buffer)) {

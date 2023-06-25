@@ -1,6 +1,6 @@
 import BinaryBuffer from './binary-buffer';
+import { Buffer } from 'buffer';
 import { Step } from './types';
-
 class BinaryFormatter<T> {
   private steps: Array<Step<T>>;
   constructor(steps: Array<Step<T>> = []) {

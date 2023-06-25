@@ -1,10 +1,12 @@
-import BinaryBuffer from '../binary-buffer';
 import {
   LengthOption,
   ReadAndWrite,
   ReadFunction,
   WriteFunction,
 } from '../types';
+
+import BinaryBuffer from '../binary-buffer';
+import { Buffer } from 'buffer';
 import { bufferStep } from './buffer';
 
 export const plainArrayRead =

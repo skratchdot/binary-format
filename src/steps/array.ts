@@ -1,4 +1,3 @@
-import BinaryBuffer from '../binary-buffer';
 import {
   ArrayLengthFunction,
   ArrayLengthParams,
@@ -6,6 +5,8 @@ import {
   ReadFunction,
   WriteFunction,
 } from '../types';
+
+import BinaryBuffer from '../binary-buffer';
 
 export const arrayFunctionLength =
   (length: number): ArrayLengthFunction =>

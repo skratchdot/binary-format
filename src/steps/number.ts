@@ -1,10 +1,11 @@
-import BinaryBuffer from '../binary-buffer';
 import {
   NumberKey,
   NumberKeyRead,
   NumberKeyWrite,
   ReadAndWrite,
 } from '../types';
+
+import BinaryBuffer from '../binary-buffer';
 
 export const numberRead =
   (fnName: NumberKeyRead) =>

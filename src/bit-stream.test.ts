@@ -1,4 +1,5 @@
-import { BitStream } from 'bit-buffer';
+import { BitStream } from './external/bit-buffer/bit-buffer';
+import { Buffer } from 'buffer';
 
 const getByteString = (char: string) =>
   char.charCodeAt(0).toString(2).padStart(8, '0');

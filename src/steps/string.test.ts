@@ -1,6 +1,7 @@
+import { stringRead, stringStep, stringWrite } from './string';
+
 import BinaryBuffer from '../binary-buffer';
 import createBinaryBuffer from '../util/create-binary-buffer';
-import { stringRead, stringStep, stringWrite } from './string';
 
 describe('string tests', () => {
   describe('stringRead', () => {

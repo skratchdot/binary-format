@@ -1,7 +1,8 @@
+import { choiceHelper, choiceStep, fromChoiceKey } from './choice';
+
 import BinaryFormat from '..';
 import { CustomFormatter } from '../types';
 import createBinaryBuffer from '../util/create-binary-buffer';
-import { choiceHelper, choiceStep, fromChoiceKey } from './choice';
 
 describe('choice tests', () => {
   describe('choiceHelper', () => {

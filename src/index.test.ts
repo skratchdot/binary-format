@@ -1,5 +1,6 @@
-import BinaryFormat from './binary-format';
 import * as main from './index';
+
+import BinaryFormat from './binary-format';
 
 describe('main exports', () => {
   test('we only export 1 class', () => {

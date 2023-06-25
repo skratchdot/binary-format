@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { IpFormat } from './ip';
 
 test('ip', () => {

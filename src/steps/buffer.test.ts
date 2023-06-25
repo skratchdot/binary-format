@@ -1,6 +1,8 @@
-import BinaryBuffer from '../binary-buffer';
-import createBinaryBuffer from '../util/create-binary-buffer';
 import { bufferRead, bufferStep, bufferWrite, validateBuffer } from './buffer';
+
+import BinaryBuffer from '../binary-buffer';
+import { Buffer } from 'buffer';
+import createBinaryBuffer from '../util/create-binary-buffer';
 
 describe('buffer tests', () => {
   describe('bufferRead', () => {

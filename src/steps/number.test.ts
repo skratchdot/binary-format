@@ -1,6 +1,7 @@
+import { numberRead, numberStep, numberWrite } from './number';
+
 import BinaryBuffer from '../binary-buffer';
 import createBinaryBuffer from '../util/create-binary-buffer';
-import { numberRead, numberStep, numberWrite } from './number';
 
 describe('bigint tests', () => {
   describe('numberRead', () => {

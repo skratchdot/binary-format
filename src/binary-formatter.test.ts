@@ -1,5 +1,7 @@
-import BinaryFormatter from './binary-formatter';
 import { arrayFunctionLength, arrayStep } from './steps/array';
+
+import BinaryFormatter from './binary-formatter';
+import { Buffer } from 'buffer';
 import { numberStep } from './steps/number';
 import { stringStep } from './steps/string';
 

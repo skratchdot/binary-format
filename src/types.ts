@@ -1,6 +1,6 @@
 import BinaryBuffer from './binary-buffer';
-import { SmartBuffer } from 'smart-buffer';
 import BinaryFormatter from './binary-formatter';
+import { SmartBuffer } from './external/smart-buffer/smartbuffer';
 
 export type NumberKey =
   | 'Int8'

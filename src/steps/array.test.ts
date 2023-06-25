@@ -1,5 +1,3 @@
-import BinaryBuffer from '../binary-buffer';
-import { ArrayLengthParams } from '../types';
 import {
   arrayFunctionEof,
   arrayFunctionLength,
@@ -7,6 +5,9 @@ import {
   arrayStep,
   arrayWrite,
 } from './array';
+
+import { ArrayLengthParams } from '../types';
+import BinaryBuffer from '../binary-buffer';
 
 describe('array tests', () => {
   describe('arrayFunctionLength', () => {
