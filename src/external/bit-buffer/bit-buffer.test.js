@@ -1,6 +1,6 @@
-var assert = require('assert'),
-  BitView = require('./bit-buffer').BitView,
-  BitStream = require('./bit-buffer').BitStream;
+import { BitStream, BitView } from './bit-buffer';
+
+import assert from 'node:assert';
 
 suite('BitBuffer', function () {
   var array, bv, bsw, bsr;
