@@ -1,14 +1,15 @@
-import { SmartBuffer, SmartBufferOptions } from '../src/smartbuffer';
 import {
   ERRORS,
-  isFiniteInteger,
   checkEncoding,
-  checkOffsetValue,
   checkLengthValue,
+  checkOffsetValue,
   checkTargetOffset,
-} from '../src/utils';
+  isFiniteInteger,
+} from './utils';
+import { SmartBuffer, SmartBufferOptions } from './smartbuffer';
+
+import { Buffer } from 'buffer';
 import { assert } from 'chai';
-import 'mocha';
 
 describe('Constructing a SmartBuffer', () => {
   describe('Constructing with an existing Buffer', () => {
@@ -169,6 +170,7 @@ describe('Constructing a SmartBuffer', () => {
     it('should throw and exception when given an object that is not a SmartBufferOptions', () => {
       assert.throws(() => {
         // tslint:disable-next-line:no-unused-variable
+        // @ts-expect-error ignoring third-party ts errors
         const reader = SmartBuffer.fromOptions(null);
       }, Error);
     });
@@ -283,160 +285,158 @@ describe('Reading/Writing To/From SmartBuffer', () => {
   });
 
   describe('BigInt values', () => {
-    describe('When BigInt is available and so are Buffer methods', () => {
-      before(function () {
-        if (
-          typeof BigInt === 'undefined' ||
-          typeof Buffer.prototype.writeBigInt64BE === 'undefined'
-        ) {
-          this.skip();
-        }
-      });
+    const describeWithBigIntAndBuffer =
+      typeof BigInt === 'undefined' ||
+      typeof Buffer.prototype.writeBigInt64BE === 'undefined'
+        ? describe.skip
+        : describe;
 
-      it('Reading written-to buffer should read back the results of the insert', () => {
-        const wBuffer = new SmartBuffer();
-        wBuffer.writeBigInt64LE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(2));
-        wBuffer.writeBigInt64BE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(3));
-        wBuffer.writeBigUInt64LE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(4));
-        wBuffer.writeBigUInt64BE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(5));
+    describeWithBigIntAndBuffer(
+      'When BigInt is available and so are Buffer methods',
+      () => {
+        it('Reading written-to buffer should read back the results of the insert', () => {
+          const wBuffer = new SmartBuffer();
+          wBuffer.writeBigInt64LE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(2));
+          wBuffer.writeBigInt64BE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(3));
+          wBuffer.writeBigUInt64LE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(4));
+          wBuffer.writeBigUInt64BE(BigInt(Number.MAX_SAFE_INTEGER) * BigInt(5));
 
-        assert.equal(
-          wBuffer.readBigInt64LE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(2)
-        );
-        assert.equal(
-          wBuffer.readBigInt64BE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(3)
-        );
-        assert.equal(
-          wBuffer.readBigUInt64LE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(4)
-        );
-        assert.equal(
-          wBuffer.readBigUInt64BE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(5)
-        );
-      });
+          assert.equal(
+            wBuffer.readBigInt64LE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(2)
+          );
+          assert.equal(
+            wBuffer.readBigInt64BE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(3)
+          );
+          assert.equal(
+            wBuffer.readBigUInt64LE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(4)
+          );
+          assert.equal(
+            wBuffer.readBigUInt64BE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(5)
+          );
+        });
 
-      it('Reading inserted-into buffer should read back the results of the insert', () => {
-        const iBuffer = new SmartBuffer();
-        iBuffer.insertBigInt64LE(
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(6),
-          0
-        );
-        iBuffer.insertBigInt64BE(
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(7),
-          0
-        );
-        iBuffer.insertBigUInt64LE(
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(8),
-          0
-        );
-        iBuffer.insertBigUInt64BE(
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(9),
-          0
-        );
+        it('Reading inserted-into buffer should read back the results of the insert', () => {
+          const iBuffer = new SmartBuffer();
+          iBuffer.insertBigInt64LE(
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(6),
+            0
+          );
+          iBuffer.insertBigInt64BE(
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(7),
+            0
+          );
+          iBuffer.insertBigUInt64LE(
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(8),
+            0
+          );
+          iBuffer.insertBigUInt64BE(
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(9),
+            0
+          );
 
-        assert.equal(
-          iBuffer.readBigInt64BE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(9)
-        );
-        assert.equal(
-          iBuffer.readBigInt64LE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(8)
-        );
-        assert.equal(
-          iBuffer.readBigUInt64BE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(7)
-        );
-        assert.equal(
-          iBuffer.readBigUInt64LE(),
-          BigInt(Number.MAX_SAFE_INTEGER) * BigInt(6)
-        );
-      });
-    });
+          assert.equal(
+            iBuffer.readBigInt64BE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(9)
+          );
+          assert.equal(
+            iBuffer.readBigInt64LE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(8)
+          );
+          assert.equal(
+            iBuffer.readBigUInt64BE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(7)
+          );
+          assert.equal(
+            iBuffer.readBigUInt64LE(),
+            BigInt(Number.MAX_SAFE_INTEGER) * BigInt(6)
+          );
+        });
+      }
+    );
 
-    describe('When BigInt is available but buffer methods are not', () => {
-      beforeEach(function () {
-        if (
-          typeof BigInt === 'undefined' ||
-          typeof Buffer.prototype.readBigInt64BE === 'function'
-        ) {
-          this.skip();
-        }
-      });
-      const buffer = new SmartBuffer();
+    const describeWithBigIntAndNoBuffer =
+      typeof BigInt === 'undefined' ||
+      typeof Buffer.prototype.readBigInt64BE === 'function'
+        ? describe.skip
+        : describe;
 
-      // Taking a Number to a BigInt as we do below is semantically invalid,
-      // and implicit casting between Number and BigInt throws a TypeError in
-      // JavaScript. However here, these methods immediately throw the platform
-      // exception, and no cast really takes place. These casts are solely to
-      // satisfy the type checker, as BigInt doesn't exist at runtime in these tests
+    describeWithBigIntAndNoBuffer(
+      'When BigInt is available but buffer methods are not',
+      () => {
+        const buffer = new SmartBuffer();
 
-      it('Writing throws an exception', () => {
-        assert.throws(
-          () => buffer.writeBigInt64LE(1 as any as bigint),
-          'Platform does not support Buffer.prototype.writeBigInt64LE.'
-        );
-        assert.throws(
-          () => buffer.writeBigInt64BE(2 as any as bigint),
-          'Platform does not support Buffer.prototype.writeBigInt64BE.'
-        );
-        assert.throws(
-          () => buffer.writeBigUInt64LE(1 as any as bigint),
-          'Platform does not support Buffer.prototype.writeBigUInt64LE.'
-        );
-        assert.throws(
-          () => buffer.writeBigUInt64BE(2 as any as bigint),
-          'Platform does not support Buffer.prototype.writeBigUInt64BE.'
-        );
-      });
+        // Taking a Number to a BigInt as we do below is semantically invalid,
+        // and implicit casting between Number and BigInt throws a TypeError in
+        // JavaScript. However here, these methods immediately throw the platform
+        // exception, and no cast really takes place. These casts are solely to
+        // satisfy the type checker, as BigInt doesn't exist at runtime in these tests
 
-      it('Inserting throws an exception', () => {
-        assert.throws(
-          () => buffer.insertBigInt64LE(1 as any as bigint, 0),
-          'Platform does not support Buffer.prototype.writeBigInt64LE.'
-        );
-        assert.throws(
-          () => buffer.insertBigInt64BE(2 as any as bigint, 0),
-          'Platform does not support Buffer.prototype.writeBigInt64BE.'
-        );
-        assert.throws(
-          () => buffer.insertBigUInt64LE(1 as any as bigint, 0),
-          'Platform does not support Buffer.prototype.writeBigUInt64LE.'
-        );
-        assert.throws(
-          () => buffer.insertBigUInt64BE(2 as any as bigint, 0),
-          'Platform does not support Buffer.prototype.writeBigUInt64BE.'
-        );
-      });
+        it('Writing throws an exception', () => {
+          assert.throws(
+            () => buffer.writeBigInt64LE(1 as any as bigint),
+            'Platform does not support Buffer.prototype.writeBigInt64LE.'
+          );
+          assert.throws(
+            () => buffer.writeBigInt64BE(2 as any as bigint),
+            'Platform does not support Buffer.prototype.writeBigInt64BE.'
+          );
+          assert.throws(
+            () => buffer.writeBigUInt64LE(1 as any as bigint),
+            'Platform does not support Buffer.prototype.writeBigUInt64LE.'
+          );
+          assert.throws(
+            () => buffer.writeBigUInt64BE(2 as any as bigint),
+            'Platform does not support Buffer.prototype.writeBigUInt64BE.'
+          );
+        });
 
-      it('Reading throws an exception', () => {
-        assert.throws(
-          () => buffer.readBigInt64LE(),
-          'Platform does not support Buffer.prototype.readBigInt64LE.'
-        );
-        assert.throws(
-          () => buffer.readBigInt64BE(),
-          'Platform does not support Buffer.prototype.readBigInt64BE.'
-        );
-        assert.throws(
-          () => buffer.readBigUInt64LE(),
-          'Platform does not support Buffer.prototype.readBigUInt64LE.'
-        );
-        assert.throws(
-          () => buffer.readBigUInt64BE(),
-          'Platform does not support Buffer.prototype.readBigUInt64BE.'
-        );
-      });
-    });
+        it('Inserting throws an exception', () => {
+          assert.throws(
+            () => buffer.insertBigInt64LE(1 as any as bigint, 0),
+            'Platform does not support Buffer.prototype.writeBigInt64LE.'
+          );
+          assert.throws(
+            () => buffer.insertBigInt64BE(2 as any as bigint, 0),
+            'Platform does not support Buffer.prototype.writeBigInt64BE.'
+          );
+          assert.throws(
+            () => buffer.insertBigUInt64LE(1 as any as bigint, 0),
+            'Platform does not support Buffer.prototype.writeBigUInt64LE.'
+          );
+          assert.throws(
+            () => buffer.insertBigUInt64BE(2 as any as bigint, 0),
+            'Platform does not support Buffer.prototype.writeBigUInt64BE.'
+          );
+        });
 
-    describe('When BigInt is unavailable', () => {
-      beforeEach(function () {
-        if (typeof BigInt === 'function') {
-          this.skip();
-        }
-      });
+        it('Reading throws an exception', () => {
+          assert.throws(
+            () => buffer.readBigInt64LE(),
+            'Platform does not support Buffer.prototype.readBigInt64LE.'
+          );
+          assert.throws(
+            () => buffer.readBigInt64BE(),
+            'Platform does not support Buffer.prototype.readBigInt64BE.'
+          );
+          assert.throws(
+            () => buffer.readBigUInt64LE(),
+            'Platform does not support Buffer.prototype.readBigUInt64LE.'
+          );
+          assert.throws(
+            () => buffer.readBigUInt64BE(),
+            'Platform does not support Buffer.prototype.readBigUInt64BE.'
+          );
+        });
+      }
+    );
+
+    const describeWithNoBigInt =
+      typeof BigInt === 'function' ? describe.skip : describe;
+    describeWithNoBigInt('When BigInt is unavailable', () => {
       const buffer = new SmartBuffer();
 
       // Taking a Number to a BigInt as we do below is semantically invalid,

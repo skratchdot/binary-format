@@ -123,7 +123,7 @@ class SmartBuffer {
    * Type checking function that determines if an object is a SmartBufferOptions object.
    */
   static isSmartBufferOptions(
-    options: SmartBufferOptions
+    options?: SmartBufferOptions
   ): options is SmartBufferOptions {
     const castOptions = <SmartBufferOptions>options;
 

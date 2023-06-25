@@ -1,8 +1,8 @@
 import { BitStream, BitView } from './bit-buffer';
 
-import assert from 'node:assert';
+import { assert } from 'chai';
 
-suite('BitBuffer', function () {
+describe('BitBuffer', function () {
   var array, bv, bsw, bsr;
 
   setup(function () {
@@ -386,7 +386,7 @@ suite('BitBuffer', function () {
   });
 });
 
-suite('Reading big/little endian', function () {
+describe('Reading big/little endian', function () {
   var array, u8, bv, bsw, bsr;
 
   setup(function () {
@@ -525,7 +525,7 @@ suite('Reading big/little endian', function () {
   });
 });
 
-suite('Writing big/little endian', function () {
+describe('Writing big/little endian', function () {
   var array, u8, bv, bsw, bsr;
 
   setup(function () {
