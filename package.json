@@ -12,7 +12,7 @@
   "scripts": {
     "build": "rimraf dist/ && rollup -c",
     "cover": "npm run test -- --coverage",
-    "format": "prettier --write .",
+    "format": "prettier --check --write .",
     "lint": "eslint .",
     "prepublish": "npm run lint && npm run cover && npm run build",
     "test": "jest --no-cache",
