@@ -14,8 +14,9 @@
     "cover": "npm run test -- --coverage",
     "format": "prettier --check --write .",
     "lint": "eslint .",
-    "prepublish": "npm run lint && npm run cover && npm run build",
+    "prepublish": "npm run lint && npm run tsc && npm run cover && npm run build",
     "test": "jest --no-cache",
+    "tsc": "tsc --noEmit",
     "watch": "npm run cover -- --watchAll"
   },
   "homepage": "https://github.com/skratchdot/binary-format/",
