@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**********************************************************
  *
  * BitStream
@@ -108,9 +109,8 @@ function writeUTF8String(stream, string, bytes) {
 // @ts-expect-error bit-buffer
 function stringToByteArray(str) {
   // https://gist.github.com/volodymyr-mykhailyk/2923227
-  let b = [],
-    i,
-    unicode;
+  const b = [];
+  let i, unicode;
   for (i = 0; i < str.length; i++) {
     unicode = str.charCodeAt(i);
     // 0x00000000 - 0x0000007f -> 0xxxxxxx
@@ -152,9 +152,7 @@ class BitStream {
   readUint16: () => any;
   readUint32: () => any;
   readUint8: () => any;
-  writeArrayBuffer: (buffer: any, byteLength: any) => void;
   writeBits: (value: any, bits: any) => void;
-  writeBitStream: (stream: any, length: any) => void;
   writeBoolean: (value: any) => void;
   writeFloat32: (value: any) => void;
   writeFloat64: (value: any) => void;
@@ -164,6 +162,14 @@ class BitStream {
   writeUint16: (value: any) => void;
   writeUint32: (value: any) => void;
   writeUint8: (value: any) => void;
+  readASCIIString: (bytes?: any) => string;
+  readUTF8String: (bytes?: any) => string;
+  writeASCIIString: (string: any, bytes?: any) => void;
+  writeUTF8String: (string: any, bytes?: any) => void;
+  readBitStream: (bitLength: any) => BitStream;
+  writeBitStream: (stream: any, length: any) => void;
+  readArrayBuffer: (byteLength: any) => any;
+  writeArrayBuffer: (buffer: any, byteLength: any) => void;
 
   constructor(
     source: ArrayBuffer | Buffer | BitView,
@@ -216,23 +222,18 @@ class BitStream {
     this.writeUint32 = writer('setUint32', 32);
     this.writeFloat32 = writer('setFloat32', 32);
     this.writeFloat64 = writer('setFloat64', 64);
-    // @ts-expect-error bit-buffer
     this.readASCIIString = function (bytes) {
       return readASCIIString(this, bytes);
     };
-    // @ts-expect-error bit-buffer
     this.readUTF8String = function (bytes) {
       return readUTF8String(this, bytes);
     };
-    // @ts-expect-error bit-buffer
     this.writeASCIIString = function (string, bytes) {
       writeASCIIString(this, string, bytes);
     };
-    // @ts-expect-error bit-buffer
     this.writeUTF8String = function (string, bytes) {
       writeUTF8String(this, string, bytes);
     };
-    // @ts-expect-error bit-buffer
     this.readBitStream = function (bitLength) {
       const slice = new BitStream(this._view);
       slice._startIndex = this._index;
@@ -253,7 +254,6 @@ class BitStream {
         length -= bitsToWrite;
       }
     };
-    // @ts-expect-error bit-buffer
     this.readArrayBuffer = function (byteLength) {
       const buffer = this._view.getArrayBuffer(this._index, byteLength);
       this._index += byteLength * 8;

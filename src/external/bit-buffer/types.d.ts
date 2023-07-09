@@ -9,39 +9,22 @@ declare module 'bit-buffer' {
     bigEndian: boolean;
 
     getBits(offset: number, bits: number, signed?: boolean): number;
-
     getInt8(offset: number): number;
-
     getInt16(offset: number): number;
-
     getInt32(offset: number): number;
-
     getUint8(offset: number): number;
-
     getUint16(offset: number): number;
-
     getUint32(offset: number): number;
-
     getFloat32(offset: number): number;
-
     getFloat64(offset: number): number;
-
     setBits(offset: number, value: number, bits: number);
-
     setInt8(offset: number);
-
     setInt16(offset: number);
-
     setInt32(offset: number);
-
     setUint8(offset: number);
-
     setUint16(offset: number);
-
     setUint32(offset: number);
-
     setFloat32(offset: number, value: number);
-
     setFloat64(offset: number, value: number);
   }
 

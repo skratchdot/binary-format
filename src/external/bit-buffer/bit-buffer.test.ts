@@ -1,9 +1,10 @@
 import { BitStream } from './bit-stream';
 import { BitView } from './bit-view';
+import { Buffer } from 'buffer';
 import { assert } from 'chai';
 
 describe('BitBuffer', function () {
-  let array: any, bv: any, bsw: any, bsr: any;
+  let array: ArrayBuffer, bv: BitView, bsw: BitStream, bsr: BitStream;
 
   // todo: was previously setup
   beforeEach(function () {
@@ -388,7 +389,7 @@ describe('BitBuffer', function () {
 });
 
 describe('Reading big/little endian', function () {
-  let array: ArrayBuffer, u8: Uint8Array, bv, bsw, bsr: BitStream;
+  let array: ArrayBuffer, u8: Uint8Array, bsr: BitStream;
 
   // todo: was previously setup
   beforeEach(function () {
@@ -528,7 +529,7 @@ describe('Reading big/little endian', function () {
 });
 
 describe('Writing big/little endian', function () {
-  let array: ArrayBuffer, u8: Uint8Array, bv: BitView, bsw: BitStream, bsr;
+  let array: ArrayBuffer, u8: Uint8Array, bv: BitView, bsw: BitStream;
 
   // todo: was previously setup
   beforeEach(function () {

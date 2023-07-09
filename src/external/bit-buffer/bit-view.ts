@@ -10,30 +10,31 @@
 import { Buffer } from 'buffer';
 
 class BitView {
-  _setBit: (offset: any, on: any) => void;
+  _setBit: (offset: number, on: boolean) => void;
   _view: Uint8Array;
   bigEndian: boolean;
-  getArrayBuffer: (offset: any, byteLength: any) => Uint8Array;
-  getBits: (offset: any, bits: any, signed: any) => number;
-  getBoolean: (offset: any) => boolean;
-  getFloat32: (offset: any) => any;
-  getFloat64: (offset: any) => any;
-  getInt16: (offset: any) => any;
-  getInt32: (offset: any) => any;
-  getInt8: (offset: any) => any;
-  getUint16: (offset: any) => any;
-  getUint32: (offset: any) => any;
-  getUint8: (offset: any) => any;
-  setBits: (offset: any, value: any, bits: any) => void;
-  setBoolean: (offset: any, value: any) => void;
-  setFloat32: (offset: any, value: any) => void;
-  setFloat64: (offset: any, value: any) => void;
-  setInt16: (offset: any, value: any) => void;
-  setInt32: (offset: any, value: any) => void;
-  setInt8: (offset: any, value: any) => void;
-  setUint16: (offset: any, value: any) => void;
-  setUint32: (offset: any, value: any) => void;
-  setUint8: (offset: any, value: any) => void;
+  getArrayBuffer: (offset: number, byteLength: number) => Uint8Array;
+  getBits: (offset: number, bits: number, signed?: boolean) => number;
+  getBoolean: (offset: number) => boolean;
+  getFloat32: (offset: number) => number;
+  getFloat64: (offset: number) => number;
+  getInt16: (offset: number) => number;
+  getInt32: (offset: number) => number;
+  getInt8: (offset: number) => number;
+  getUint16: (offset: number) => number;
+  getUint32: (offset: number) => number;
+  getUint8: (offset: number) => number;
+  setBits: (offset: number, value: number, bits: number) => void;
+  setBoolean: (offset: number, value: boolean) => void;
+  setFloat32: (offset: number, value: number) => void;
+  setFloat64: (offset: number, value: number) => void;
+  setInt8: (offset: number, value: number) => void;
+  setUint8: (offset: number, value: number) => void;
+  setInt16: (offset: number, value: number) => void;
+  setUint16: (offset: number, value: number) => void;
+  setInt32: (offset: number, value: number) => void;
+  setUint32: (offset: number, value: number) => void;
+
   // Used to massage fp values so we can operate on them
   // at the bit level.
   static _scratch = new DataView(new ArrayBuffer(8));
@@ -75,7 +76,11 @@ class BitView {
       }
     };
 
-    this.getBits = function (offset, bits, signed) {
+    this.getBits = function (
+      offset: number,
+      bits: number,
+      signed?: boolean
+    ): number {
       const available = this._view.length * 8 - offset;
 
       if (bits > available) {
@@ -190,59 +195,62 @@ class BitView {
       }
     };
 
-    this.getBoolean = function (offset) {
+    this.getBoolean = function (offset: number): boolean {
       return this.getBits(offset, 1, false) !== 0;
     };
-    this.getInt8 = function (offset) {
+    this.getInt8 = function (offset: number): number {
       return this.getBits(offset, 8, true);
     };
-    this.getUint8 = function (offset) {
+    this.getUint8 = function (offset: number): number {
       return this.getBits(offset, 8, false);
     };
-    this.getInt16 = function (offset) {
+    this.getInt16 = function (offset: number): number {
       return this.getBits(offset, 16, true);
     };
-    this.getUint16 = function (offset) {
+    this.getUint16 = function (offset: number): number {
       return this.getBits(offset, 16, false);
     };
-    this.getInt32 = function (offset) {
+    this.getInt32 = function (offset: number): number {
       return this.getBits(offset, 32, true);
     };
-    this.getUint32 = function (offset) {
+    this.getUint32 = function (offset: number): number {
       return this.getBits(offset, 32, false);
     };
-    this.getFloat32 = function (offset) {
+    this.getFloat32 = function (offset: number): number {
       BitView._scratch.setUint32(0, this.getUint32(offset));
       return BitView._scratch.getFloat32(0);
     };
-    this.getFloat64 = function (offset) {
+    this.getFloat64 = function (offset: number): number {
       BitView._scratch.setUint32(0, this.getUint32(offset));
       // DataView offset is in bytes.
       BitView._scratch.setUint32(4, this.getUint32(offset + 32));
       return BitView._scratch.getFloat64(0);
     };
-    this.setBoolean = function (offset, value) {
+    this.setBoolean = function (offset: number, value: boolean) {
       this.setBits(offset, value ? 1 : 0, 1);
     };
-    this.setInt8 = this.setUint8 = function (offset, value) {
+    this.setInt8 = this.setUint8 = function (offset: number, value: number) {
       this.setBits(offset, value, 8);
     };
-    this.setInt16 = this.setUint16 = function (offset, value) {
+    this.setInt16 = this.setUint16 = function (offset: number, value: number) {
       this.setBits(offset, value, 16);
     };
-    this.setInt32 = this.setUint32 = function (offset, value) {
+    this.setInt32 = this.setUint32 = function (offset: number, value: number) {
       this.setBits(offset, value, 32);
     };
-    this.setFloat32 = function (offset, value) {
+    this.setFloat32 = function (offset: number, value: number) {
       BitView._scratch.setFloat32(0, value);
       this.setBits(offset, BitView._scratch.getUint32(0), 32);
     };
-    this.setFloat64 = function (offset, value) {
+    this.setFloat64 = function (offset: number, value: number) {
       BitView._scratch.setFloat64(0, value);
       this.setBits(offset, BitView._scratch.getUint32(0), 32);
       this.setBits(offset + 32, BitView._scratch.getUint32(4), 32);
     };
-    this.getArrayBuffer = function (offset, byteLength) {
+    this.getArrayBuffer = function (
+      offset: number,
+      byteLength: number
+    ): Uint8Array {
       const buffer = new Uint8Array(byteLength);
       for (let i = 0; i < byteLength; i++) {
         buffer[i] = this.getUint8(offset + i * 8);
@@ -251,9 +259,7 @@ class BitView {
     };
   }
   get buffer() {
-    return typeof Buffer !== 'undefined'
-      ? Buffer.from(this._view.buffer)
-      : this._view.buffer;
+    return Buffer.from(this._view.buffer);
   }
   get byteLength() {
     return this._view.length;

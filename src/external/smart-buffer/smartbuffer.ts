@@ -22,18 +22,18 @@ interface SmartBufferOptions {
 }
 
 // The default Buffer size if one is not provided.
-const DEFAULT_SMARTBUFFER_SIZE: number = 4096;
+const DEFAULT_SMARTBUFFER_SIZE = 4096;
 
 // The default string encoding to use for reading/writing strings.
 const DEFAULT_SMARTBUFFER_ENCODING: BufferEncoding = 'utf8';
 
 class SmartBuffer {
-  public length: number = 0;
+  public length = 0;
 
   private _encoding: BufferEncoding = DEFAULT_SMARTBUFFER_ENCODING;
   private _buff: Buffer;
-  private _writeOffset: number = 0;
-  private _readOffset: number = 0;
+  private _writeOffset = 0;
+  private _readOffset = 0;
 
   /**
    * Creates a new SmartBuffer instance.
@@ -1525,7 +1525,7 @@ class SmartBuffer {
     const oldLength = this._buff.length;
 
     if (minLength > oldLength) {
-      let data = this._buff;
+      const data = this._buff;
       let newLength = (oldLength * 3) / 2 + 1;
       if (newLength < minLength) {
         newLength = minLength;
