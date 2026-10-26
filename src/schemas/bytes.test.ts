@@ -66,4 +66,13 @@ describe('byte range schemas', () => {
     );
     expect(() => bf.bytesFromHex('xx')).toThrow('hex string contains invalid digits');
   });
+
+  it.each(['0g', 'fZ', '-1', '+1', '0x', 'de a!'])('rejects malformed hex %s', (hex) => {
+    expect(() => bf.bytesFromHex(hex)).toThrow('hex string contains invalid digits');
+  });
+
+  it('accepts empty hex strings and mixed-case digits with whitespace', () => {
+    expect(bf.bytesFromHex(' \n')).toStrictEqual(new Uint8Array());
+    expect(bf.bytesFromHex('aB CD\t01')).toStrictEqual(Uint8Array.of(0xab, 0xcd, 1));
+  });
 });

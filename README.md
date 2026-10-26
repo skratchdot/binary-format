@@ -66,10 +66,17 @@ letting the field encode reserved bytes.
 ### Text
 
 `bf.string(length)` reads UTF-8 text. `bf.latin1(length)` reads one-byte
-Latin-1 text and supports explicit out-of-range handling. Object fields can
-use `{ outOfRange: 'replace' }` or `{ outOfRange: 'truncate' }` with
-`bf.latin1()` when needed. Other encodings can be implemented as custom
+Latin-1 text and supports explicit out-of-range handling through its second
+argument, for example `bf.latin1(16, { outOfRange: 'replace' })` or
+`bf.latin1(16, { outOfRange: 'truncate' })`. The default is `'throw'`.
+Other encodings can be implemented as custom
 schemas with an appropriate polyfill or package.
+
+### Bit fields
+
+Group bit fields directly inside `bf.object()` so their widths add up to whole
+bytes. Use the same bit ordering within each byte. Root encoding and decoding
+also require whole bytes. Bit schemas inside `bf.array()` are not supported yet.
 
 ### Custom schemas
 

@@ -36,6 +36,10 @@ export const encode = <T>(schema: Schema<T>, value: T | DeepReadonly<T>): Uint8A
     encodedObject: emptyObject,
     path: [],
   });
+  const finalBitOffset = result.bitsEncoded % 8;
+  if (finalBitOffset !== 0) {
+    throw new Error(`schema encoded a partial byte ending at bit offset ${finalBitOffset}`);
+  }
   return result.result;
 };
 

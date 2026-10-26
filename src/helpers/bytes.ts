@@ -54,12 +54,12 @@ export const bytesFromHex = (hex: string): Uint8Array => {
   if (normalized.length % 2 !== 0) {
     throw new RangeError('hex string must contain an even number of digits');
   }
+  if (!/^[\da-f]*$/i.test(normalized)) {
+    throw new TypeError('hex string contains invalid digits');
+  }
   const bytesValue = new Uint8Array(normalized.length / 2);
   for (let index = 0; index < bytesValue.length; index++) {
     const byte = Number.parseInt(normalized.slice(index * 2, index * 2 + 2), 16);
-    if (Number.isNaN(byte)) {
-      throw new TypeError('hex string contains invalid digits');
-    }
     bytesValue[index] = byte;
   }
   return bytesValue;

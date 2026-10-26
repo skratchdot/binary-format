@@ -1,5 +1,5 @@
 import type { DecodeContext, DecodeResult, EncodeContext, EncodeResult, Schema } from '../types';
-import { assertByteAligned } from '../helpers/context';
+import { assertByteAligned, assertLength } from '../helpers/context';
 import { concat } from '../helpers/bytes';
 import { withBinaryFormatError } from '../helpers/errors';
 
@@ -95,6 +95,7 @@ const shouldContinueArray = <T>(
   byteOffset: number
 ): boolean => {
   if (typeof length === 'number') {
+    assertLength(length, 'array length');
     return index < length;
   }
   if (length === 'eof') {
