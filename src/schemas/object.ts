@@ -1,42 +1,23 @@
-import type {
-  DecodeResult,
-  EncodeResult,
-  FieldOptions,
-  Schema,
-} from '../types';
+import type { DecodeResult, EncodeResult, FieldOptions, Schema } from '../types';
 import { advanceOffset, assertByteAligned } from '../helpers/context';
 import { encodeBitField, isBitSchema } from './bit';
 import type { BitEncodeState } from './bit';
 import { concat } from '../helpers/bytes';
 import { withBinaryFormatError } from '../helpers/errors';
 
-type ObjectField = readonly [
-  name: PropertyKey,
-  schema: Schema<unknown>,
-  options?: FieldOptions,
-];
+type ObjectField = readonly [name: PropertyKey, schema: Schema<unknown>, options?: FieldOptions];
 
-type FieldName<TField> = TField extends readonly [
-  infer TName extends PropertyKey,
-  Schema<unknown>,
-]
+type FieldName<TField> = TField extends readonly [infer TName extends PropertyKey, Schema<unknown>]
   ? TName
-  : TField extends readonly [
-      infer TName extends PropertyKey,
-      Schema<unknown>,
-      FieldOptions,
-    ]
-  ? TName
-  : never;
+  : TField extends readonly [infer TName extends PropertyKey, Schema<unknown>, FieldOptions]
+    ? TName
+    : never;
 
-type FieldValue<TField> = TField extends readonly [
-  PropertyKey,
-  Schema<infer TValue>,
-]
+type FieldValue<TField> = TField extends readonly [PropertyKey, Schema<infer TValue>]
   ? TValue
   : TField extends readonly [PropertyKey, Schema<infer TValue>, FieldOptions]
-  ? TValue
-  : never;
+    ? TValue
+    : never;
 
 type IsOptionalField<TField> = TField extends readonly [
   PropertyKey,
@@ -49,13 +30,13 @@ type IsOptionalField<TField> = TField extends readonly [
   : false;
 
 type ObjectFromFields<TFields extends readonly ObjectField[]> = {
-  [TField in TFields[number] as IsOptionalField<TField> extends true
-    ? never
-    : FieldName<TField>]: FieldValue<TField>;
+  [
+    TField in TFields[number] as IsOptionalField<TField> extends true ? never : FieldName<TField>
+  ]: FieldValue<TField>;
 } & {
-  [TField in TFields[number] as IsOptionalField<TField> extends true
-    ? FieldName<TField>
-    : never]?: Exclude<FieldValue<TField>, undefined>;
+  [
+    TField in TFields[number] as IsOptionalField<TField> extends true ? FieldName<TField> : never
+  ]?: Exclude<FieldValue<TField>, undefined>;
 };
 
 export const object = <const TFields extends readonly ObjectField[]>(

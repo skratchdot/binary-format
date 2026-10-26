@@ -9,8 +9,8 @@ describe('root encode/decode helpers', () => {
     expect(bf.decode(schema, Uint8Array.from([1, 2]))).toStrictEqual({
       value: 1,
     });
-    expect(() =>
-      bf.decode(schema, Uint8Array.from([1, 2]), { requireEOF: true })
-    ).toThrow('expected EOF at byte offset 1 but input has 2 byte(s)');
+    expect(() => bf.decode(schema, Uint8Array.from([1, 2]), { requireEOF: true })).toThrow(
+      'expected EOF at byte offset 1 but input has 2 byte(s)'
+    );
   });
 });

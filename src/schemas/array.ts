@@ -1,10 +1,4 @@
-import type {
-  DecodeContext,
-  DecodeResult,
-  EncodeContext,
-  EncodeResult,
-  Schema,
-} from '../types';
+import type { DecodeContext, DecodeResult, EncodeContext, EncodeResult, Schema } from '../types';
 import { assertByteAligned } from '../helpers/context';
 import { concat } from '../helpers/bytes';
 import { withBinaryFormatError } from '../helpers/errors';
@@ -17,10 +11,7 @@ type ArrayLengthPredicate<T> = (params: {
 
 type ArrayLengthOption<T> = number | 'eof' | ArrayLengthPredicate<T>;
 
-export const array = <T>(
-  itemSchema: Schema<T>,
-  length: ArrayLengthOption<T>
-): Schema<T[]> => ({
+export const array = <T>(itemSchema: Schema<T>, length: ArrayLengthOption<T>): Schema<T[]> => ({
   kind: 'array',
   decode: (context): DecodeResult<T[]> => {
     assertByteAligned(context, 'decode array');
@@ -40,11 +31,7 @@ export const array = <T>(
         itemSchema.kind
       );
       output.push(item.result);
-      if (
-        length === 'eof' &&
-        item.bytesDecoded === 0 &&
-        item.bitsDecoded === 0
-      ) {
+      if (length === 'eof' && item.bytesDecoded === 0 && item.bitsDecoded === 0) {
         throw new Error('array item schema must consume bytes before eof');
       }
       byteOffset += item.bytesDecoded;
@@ -69,9 +56,7 @@ export const array = <T>(
     let byteOffset = context.byteOffset;
     let index = 0;
 
-    while (
-      shouldContinueArray(length, context, index, context.value, byteOffset)
-    ) {
+    while (shouldContinueArray(length, context, index, context.value, byteOffset)) {
       const itemContext = {
         value: context.value[index],
         byteOffset,
@@ -113,9 +98,7 @@ const shouldContinueArray = <T>(
     return index < length;
   }
   if (length === 'eof') {
-    return 'buffer' in context
-      ? byteOffset < context.buffer.byteLength
-      : index < arrayValue.length;
+    return 'buffer' in context ? byteOffset < context.buffer.byteLength : index < arrayValue.length;
   }
   return length({ context, index, array: arrayValue });
 };

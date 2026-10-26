@@ -128,7 +128,9 @@ Each schema includes its encode and decode methods; this does not promise
 separate decoder-only and encoder-only bundles.
 
 The runtime uses standard typed arrays, DataView, TextEncoder, and TextDecoder.
-Development and Node.js usage require Node.js 20 or later.
+Node.js usage requires Node.js 22 or later. Development uses Node.js 24.11+
+(or 22.18+) for tsdown. CI builds once on Node 24 and tests the built package
+on Node 22 and 24.
 
 ## Development
 
@@ -140,6 +142,9 @@ npm run build
 npm run check
 ```
 
-`npm run check` checks formatting, types, coverage, and the packed package's
+`npm run format` formats with oxfmt; `npm run lint` checks code with oxlint.
+`npm run build` generates the package with tsdown.
+
+`npm run check` checks formatting, linting, types, coverage, and the packed package's
 ESM/CommonJS entry points, declarations, and browser tree shaking. No command
 above publishes a release.

@@ -10,9 +10,7 @@ import path from 'node:path';
 test('bmp (bitmap)', async () => {
   const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
   const bytes = new Uint8Array(
-    await fs.promises.readFile(
-      path.resolve(currentDirectory, './data/test.bmp')
-    )
+    await fs.promises.readFile(path.resolve(currentDirectory, './data/test.bmp'))
   );
   const decoded = bf.decode(BitmapSchema, bytes);
   const encoded = bf.encode(BitmapSchema, decoded);

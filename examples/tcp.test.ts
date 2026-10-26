@@ -4,9 +4,7 @@ import { expect, test } from 'vitest';
 import { TcpSchema } from './tcp';
 
 test('tcp', () => {
-  const bytes = bf.bytesFromHex(
-    'e8a203e108e177e13d20756b801829d3004100000101080a2ea486ba793310bc'
-  );
+  const bytes = bf.bytesFromHex('e8a203e108e177e13d20756b801829d3004100000101080a2ea486ba793310bc');
   const decoded = bf.decode(TcpSchema, bytes);
   const encoded = bf.encode(TcpSchema, decoded);
 

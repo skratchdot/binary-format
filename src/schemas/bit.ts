@@ -49,70 +49,38 @@ export const bit = (bitLength: number, littleEndian = false): BitSchema => {
   };
 };
 
-export const bit1 = (littleEndian = false): Schema<number> =>
-  bit(1, littleEndian);
-export const bit2 = (littleEndian = false): Schema<number> =>
-  bit(2, littleEndian);
-export const bit3 = (littleEndian = false): Schema<number> =>
-  bit(3, littleEndian);
-export const bit4 = (littleEndian = false): Schema<number> =>
-  bit(4, littleEndian);
-export const bit5 = (littleEndian = false): Schema<number> =>
-  bit(5, littleEndian);
-export const bit6 = (littleEndian = false): Schema<number> =>
-  bit(6, littleEndian);
-export const bit7 = (littleEndian = false): Schema<number> =>
-  bit(7, littleEndian);
-export const bit8 = (littleEndian = false): Schema<number> =>
-  bit(8, littleEndian);
-export const bit9 = (littleEndian = false): Schema<number> =>
-  bit(9, littleEndian);
-export const bit10 = (littleEndian = false): Schema<number> =>
-  bit(10, littleEndian);
-export const bit11 = (littleEndian = false): Schema<number> =>
-  bit(11, littleEndian);
-export const bit12 = (littleEndian = false): Schema<number> =>
-  bit(12, littleEndian);
-export const bit13 = (littleEndian = false): Schema<number> =>
-  bit(13, littleEndian);
-export const bit14 = (littleEndian = false): Schema<number> =>
-  bit(14, littleEndian);
-export const bit15 = (littleEndian = false): Schema<number> =>
-  bit(15, littleEndian);
-export const bit16 = (littleEndian = false): Schema<number> =>
-  bit(16, littleEndian);
-export const bit17 = (littleEndian = false): Schema<number> =>
-  bit(17, littleEndian);
-export const bit18 = (littleEndian = false): Schema<number> =>
-  bit(18, littleEndian);
-export const bit19 = (littleEndian = false): Schema<number> =>
-  bit(19, littleEndian);
-export const bit20 = (littleEndian = false): Schema<number> =>
-  bit(20, littleEndian);
-export const bit21 = (littleEndian = false): Schema<number> =>
-  bit(21, littleEndian);
-export const bit22 = (littleEndian = false): Schema<number> =>
-  bit(22, littleEndian);
-export const bit23 = (littleEndian = false): Schema<number> =>
-  bit(23, littleEndian);
-export const bit24 = (littleEndian = false): Schema<number> =>
-  bit(24, littleEndian);
-export const bit25 = (littleEndian = false): Schema<number> =>
-  bit(25, littleEndian);
-export const bit26 = (littleEndian = false): Schema<number> =>
-  bit(26, littleEndian);
-export const bit27 = (littleEndian = false): Schema<number> =>
-  bit(27, littleEndian);
-export const bit28 = (littleEndian = false): Schema<number> =>
-  bit(28, littleEndian);
-export const bit29 = (littleEndian = false): Schema<number> =>
-  bit(29, littleEndian);
-export const bit30 = (littleEndian = false): Schema<number> =>
-  bit(30, littleEndian);
-export const bit31 = (littleEndian = false): Schema<number> =>
-  bit(31, littleEndian);
-export const bit32 = (littleEndian = false): Schema<number> =>
-  bit(32, littleEndian);
+export const bit1 = (littleEndian = false): Schema<number> => bit(1, littleEndian);
+export const bit2 = (littleEndian = false): Schema<number> => bit(2, littleEndian);
+export const bit3 = (littleEndian = false): Schema<number> => bit(3, littleEndian);
+export const bit4 = (littleEndian = false): Schema<number> => bit(4, littleEndian);
+export const bit5 = (littleEndian = false): Schema<number> => bit(5, littleEndian);
+export const bit6 = (littleEndian = false): Schema<number> => bit(6, littleEndian);
+export const bit7 = (littleEndian = false): Schema<number> => bit(7, littleEndian);
+export const bit8 = (littleEndian = false): Schema<number> => bit(8, littleEndian);
+export const bit9 = (littleEndian = false): Schema<number> => bit(9, littleEndian);
+export const bit10 = (littleEndian = false): Schema<number> => bit(10, littleEndian);
+export const bit11 = (littleEndian = false): Schema<number> => bit(11, littleEndian);
+export const bit12 = (littleEndian = false): Schema<number> => bit(12, littleEndian);
+export const bit13 = (littleEndian = false): Schema<number> => bit(13, littleEndian);
+export const bit14 = (littleEndian = false): Schema<number> => bit(14, littleEndian);
+export const bit15 = (littleEndian = false): Schema<number> => bit(15, littleEndian);
+export const bit16 = (littleEndian = false): Schema<number> => bit(16, littleEndian);
+export const bit17 = (littleEndian = false): Schema<number> => bit(17, littleEndian);
+export const bit18 = (littleEndian = false): Schema<number> => bit(18, littleEndian);
+export const bit19 = (littleEndian = false): Schema<number> => bit(19, littleEndian);
+export const bit20 = (littleEndian = false): Schema<number> => bit(20, littleEndian);
+export const bit21 = (littleEndian = false): Schema<number> => bit(21, littleEndian);
+export const bit22 = (littleEndian = false): Schema<number> => bit(22, littleEndian);
+export const bit23 = (littleEndian = false): Schema<number> => bit(23, littleEndian);
+export const bit24 = (littleEndian = false): Schema<number> => bit(24, littleEndian);
+export const bit25 = (littleEndian = false): Schema<number> => bit(25, littleEndian);
+export const bit26 = (littleEndian = false): Schema<number> => bit(26, littleEndian);
+export const bit27 = (littleEndian = false): Schema<number> => bit(27, littleEndian);
+export const bit28 = (littleEndian = false): Schema<number> => bit(28, littleEndian);
+export const bit29 = (littleEndian = false): Schema<number> => bit(29, littleEndian);
+export const bit30 = (littleEndian = false): Schema<number> => bit(30, littleEndian);
+export const bit31 = (littleEndian = false): Schema<number> => bit(31, littleEndian);
+export const bit32 = (littleEndian = false): Schema<number> => bit(32, littleEndian);
 
 export const isBitSchema = (schema: Schema<unknown>): schema is BitSchema =>
   schema.kind === 'bit' && 'bitLength' in schema && 'littleEndian' in schema;
@@ -128,11 +96,7 @@ export const encodeBitField = (
   return encodeBitValue(value, schema.bitLength, schema.littleEndian, state);
 };
 
-const getBit = (
-  buffer: Uint8Array,
-  absoluteBitOffset: number,
-  littleEndian: boolean
-): number => {
+const getBit = (buffer: Uint8Array, absoluteBitOffset: number, littleEndian: boolean): number => {
   const byte = buffer[Math.floor(absoluteBitOffset / 8)] ?? 0;
   const bitOffset = absoluteBitOffset % 8;
   const bitIndex = littleEndian ? bitOffset : 7 - bitOffset;

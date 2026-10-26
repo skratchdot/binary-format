@@ -1,36 +1,20 @@
-import type {
-  DecodeContext,
-  DecodeResult,
-  EncodeContext,
-  LengthOption,
-} from '../types';
+import type { DecodeContext, DecodeResult, EncodeContext, LengthOption } from '../types';
 
 export const emptyObject: Record<PropertyKey, never> = {};
 
-export const assertByteAligned = (
-  context: DecodeContext | EncodeContext,
-  action: string
-): void => {
+export const assertByteAligned = (context: DecodeContext | EncodeContext, action: string): void => {
   if (context.bitOffset !== 0) {
     throw new Error(`cannot ${action} while bitOffset is ${context.bitOffset}`);
   }
 };
 
-export const assertCanRead = (
-  context: DecodeContext,
-  byteLength: number
-): void => {
+export const assertCanRead = (context: DecodeContext, byteLength: number): void => {
   if (context.byteOffset + byteLength > context.buffer.byteLength) {
-    throw new RangeError(
-      `cannot decode ${byteLength} byte(s) at offset ${context.byteOffset}`
-    );
+    throw new RangeError(`cannot decode ${byteLength} byte(s) at offset ${context.byteOffset}`);
   }
 };
 
-export const assertCanReadBits = (
-  context: DecodeContext,
-  bitLength: number
-): void => {
+export const assertCanReadBits = (context: DecodeContext, bitLength: number): void => {
   const absoluteBitOffset = context.byteOffset * 8 + context.bitOffset;
   if (absoluteBitOffset + bitLength > context.buffer.byteLength * 8) {
     throw new RangeError(
@@ -45,10 +29,7 @@ export const assertLength = (length: number, label: string): void => {
   }
 };
 
-export const resolveLength = (
-  length: LengthOption,
-  context: DecodeContext
-): number => {
+export const resolveLength = (length: LengthOption, context: DecodeContext): number => {
   const resolvedLength = resolveLengthValue(length, context);
   if (resolvedLength === 'eof') {
     return context.buffer.byteLength - context.byteOffset;

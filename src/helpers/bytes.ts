@@ -39,10 +39,7 @@ export const formatBytes = (bytesValue: Uint8Array): string =>
   [...bytesValue].map((byte) => byte.toString(16).padStart(2, '0')).join(' ');
 
 export const concat = (chunks: readonly Uint8Array[]): Uint8Array => {
-  const byteLength = chunks.reduce(
-    (total, chunk) => total + chunk.byteLength,
-    0
-  );
+  const byteLength = chunks.reduce((total, chunk) => total + chunk.byteLength, 0);
   const output = new Uint8Array(byteLength);
   let offset = 0;
   for (const chunk of chunks) {
@@ -59,10 +56,7 @@ export const bytesFromHex = (hex: string): Uint8Array => {
   }
   const bytesValue = new Uint8Array(normalized.length / 2);
   for (let index = 0; index < bytesValue.length; index++) {
-    const byte = Number.parseInt(
-      normalized.slice(index * 2, index * 2 + 2),
-      16
-    );
+    const byte = Number.parseInt(normalized.slice(index * 2, index * 2 + 2), 16);
     if (Number.isNaN(byte)) {
       throw new TypeError('hex string contains invalid digits');
     }

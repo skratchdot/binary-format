@@ -2,42 +2,6 @@
   "name": "@binary-format/binary-format",
   "version": "1.0.0",
   "description": "a typescript library for reading and writing binary files to and from plain javascript objects",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "cover": "vitest run --coverage",
-    "format": "prettier --write .",
-    "lint": "prettier --check .",
-    "test": "vitest run",
-    "tsc": "tsc --noEmit",
-    "watch": "vitest",
-    "test:package": "npm run build && node scripts/check-package.mjs",
-    "check": "npm run lint && npm run tsc && npm run cover && npm run test:package",
-    "prepublishOnly": "npm run check"
-  },
-  "homepage": "https://github.com/skratchdot/binary-format/",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/skratchdot/binary-format.git"
-  },
-  "bugs": {
-    "url": "https://github.com/skratchdot/binary-format/issues"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@vitest/coverage-v8": "^4.0.0",
-    "esbuild": "^0.25.0",
-    "prettier": "^3.0.0",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.0"
-  },
   "keywords": [
     "arraybuffer",
     "arrays",
@@ -62,11 +26,23 @@
     "unpack",
     "write"
   ],
+  "homepage": "https://github.com/skratchdot/binary-format/",
+  "bugs": {
+    "url": "https://github.com/skratchdot/binary-format/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/skratchdot/binary-format.git"
+  },
+  "files": [
+    "dist/"
+  ],
   "type": "module",
   "sideEffects": false,
-  "engines": {
-    "node": ">=20"
-  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": {
@@ -79,5 +55,31 @@
       }
     },
     "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "cover": "vitest run --coverage",
+    "format": "oxfmt --write .",
+    "lint": "oxlint --deny-warnings",
+    "test": "vitest run",
+    "tsc": "tsc --noEmit",
+    "watch": "vitest",
+    "test:package": "npm run build && node scripts/check-package.mjs",
+    "check": "npm run format:check && npm run lint && npm run tsc && npm run cover && npm run test:package",
+    "prepublishOnly": "npm run check",
+    "format:check": "oxfmt --check ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "tsdown": "^0.23.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

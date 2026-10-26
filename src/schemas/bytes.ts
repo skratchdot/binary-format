@@ -1,9 +1,4 @@
-import type {
-  DecodeResult,
-  EncodeResult,
-  LengthOption,
-  Schema,
-} from '../types';
+import type { DecodeResult, EncodeResult, LengthOption, Schema } from '../types';
 import {
   assertByteAligned,
   assertCanRead,
@@ -11,12 +6,7 @@ import {
   resolveEncodeLength,
   resolveLength,
 } from '../helpers/context';
-import {
-  bytesEqual,
-  formatBytes,
-  toUint8Array,
-  toUint8ArrayLike,
-} from '../helpers/bytes';
+import { bytesEqual, formatBytes, toUint8Array, toUint8ArrayLike } from '../helpers/bytes';
 
 export const bytes = (length: LengthOption): Schema<Uint8Array> => ({
   kind: 'bytes',
@@ -37,9 +27,7 @@ export const bytes = (length: LengthOption): Schema<Uint8Array> => ({
     const value = toUint8Array(context.value);
     const byteLength = resolveEncodeLength(length, context);
     if (typeof byteLength === 'number' && value.byteLength !== byteLength) {
-      throw new RangeError(
-        `expected ${byteLength} bytes but received ${value.byteLength}`
-      );
+      throw new RangeError(`expected ${byteLength} bytes but received ${value.byteLength}`);
     }
     return {
       result: value,
@@ -92,9 +80,7 @@ export const constant = (
         throw new Error(
           `constant mismatch at byte offset ${
             context.byteOffset
-          }: expected ${formatBytes(expectedBytes)} but received ${formatBytes(
-            actual
-          )}`
+          }: expected ${formatBytes(expectedBytes)} but received ${formatBytes(actual)}`
         );
       }
       return {

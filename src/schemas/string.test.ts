@@ -9,18 +9,13 @@ describe('string schema', () => {
       ['utf8', bf.string(2)],
     ]);
 
-    const decoded = bf.decode(
-      schema,
-      Uint8Array.from([0x68, 0x69, 0xc3, 0xa9])
-    );
+    const decoded = bf.decode(schema, Uint8Array.from([0x68, 0x69, 0xc3, 0xa9]));
 
     expect(decoded).toStrictEqual({
       ascii: 'hi',
       utf8: 'é',
     });
-    expect([...bf.encode(schema, decoded)]).toStrictEqual([
-      0x68, 0x69, 0xc3, 0xa9,
-    ]);
+    expect([...bf.encode(schema, decoded)]).toStrictEqual([0x68, 0x69, 0xc3, 0xa9]);
   });
 
   it('supports context-based string lengths', () => {
@@ -30,9 +25,7 @@ describe('string schema', () => {
         'name',
         bf.string((context) => {
           const currentObject =
-            'decodedObject' in context
-              ? context.decodedObject
-              : context.encodedObject;
+            'decodedObject' in context ? context.decodedObject : context.encodedObject;
           return Number(currentObject['nameLength']);
         }),
       ],
@@ -44,8 +37,6 @@ describe('string schema', () => {
       nameLength: 5,
       name: 'hello',
     });
-    expect([...bf.encode(schema, decoded)]).toStrictEqual([
-      5, 0x68, 0x65, 0x6c, 0x6c, 0x6f,
-    ]);
+    expect([...bf.encode(schema, decoded)]).toStrictEqual([5, 0x68, 0x65, 0x6c, 0x6c, 0x6f]);
   });
 });

@@ -37,18 +37,15 @@ describe('byte range schemas', () => {
       ['value', bf.uint8()],
     ]);
 
-    const decoded = bf.decode(
-      schema,
-      Uint8Array.from([0x80, 0x00, 0x7f, 0xff, 5])
-    );
+    const decoded = bf.decode(schema, Uint8Array.from([0x80, 0x00, 0x7f, 0xff, 5]));
 
     expect(decoded).toStrictEqual({
       magic: Uint8Array.from([0x80, 0x00, 0x7f, 0xff]),
       value: 5,
     });
-    expect([
-      ...bf.encode(schema, { value: 5, magic: new Uint8Array() }),
-    ]).toStrictEqual([0x80, 0x00, 0x7f, 0xff, 5]);
+    expect([...bf.encode(schema, { value: 5, magic: new Uint8Array() })]).toStrictEqual([
+      0x80, 0x00, 0x7f, 0xff, 5,
+    ]);
   });
 
   it('throws when constant bytes do not match', () => {
@@ -60,17 +57,13 @@ describe('byte range schemas', () => {
   });
 
   it('converts hex strings to bytes', () => {
-    expect([...bf.bytesFromHex('de ad\nbeef')]).toStrictEqual([
-      0xde, 0xad, 0xbe, 0xef,
-    ]);
+    expect([...bf.bytesFromHex('de ad\nbeef')]).toStrictEqual([0xde, 0xad, 0xbe, 0xef]);
   });
 
   it('validates hex strings', () => {
     expect(() => bf.bytesFromHex('abc')).toThrow(
       'hex string must contain an even number of digits'
     );
-    expect(() => bf.bytesFromHex('xx')).toThrow(
-      'hex string contains invalid digits'
-    );
+    expect(() => bf.bytesFromHex('xx')).toThrow('hex string contains invalid digits');
   });
 });

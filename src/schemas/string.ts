@@ -1,9 +1,4 @@
-import type {
-  DecodeResult,
-  EncodeResult,
-  LengthOption,
-  Schema,
-} from '../types';
+import type { DecodeResult, EncodeResult, LengthOption, Schema } from '../types';
 import { bytes } from './bytes';
 import { resolveEncodeLength } from '../helpers/context';
 
@@ -23,8 +18,7 @@ export const string = (length: LengthOption): Schema<string> => ({
   encode: (context): EncodeResult => {
     const encoded = textEncoder.encode(String(context.value));
     const resolvedLength = resolveEncodeLength(length, context);
-    const byteLength =
-      typeof resolvedLength === 'number' ? resolvedLength : encoded.byteLength;
+    const byteLength = typeof resolvedLength === 'number' ? resolvedLength : encoded.byteLength;
     const result = new Uint8Array(byteLength);
     result.set(encoded.subarray(0, byteLength));
     return {

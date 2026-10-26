@@ -34,9 +34,7 @@ const numberSchema = (
     if (
       Number.isSafeInteger(min) &&
       Number.isSafeInteger(max) &&
-      (!Number.isSafeInteger(context.value) ||
-        context.value < min ||
-        context.value > max)
+      (!Number.isSafeInteger(context.value) || context.value < min || context.value > max)
     ) {
       throw new RangeError(`${kind} value is out of range`);
     }

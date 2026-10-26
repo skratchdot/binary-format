@@ -39,10 +39,7 @@ export class BinaryFormatError extends Error {
 
 export const withBinaryFormatError = <T>(
   fn: () => T,
-  context: Pick<
-    DecodeContext | EncodeContext,
-    'bitOffset' | 'byteOffset' | 'path'
-  >,
+  context: Pick<DecodeContext | EncodeContext, 'bitOffset' | 'byteOffset' | 'path'>,
   schemaKind?: string
 ): T => {
   try {
@@ -71,9 +68,7 @@ const formatPath = (path: readonly PropertyKey[]): string => {
   }
   return path
     .map((part) =>
-      typeof part === 'number'
-        ? `[${part}]`
-        : String(part).replaceAll('.', String.raw`\.`)
+      typeof part === 'number' ? `[${part}]` : String(part).replaceAll('.', String.raw`\.`)
     )
     .join('.');
 };

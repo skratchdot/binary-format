@@ -13,12 +13,8 @@ describe('choice schema', () => {
         bf.choice(
           (context) => {
             const currentObject =
-              'decodedObject' in context
-                ? context.decodedObject
-                : context.encodedObject;
-            return 'tag' in currentObject
-              ? Number(currentObject.tag)
-              : undefined;
+              'decodedObject' in context ? context.decodedObject : context.encodedObject;
+            return 'tag' in currentObject ? Number(currentObject.tag) : undefined;
           },
           {
             1: oneBytePayload,

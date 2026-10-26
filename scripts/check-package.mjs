@@ -1,12 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import {
-  mkdtempSync,
-  mkdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { build } from 'esbuild';
@@ -17,27 +11,14 @@ const run = (command, args, cwd = temporary) =>
 
 try {
   const [packed] = JSON.parse(
-    run(
-      'npm',
-      ['pack', '--json', '--pack-destination', temporary],
-      process.cwd()
-    )
+    run('npm', ['pack', '--json', '--pack-destination', temporary], process.cwd())
   );
   assert(packed.files.some(({ path }) => path === 'dist/index.d.ts'));
   assert(packed.files.some(({ path }) => path === 'dist/index.d.cts'));
   assert(!packed.files.some(({ path }) => /test\.|^src\//.test(path)));
-  const packageDir = join(
-    temporary,
-    'node_modules/@binary-format/binary-format'
-  );
+  const packageDir = join(temporary, 'node_modules/@binary-format/binary-format');
   mkdirSync(packageDir, { recursive: true });
-  run('tar', [
-    '-xzf',
-    join(temporary, packed.filename),
-    '--strip-components=1',
-    '-C',
-    packageDir,
-  ]);
+  run('tar', ['-xzf', join(temporary, packed.filename), '--strip-components=1', '-C', packageDir]);
   const name = '@binary-format/binary-format';
   const assertion = `
     const schema = bf.object([['value', bf.uint16be()]]);
@@ -104,9 +85,7 @@ const invalid: Value = { value: 'wrong' };
     `data:text/javascript;base64,${Buffer.from(minimal).toString('base64')}`
   );
   assert.equal(value, 42);
-  const metadata = JSON.parse(
-    readFileSync(join(packageDir, 'package.json'), 'utf8')
-  );
+  const metadata = JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8'));
   assert.equal(metadata.sideEffects, false);
   assert.equal(metadata.version, '1.0.0');
   console.log(

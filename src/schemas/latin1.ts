@@ -1,9 +1,4 @@
-import type {
-  DecodeResult,
-  EncodeResult,
-  LengthOption,
-  Schema,
-} from '../types';
+import type { DecodeResult, EncodeResult, LengthOption, Schema } from '../types';
 
 import { bytes } from './bytes';
 import { resolveEncodeLength } from '../helpers/context';
@@ -14,10 +9,7 @@ export type Latin1Options = {
   readonly outOfRange?: Latin1OutOfRange;
 };
 
-export const latin1 = (
-  length: LengthOption,
-  options: Latin1Options = {}
-): Schema<string> => ({
+export const latin1 = (length: LengthOption, options: Latin1Options = {}): Schema<string> => ({
   kind: 'latin1',
   decode: (context): DecodeResult<string> => {
     const byteResult = bytes(length).decode(context);
@@ -28,13 +20,9 @@ export const latin1 = (
     };
   },
   encode: (context): EncodeResult => {
-    const encoded = encodeLatin1(
-      String(context.value),
-      options.outOfRange ?? 'throw'
-    );
+    const encoded = encodeLatin1(String(context.value), options.outOfRange ?? 'throw');
     const resolvedLength = resolveEncodeLength(length, context);
-    const byteLength =
-      typeof resolvedLength === 'number' ? resolvedLength : encoded.byteLength;
+    const byteLength = typeof resolvedLength === 'number' ? resolvedLength : encoded.byteLength;
     const result = new Uint8Array(byteLength);
     result.set(encoded.subarray(0, byteLength));
     return {
@@ -53,10 +41,7 @@ const decodeLatin1 = (bytesValue: Uint8Array): string => {
   return result;
 };
 
-const encodeLatin1 = (
-  value: string,
-  outOfRange: Latin1OutOfRange
-): Uint8Array => {
+const encodeLatin1 = (value: string, outOfRange: Latin1OutOfRange): Uint8Array => {
   const output = new Uint8Array(value.length);
   for (let index = 0; index < value.length; index++) {
     const codeUnit = codeUnitAt(value, index);

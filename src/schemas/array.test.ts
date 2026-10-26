@@ -9,18 +9,13 @@ describe('array schema', () => {
       ['body', bf.array(bf.uint16be(), 'eof')],
     ]);
 
-    const decoded = bf.decode(
-      schema,
-      Uint8Array.from([0xaa, 0xbb, 0x00, 0x01, 0x00, 0x02])
-    );
+    const decoded = bf.decode(schema, Uint8Array.from([0xaa, 0xbb, 0x00, 0x01, 0x00, 0x02]));
 
     expect(decoded).toStrictEqual({
       header: [0xaa, 0xbb],
       body: [1, 2],
     });
-    expect([...bf.encode(schema, decoded)]).toStrictEqual([
-      0xaa, 0xbb, 0x00, 0x01, 0x00, 0x02,
-    ]);
+    expect([...bf.encode(schema, decoded)]).toStrictEqual([0xaa, 0xbb, 0x00, 0x01, 0x00, 0x02]);
   });
 
   it('supports choices selected from byte offsets', () => {

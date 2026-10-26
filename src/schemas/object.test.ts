@@ -34,9 +34,7 @@ describe('object schema', () => {
         'payload',
         bf.bytes((context) => {
           const currentObject =
-            'decodedObject' in context
-              ? context.decodedObject
-              : context.encodedObject;
+            'decodedObject' in context ? context.decodedObject : context.encodedObject;
           return Number(currentObject['length']);
         }),
       ],
@@ -48,9 +46,7 @@ describe('object schema', () => {
       length: 3,
       payload: Uint8Array.from([0xaa, 0xbb, 0xcc]),
     });
-    expect([...bf.encode(schema, decoded)]).toStrictEqual([
-      3, 0xaa, 0xbb, 0xcc,
-    ]);
+    expect([...bf.encode(schema, decoded)]).toStrictEqual([3, 0xaa, 0xbb, 0xcc]);
   });
 
   it('keeps undefined custom fields by default and can omit them per field', () => {

@@ -35,24 +35,18 @@ describe('latin1 schema', () => {
   it('throws for code units outside latin1', () => {
     const schema = bf.latin1(2);
 
-    expect(() => bf.encode(schema, 'Ā')).toThrow(
-      'latin1 value contains code units above 0xff'
-    );
+    expect(() => bf.encode(schema, 'Ā')).toThrow('latin1 value contains code units above 0xff');
   });
 
   it('can replace code units outside latin1', () => {
     const schema = bf.latin1(4, { outOfRange: 'replace' });
 
-    expect([...bf.encode(schema, 'aĀ😀')]).toStrictEqual([
-      0x61, 0x3f, 0x3f, 0x3f,
-    ]);
+    expect([...bf.encode(schema, 'aĀ😀')]).toStrictEqual([0x61, 0x3f, 0x3f, 0x3f]);
   });
 
   it('can truncate code units outside latin1', () => {
     const schema = bf.latin1(4, { outOfRange: 'truncate' });
 
-    expect([...bf.encode(schema, 'aĀ😀')]).toStrictEqual([
-      0x61, 0x00, 0x3d, 0x00,
-    ]);
+    expect([...bf.encode(schema, 'aĀ😀')]).toStrictEqual([0x61, 0x00, 0x3d, 0x00]);
   });
 });

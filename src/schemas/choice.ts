@@ -1,18 +1,11 @@
-import type {
-  DecodeContext,
-  DecodeResult,
-  EncodeContext,
-  Schema,
-} from '../types';
+import type { DecodeContext, DecodeResult, EncodeContext, Schema } from '../types';
 
 type ChoiceOptionMap = Readonly<Record<string | number, Schema<unknown>>>;
 
 type ChoiceValue<TOptions extends ChoiceOptionMap> =
   TOptions[keyof TOptions] extends Schema<infer TValue> ? TValue : never;
 
-type ChoiceSelector = (
-  context: DecodeContext | EncodeContext
-) => string | number | undefined;
+type ChoiceSelector = (context: DecodeContext | EncodeContext) => string | number | undefined;
 
 export const choice = <
   const TOptions extends ChoiceOptionMap,
@@ -21,28 +14,16 @@ export const choice = <
   selector: ChoiceSelector,
   options: TOptions,
   defaultSchema?: TDefault
-): Schema<
-  | ChoiceValue<TOptions>
-  | (TDefault extends Schema<infer TValue> ? TValue : never)
-> => ({
+): Schema<ChoiceValue<TOptions> | (TDefault extends Schema<infer TValue> ? TValue : never)> => ({
   kind: 'choice',
   decode: (context) => {
-    const schema = selectChoiceSchema(
-      selector(context),
-      options,
-      defaultSchema
-    );
+    const schema = selectChoiceSchema(selector(context), options, defaultSchema);
     return schema.decode(context) as DecodeResult<
-      | ChoiceValue<TOptions>
-      | (TDefault extends Schema<infer TValue> ? TValue : never)
+      ChoiceValue<TOptions> | (TDefault extends Schema<infer TValue> ? TValue : never)
     >;
   },
   encode: (context) => {
-    const schema = selectChoiceSchema(
-      selector(context),
-      options,
-      defaultSchema
-    );
+    const schema = selectChoiceSchema(selector(context), options, defaultSchema);
     return schema.encode(context);
   },
 });

@@ -1,6 +1,4 @@
-export type LengthFunction = (
-  context: DecodeContext | EncodeContext
-) => number | 'eof';
+export type LengthFunction = (context: DecodeContext | EncodeContext) => number | 'eof';
 export type LengthOption = number | 'eof' | LengthFunction;
 
 export type Schema<T> = {
@@ -9,19 +7,17 @@ export type Schema<T> = {
   readonly encode: (context: EncodeContext) => EncodeResult;
 };
 
-export type infer<TSchema> = TSchema extends Schema<infer TValue>
-  ? TValue
-  : never;
+export type infer<TSchema> = TSchema extends Schema<infer TValue> ? TValue : never;
 
 export type DeepReadonly<T> = T extends (...args: readonly never[]) => unknown
   ? T
   : T extends ArrayBufferView
-  ? T
-  : T extends readonly (infer TValue)[]
-  ? readonly DeepReadonly<TValue>[]
-  : T extends object
-  ? { readonly [TKey in keyof T]: DeepReadonly<T[TKey]> }
-  : T;
+    ? T
+    : T extends readonly (infer TValue)[]
+      ? readonly DeepReadonly<TValue>[]
+      : T extends object
+        ? { readonly [TKey in keyof T]: DeepReadonly<T[TKey]> }
+        : T;
 
 export type DecodeContext<
   TRoot extends Record<PropertyKey, unknown> = Record<PropertyKey, unknown>,

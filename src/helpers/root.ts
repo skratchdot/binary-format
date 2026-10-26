@@ -23,17 +23,12 @@ export const decode = <T>(
     );
   }
   if (finalOffset.bitOffset !== 0) {
-    throw new Error(
-      `schema decoded a partial byte ending at bit offset ${finalOffset.bitOffset}`
-    );
+    throw new Error(`schema decoded a partial byte ending at bit offset ${finalOffset.bitOffset}`);
   }
   return result.result;
 };
 
-export const encode = <T>(
-  schema: Schema<T>,
-  value: T | DeepReadonly<T>
-): Uint8Array => {
+export const encode = <T>(schema: Schema<T>, value: T | DeepReadonly<T>): Uint8Array => {
   const result = schema.encode({
     value,
     byteOffset: 0,
