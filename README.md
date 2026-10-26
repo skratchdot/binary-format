@@ -148,3 +148,36 @@ npm run check
 `npm run check` checks formatting, linting, types, coverage, and the packed package's
 ESM/CommonJS entry points, declarations, and browser tree shaking. No command
 above publishes a release.
+
+## See also
+
+Related libraries for exploring other approaches to binary formats.
+
+### Parsing libraries
+
+- [binary-parser](https://github.com/keichi/binary-parser)
+- [bin-grammar](https://github.com/anfema/bin-grammar)
+- [node-binary](https://github.com/substack/node-binary)
+- [binary-data](https://github.com/reklatsmasters/binary-data)
+- [restructure](https://github.com/foliojs/restructure)
+- [Kaitai Struct](https://kaitai.io/)
+- [bin-format](https://github.com/lammas/bin-format)
+- [BinaryFormat](https://github.com/RobertBorg/node-BinaryFormat)
+- [memory-efficient-object](https://www.npmjs.com/package/memory-efficient-object)
+- [@astronautlabs/bitstream](https://www.npmjs.com/package/@astronautlabs/bitstream)
+
+### Bit, byte, and buffer libraries
+
+- [bit-buffer](https://github.com/inolen/bit-buffer)
+- [buffer](https://github.com/feross/buffer)
+- [smart-buffer](https://github.com/JoshGlazebrook/smart-buffer)
+- [bits](https://github.com/fredricrylander/bits)
+- [Bit.js](https://github.com/uupaa/Bit.js/)
+- [bitwise](https://github.com/FlorianWendelborn/bitwise)
+- [bitter](https://github.com/steinwurf/bitter) (C)
+- [node-bit-stream](https://www.npmjs.com/package/node-bit-stream)
+- [thi.ng bitstream](https://github.com/thi-ng/umbrella/tree/develop/packages/bitstream)
+- [bitsandbytes](https://github.com/conekt/bitsandbytes)
+- [bits-bytes](https://www.npmjs.com/package/bits-bytes)
+- [construct-js](https://github.com/francisrstokes/construct-js)
+- [byte-data](https://github.com/rochars/byte-data)
