@@ -1,35 +1,19 @@
 // ported from: https://github.com/keichi/binary-parser/blob/master/example/ip.js
-import BinaryFormat from '../src/binary-format';
+import * as bf from '../src/index';
 
-export interface Ip {
-  version: number;
-  headerLength: number;
-  tos: number;
-  packetLength: number;
-  id: number;
-  offset: number;
-  fragOffset: number;
-  ttl: number;
-  protocol: number;
-  checksum: number;
-  src: number;
-  dst: number;
-}
+export const IpSchema = bf.object([
+  ['version', bf.bit4()],
+  ['headerLength', bf.bit4()],
+  ['tos', bf.uint8()],
+  ['packetLength', bf.uint16be()],
+  ['id', bf.uint16be()],
+  ['offset', bf.bit3()],
+  ['fragOffset', bf.bit13()],
+  ['ttl', bf.uint8()],
+  ['protocol', bf.uint8()],
+  ['checksum', bf.uint16be()],
+  ['src', bf.plainArray(4)],
+  ['dst', bf.plainArray(4)],
+]);
 
-export const IpFormat = new BinaryFormat<Ip>()
-  .endianess('big')
-  .bit4('version')
-  .bit4('headerLength')
-  .uint8('tos')
-  .uint16('packetLength')
-  .uint16('id')
-  .bit3('offset')
-  .bit13('fragOffset')
-  .uint8('ttl')
-  .uint8('protocol')
-  .uint16('checksum')
-  .uint8('src')
-  .toArray(4)
-  .uint8('dst')
-  .toArray(4)
-  .done();
+export type Ip = bf.infer<typeof IpSchema>;

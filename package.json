@@ -1,23 +1,24 @@
 {
   "name": "@binary-format/binary-format",
-  "version": "0.0.16",
+  "version": "1.0.0",
   "description": "a typescript library for reading and writing binary files to and from plain javascript objects",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
-  "types": "dist/src/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist/"
   ],
   "scripts": {
-    "build": "rimraf dist/ && rollup -c",
-    "cover": "npm run test -- --coverage",
-    "format": "prettier --check --write .",
-    "lint": "eslint .",
-    "prepublish": "npm run lint && npm run tsc && npm run cover && npm run build",
-    "test": "jest --no-cache",
+    "build": "tsup",
+    "cover": "vitest run --coverage",
+    "format": "prettier --write .",
+    "lint": "prettier --check .",
+    "test": "vitest run",
     "tsc": "tsc --noEmit",
-    "watch": "npm run cover -- --watchAll"
+    "watch": "vitest",
+    "test:package": "npm run build && node scripts/check-package.mjs",
+    "check": "npm run lint && npm run tsc && npm run cover && npm run test:package",
+    "prepublishOnly": "npm run check"
   },
   "homepage": "https://github.com/skratchdot/binary-format/",
   "repository": {
@@ -29,25 +30,13 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-babel": "^6.0.3",
-    "@types/chai": "^4.3.5",
-    "@types/jest": "^29.5.2",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
-    "chai": "^4.3.7",
-    "eslint": "^8.44.0",
-    "eslint-plugin-node": "^11.1.0",
-    "jest": "^29.6.1",
-    "jest-buffer-snapshot-serializer": "^1.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.0.0",
+    "esbuild": "^0.25.0",
     "prettier": "^3.0.0",
-    "rimraf": "^5.0.1",
-    "rollup-plugin-license": "^3.0.1",
-    "rollup-plugin-typescript2": "^0.35.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.1.6"
-  },
-  "dependencies": {
-    "buffer": "^6.0.3"
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
   },
   "keywords": [
     "arraybuffer",
@@ -72,5 +61,23 @@
     "serialize",
     "unpack",
     "write"
-  ]
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  }
 }

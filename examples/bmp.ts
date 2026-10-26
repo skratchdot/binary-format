@@ -1,55 +1,36 @@
+// cspell:ignore: Pels
 // ported from: https://github.com/keichi/binary-parser/blob/master/example/bmp.js
-import BinaryFormat from '../src/binary-format';
+import * as bf from '../src/index';
 
-export interface BitmapFileHeader {
-  type: string;
-  size: number;
-  reserved1: number;
-  reserved2: number;
-  offBits: number;
-}
-export const BitmapFileHeaderFormat = new BinaryFormat<BitmapFileHeader>()
-  .endianess('little')
-  .string('type', 2) // TODO: assert type === 'BM'
-  .uint32('size')
-  .uint16('reserved1')
-  .uint16('reserved2')
-  .uint32('offBits')
-  .done();
+export const BitmapFileHeaderSchema = bf.object([
+  ['type', bf.string(2)],
+  ['size', bf.uint32le()],
+  ['reserved1', bf.uint16le()],
+  ['reserved2', bf.uint16le()],
+  ['offBits', bf.uint32le()],
+]);
 
-export interface BitmapInfoHeader {
-  size: number;
-  width: number;
-  height: number;
-  planes: number;
-  bitCount: number;
-  compression: number;
-  sizeImage: number;
-  xPelsPerMeter: number;
-  yPelsPerMeter: number;
-  clrUsed: number;
-  clrImportant: number;
-}
-export const BitmapInfoHeaderFormat = new BinaryFormat<BitmapInfoHeader>()
-  .endianess('little')
-  .uint32('size')
-  .int32('width')
-  .int32('height')
-  .uint16('planes')
-  .uint16('bitCount')
-  .uint32('compression')
-  .uint32('sizeImage')
-  .int32('xPelsPerMeter')
-  .int32('yPelsPerMeter')
-  .uint32('clrUsed')
-  .uint32('clrImportant')
-  .done();
+export type BitmapFileHeader = bf.infer<typeof BitmapFileHeaderSchema>;
 
-export interface Bitmap {
-  fileHeader: BitmapFileHeader;
-  infoHeader: BitmapInfoHeader;
-}
-export const BitmapFormat = new BinaryFormat<Bitmap>()
-  .custom('fileHeader', BitmapFileHeaderFormat)
-  .custom('infoHeader', BitmapInfoHeaderFormat)
-  .done();
+export const BitmapInfoHeaderSchema = bf.object([
+  ['size', bf.uint32le()],
+  ['width', bf.int32le()],
+  ['height', bf.int32le()],
+  ['planes', bf.uint16le()],
+  ['bitCount', bf.uint16le()],
+  ['compression', bf.uint32le()],
+  ['sizeImage', bf.uint32le()],
+  ['xPelsPerMeter', bf.int32le()],
+  ['yPelsPerMeter', bf.int32le()],
+  ['clrUsed', bf.uint32le()],
+  ['clrImportant', bf.uint32le()],
+]);
+
+export type BitmapInfoHeader = bf.infer<typeof BitmapInfoHeaderSchema>;
+
+export const BitmapSchema = bf.object([
+  ['fileHeader', BitmapFileHeaderSchema],
+  ['infoHeader', BitmapInfoHeaderSchema],
+]);
+
+export type Bitmap = bf.infer<typeof BitmapSchema>;

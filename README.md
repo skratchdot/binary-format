@@ -1,112 +1,145 @@
-# binary-format
+# `@binary-format/binary-format`
 
-a typescript library for reading and writing binary files to and from plain javascript objects.
+`@binary-format/binary-format` is a schema-first TypeScript library for decoding
+binary files into plain JavaScript objects and encoding them again. It favors
+serializable, immutable-data-friendly values over a lowest-level byte API, with a composable, Valibot-style API.
 
-there is a plethora of exiting libraries that accomplish the same goal, but all come with tradeoffs.
+Many binary libraries make different tradeoffs around speed, generated parsers,
+or mutable data structures. This package intentionally favors plain objects
+that work well with serializing and immutable-data tools such as Immer.
 
-i am trading some speed in favor or using "plain" javascript objects that immer supports because i wanted
-to use immutable data structures while working on an online editor that supports the editing of various
-file formats.
-
-## quick start
+## Quick start
 
 ```typescript
-import BinaryFormat from '@skratchdot/binary-format';
-const helloWorldParser = new BinaryFormat<{
-  hello: string;
-  asciiSpace: number;
-  world: string;
-  asciiExclaimation: number;
-}>()
-  .string('hello', 5)
-  .uint8('asciiSpace')
-  .string('world', 5)
-  .uint8('asciiExclaimation')
-  .done();
-const buffer = Buffer.from('hello world!');
-const readResult = helloWorldParser.read(buffer);
-const writeResult = helloWorldParser.write(readResult);
-console.log({ readResult, writeResult });
+import * as bf from '@binary-format/binary-format';
+
+const helloWorldSchema = bf.object([
+  ['hello', bf.string(5)],
+  ['asciiSpace', bf.uint8()],
+  ['world', bf.string(5)],
+  ['asciiExclamation', bf.uint8()],
+]);
+
+type HelloWorld = bf.infer<typeof helloWorldSchema>;
+
+const bytes = new TextEncoder().encode('hello world!');
+const value: HelloWorld = bf.decode(helloWorldSchema, bytes);
+const encoded = bf.encode(helloWorldSchema, value);
+
+console.log({ value, encoded });
 /*
 {
-  readResult: {
+  value: {
     hello: 'hello',
     asciiSpace: 32,
     world: 'world',
-    asciiExclaimation: 33
+    asciiExclamation: 33
   },
-  writeResult: <Buffer 68 65 6c 6c 6f 20 77 6f 72 6c 64 21>
+  encoded: Uint8Array(12) [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33]
 }
 */
 ```
 
-## features
+## Concepts
 
-- written in typescript
-- supports both reading and writing of binary files
-- supports formatting to/from "plain" javascript objects (that are serializable and supported via immutability libs like `immer`)
-- supports formatting to/from "complex" javascript objects like typed arrays and buffers
+- Build schemas with primitives, objects, arrays, choices, bytes, text, and
+  bit fields.
+- Use `bf.infer<typeof schema>` to derive the decoded TypeScript value.
+- Use `bf.decode(schema, bytes)` and `bf.encode(schema, value)` at format
+  boundaries.
+- Implement custom schemas with `decode(context)` and `encode(context)` when a
+  format needs behavior beyond the built-in schema types.
 
-## documentation
-
-coming soon. for now check out the examples folder or the unit tests
-
-#### Custom
+### Objects and arrays
 
 ```typescript
-export const stringWithLength = (length: number): ReadAndWrite => ({
-  read: (r: SmartBuffer) => r.readString(length),
-  write: (w: SmartBuffer, v: unknown) => w.writeString(String(v), length),
+const schema = bf.object([
+  ['count', bf.uint8()],
+  ['items', bf.array(bf.uint16be(), 4)],
+]);
+```
+
+Object fields can include options as a third tuple value. For example,
+`{ omitUndefined: true }` skips an `undefined` decoded field while still
+letting the field encode reserved bytes.
+
+### Text
+
+`bf.string(length)` reads UTF-8 text. `bf.latin1(length)` reads one-byte
+Latin-1 text and supports explicit out-of-range handling. Object fields can
+use `{ outOfRange: 'replace' }` or `{ outOfRange: 'truncate' }` with
+`bf.latin1()` when needed. Other encodings can be implemented as custom
+schemas with an appropriate polyfill or package.
+
+### Custom schemas
+
+Any object with `decode(context)` and `encode(context)` methods can be used as
+a schema.
+
+```typescript
+const zeroByte = bf.custom<undefined>({
+  kind: 'zeroByte',
+  decode: (context) => {
+    if (context.buffer[context.byteOffset] !== 0) {
+      throw new Error('expected zero byte');
+    }
+    return { result: undefined, bytesDecoded: 1, bitsDecoded: 0 };
+  },
+  encode: () => ({
+    result: Uint8Array.of(0),
+    bytesEncoded: 1,
+    bitsEncoded: 0,
+  }),
 });
 ```
 
-## see also
+## v1 migration
 
-#### parsing libs
+v1 replaces the v0 chaining API with composable schemas. This branch prepares
+version 1.0.0; it has not been published to npm yet. The package name remains
+`@binary-format/binary-format`.
 
-- https://github.com/keichi/binary-parser
-- https://github.com/anfema/bin-grammar
-- https://github.com/substack/node-binary
-- https://github.com/reklatsmasters/binary-data
-- https://github.com/foliojs/restructure
-- https://kaitai.io/
-- https://github.com/lammas/bin-format
-- https://github.com/RobertBorg/node-BinaryFormat
-- https://www.npmjs.com/package/memory-efficient-object
-- https://www.npmjs.com/package/@astronautlabs/bitstream?activeTab=readme
+- Replace chained format definitions with `object([['field', schema], ...])`.
+- Replace formatter methods with `decode(schema, bytes)` and
+  `encode(schema, value)`.
+- Encoding returns `Uint8Array`. Decoding accepts `ArrayBuffer` and views,
+  including Node.js `Buffer`, without a runtime buffer dependency.
+- Use `infer<typeof schema>` for value types and `custom()` for extensions.
+- See the [BMP](examples/bmp.ts), [IP](examples/ip.ts), and
+  [TCP](examples/tcp.ts) schemas for complete examples.
 
-#### buffer libs:
+This is a breaking release; the v0 chaining API is no longer exported.
 
-- https://github.com/inolen/bit-buffer
-- https://github.com/feross/buffer
-- https://github.com/JoshGlazebrook/smart-buffer
-- https://github.com/fredricrylander/bits
-- https://github.com/uupaa/Bit.js/
-- https://github.com/FlorianWendelborn/bitwise
-- https://github.com/steinwurf/bitter (c library)
-- https://www.npmjs.com/package/node-bit-stream
-- https://github.com/thi-ng/umbrella/tree/develop/packages/bitstream
-- https://github.com/conekt/bitsandbytes
-- https://www.npmjs.com/package/bits-bytes (pack and unpack)
-- https://github.com/francisrstokes/construct-js
-- https://github.com/rochars/byte-data
+## Modules and tree shaking
 
-## todos
+The package provides ESM and CommonJS builds with TypeScript declarations.
+Use ESM imports with a tree-shaking bundler to omit unused schema factories:
 
-- detect cycles
-- add streaming support
-- add example parsers
-- remove all dependencies
-  - update BinaryBuffer so it supports all the functionality of bit-buffer and smart-buffer (with bit/byte offset logic)
-- consider "export parser" so endusers don't need to include unneeded generator code in their project
-- generate api documentation and add better comments
-- support signed/unsigned and big/little endian for _everything_ (right now i'm assuming unsigned for bits)
-- add library comparison chart
-- add benchmarks and make performance improvements
-- add "assertion" logic
-  - assert at EOF after reading (optional)
-  - add `.assert(data => data.foo === 'must be this value')` to api
-- add seek/pointer logic
-- let `toArray()` take a funtion instead of a number as the only parameter (potentially other objects that take a length: `string()` and `buffer()` etc)
-- add `typedarray` logic (maybe things like `uint8array()`)
-- can we ever support `toArray()` being called on `bits()`?
+```typescript
+import { decode, uint8 } from '@binary-format/binary-format';
+
+const value = decode(uint8(), Uint8Array.of(42));
+```
+
+Static namespace imports (as in the quick start) also work with modern bundlers.
+Dynamic property access can retain additional exports. CommonJS consumers can
+use `require('@binary-format/binary-format')`, but should use ESM for tree shaking.
+Each schema includes its encode and decode methods; this does not promise
+separate decoder-only and encoder-only bundles.
+
+The runtime uses standard typed arrays, DataView, TextEncoder, and TextDecoder.
+Development and Node.js usage require Node.js 20 or later.
+
+## Development
+
+```bash
+npm ci
+npm test
+npm run tsc
+npm run build
+npm run check
+```
+
+`npm run check` checks formatting, types, coverage, and the packed package's
+ESM/CommonJS entry points, declarations, and browser tree shaking. No command
+above publishes a release.
