@@ -187,9 +187,6 @@ importers:
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
-      typescript6:
-        specifier: npm:typescript@^6.0.3
-        version: typescript@6.0.3
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@types/node@26.6.5)(@vitest/coverage-v8@5.0.5)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.28.2))
@@ -1266,11 +1263,6 @@ packages:
       unrun:
         optional: true
 
-  typescript@6.0.3:
-    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@7.0.2:
     resolution: {integrity: sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==}
     engines: {node: '>=16.20.0'}
@@ -2076,8 +2068,6 @@ snapshots:
       - '@vue/language-core'
       - oxc-resolver
       - vue-tsc
-
-  typescript@6.0.3: {}
 
   typescript@7.0.2:
     optionalDependencies:

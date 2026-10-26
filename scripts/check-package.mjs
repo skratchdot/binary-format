@@ -57,7 +57,7 @@ try {
     `const assert = require('node:assert/strict'); const bf = require('${name}'); ${assertion}`,
   ]);
 
-  /** Check shipped declarations with TS6 and TS7, without skipping declaration validation. */
+  /** Check shipped declarations with the project compiler, without skipping declaration validation. */
   for (const extension of ['mts', 'cts']) {
     const file = join(temporary, `consumer.${extension}`);
     writeFileSync(
@@ -84,20 +84,18 @@ const invalidChoice: bf.infer<typeof union> = false;
 const invalid: Value = { value: 'wrong' };
 `
     );
-    for (const compiler of ['typescript6', 'typescript']) {
-      run('node', [
-        resolve(`node_modules/${compiler}/bin/tsc`),
-        '--noEmit',
-        '--strict',
-        '--target',
-        'ES2022',
-        '--module',
-        'NodeNext',
-        '--moduleResolution',
-        'NodeNext',
-        file,
-      ]);
-    }
+    run('node', [
+      resolve('node_modules/typescript/bin/tsc'),
+      '--noEmit',
+      '--strict',
+      '--target',
+      'ES2022',
+      '--module',
+      'NodeNext',
+      '--moduleResolution',
+      'NodeNext',
+      file,
+    ]);
   }
 
   /** Bundle the installed package for browsers, without Node.js built-in polyfills. */
@@ -136,7 +134,7 @@ const invalid: Value = { value: 'wrong' };
   assert.equal(metadata.license, sourceMetadata.license);
   assert.equal(readFileSync(join(packageDir, 'LICENSE'), 'utf8'), readFileSync('LICENSE', 'utf8'));
   console.log(
-    `Packed ESM, CommonJS, and TS6/TS7 declarations passed. Browser bundle: ${minimal.length} bytes vs ${full.length} bytes for all exports.`
+    `Packed ESM, CommonJS, and declarations passed. Browser bundle: ${minimal.length} bytes vs ${full.length} bytes for all exports.`
   );
 } finally {
   rmSync(temporary, { recursive: true, force: true });

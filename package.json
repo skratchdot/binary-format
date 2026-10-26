@@ -62,7 +62,7 @@
     "format": "oxfmt --write .",
     "lint": "oxlint --deny-warnings",
     "test": "vitest run",
-    "tsc": "node node_modules/typescript/bin/tsc --noEmit",
+    "tsc": "tsc --noEmit",
     "watch": "vitest",
     "test:package": "pnpm run build && node scripts/check-package.mjs",
     "check": "pnpm run format:check && pnpm run lint && pnpm run tsc && pnpm run cover && pnpm run test:package",
@@ -77,7 +77,6 @@
     "oxlint": "^1.89.0",
     "tsdown": "^0.23.2",
     "typescript": "^7.0.2",
-    "typescript6": "npm:typescript@^6.0.3",
     "vitest": "^5.0.5"
   },
   "engines": {

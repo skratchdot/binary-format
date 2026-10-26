@@ -120,9 +120,8 @@ This is a breaking release; the v0 chaining API is no longer exported.
 ## Modules and tree shaking
 
 The package provides ESM and CommonJS builds with TypeScript declarations.
-Development uses TypeScript 7. The packed declarations are checked with both
-TypeScript 6.0.3 and 7.0.2, including ESM/CommonJS imports and schema inference.
-Consumers do not need TypeScript 7 or a runtime TypeScript dependency.
+Development uses TypeScript 7. Package checks validate the emitted declarations,
+ESM/CommonJS imports, and schema inference with the project compiler.
 
 Use ESM imports with a tree-shaking bundler to omit unused schema factories:
 
@@ -157,8 +156,7 @@ pnpm run check
 `pnpm run format` formats with oxfmt; `pnpm run lint` checks code with oxlint.
 `pnpm run build` generates the package with tsdown.
 Declaration generation uses Oxc because TypeScript 7 no longer exposes the
-classic compiler API. The `typescript6` dev dependency is a compatibility-test
-compiler; project type checking explicitly uses the main TypeScript 7 compiler.
+classic compiler API.
 
 `pnpm run check` checks formatting, linting, types, coverage, and the packed package's
 ESM/CommonJS entry points, declarations, and browser tree shaking. No command
