@@ -1,14 +1,21 @@
-import fs from 'fs';
-import path from 'path';
-import { BitmapFormat } from './bmp';
+// cspell:ignore Pels
+import * as bf from '../src/index';
+
+import { expect, test } from 'vitest';
+import { BitmapSchema } from './bmp';
+import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
+import path from 'node:path';
 
 test('bmp (bitmap)', async () => {
-  const buffer = await fs.promises.readFile(
-    path.resolve(__dirname, './data/test.bmp')
+  const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+  const bytes = new Uint8Array(
+    await fs.promises.readFile(path.resolve(currentDirectory, './data/test.bmp'))
   );
-  const r1 = BitmapFormat.read(buffer);
-  const r2 = BitmapFormat.write(r1);
-  expect(r1).toMatchInlineSnapshot(`
+  const decoded = bf.decode(BitmapSchema, bytes);
+  const encoded = bf.encode(BitmapSchema, decoded);
+
+  expect(decoded).toMatchInlineSnapshot(`
     {
       "fileHeader": {
         "offBits": 54,
@@ -32,13 +39,12 @@ test('bmp (bitmap)', async () => {
       },
     }
   `);
-  expect(r2).toMatchInlineSnapshot(`
-    Buffer<
-      42 4d 66 b4 00 00 00 00 00 00 36 00 00 00 28 00 00 00 7c 00 00 00 7c 00 00 00
-      01 00 18 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-      00 00
-    >
-  `);
-  // NOTE: this parser is not complete, and does not write valid bitmap files
-  expect(r2).not.toEqual(buffer);
+  expect(encoded).toStrictEqual(
+    bf.bytesFromHex(`
+      42 4d 66 b4 00 00 00 00 00 00 36 00 00 00 28 00 00 00 7c 00 00 00
+      7c 00 00 00 01 00 18 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+      00 00 00 00 00 00 00 00 00 00
+    `)
+  );
+  expect(encoded).not.toStrictEqual(bytes);
 });

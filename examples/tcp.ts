@@ -1,40 +1,22 @@
 // ported from: https://github.com/keichi/binary-parser/blob/master/example/tcp.js
-import BinaryFormat from '../src/binary-format';
+import * as bf from '../src/index';
 
-export interface TcpHeader {
-  srcPort: number;
-  dstPort: number;
-  seq: number;
-  ack: number;
-  dataOffset: number;
-  reserved: number;
-  flag_urg: number;
-  flag_ack: number;
-  flag_psh: number;
-  flag_rst: number;
-  flag_syn: number;
-  flag_fin: number;
-  windowSize: number;
-  checksum: number;
-  urgentPointer: number;
-}
+export const TcpSchema = bf.object([
+  ['srcPort', bf.uint16be()],
+  ['dstPort', bf.uint16be()],
+  ['seq', bf.uint32be()],
+  ['ack', bf.uint32be()],
+  ['dataOffset', bf.bit4()],
+  ['reserved', bf.bit6()],
+  ['flagUrg', bf.bit1()],
+  ['flagAck', bf.bit1()],
+  ['flagPsh', bf.bit1()],
+  ['flagRst', bf.bit1()],
+  ['flagSyn', bf.bit1()],
+  ['flagFin', bf.bit1()],
+  ['windowSize', bf.uint16be()],
+  ['checksum', bf.uint16be()],
+  ['urgentPointer', bf.uint16be()],
+]);
 
-export const TcpFormat = new BinaryFormat<TcpHeader>()
-  .endianess('big')
-  .uint16('srcPort')
-  .uint16('dstPort')
-  .uint32('seq')
-  .uint32('ack')
-  .bit4('dataOffset')
-  .bit6('reserved')
-  // TODO: allow custom() nodes when bitOffset is not zero so we can had a top-level "flogs"
-  .bit1('flag_urg')
-  .bit1('flag_ack')
-  .bit1('flag_psh')
-  .bit1('flag_rst')
-  .bit1('flag_syn')
-  .bit1('flag_fin')
-  .uint16('windowSize')
-  .uint16('checksum')
-  .uint16('urgentPointer')
-  .done();
+export type TcpHeader = bf.infer<typeof TcpSchema>;

@@ -1,67 +1,64 @@
-import BinaryBuffer from './binary-buffer';
-import BinaryFormatter from './binary-formatter';
-import { SmartBuffer } from './external/smart-buffer/smartbuffer';
+export type LengthFunction = (context: DecodeContext | EncodeContext) => number | 'eof';
+export type LengthOption = number | 'eof' | LengthFunction;
 
-export type NumberKey =
-  | 'Int8'
-  | 'Int16BE'
-  | 'Int16LE'
-  | 'Int32BE'
-  | 'Int32LE'
-  | 'UInt8'
-  | 'UInt16BE'
-  | 'UInt16LE'
-  | 'UInt32BE'
-  | 'UInt32LE'
-  | 'FloatBE'
-  | 'FloatLE'
-  | 'DoubleBE'
-  | 'DoubleLE';
-export type NumberKeyRead = keyof SmartBuffer & `read${NumberKey}`;
-export type NumberKeyWrite = keyof SmartBuffer & `write${NumberKey}`;
-
-export type BigIntKey =
-  | 'BigInt64BE'
-  | 'BigInt64LE'
-  | 'BigUInt64BE'
-  | 'BigUInt64LE';
-export type BigIntKeyRead = keyof SmartBuffer & `read${BigIntKey}`;
-export type BigIntKeyWrite = keyof SmartBuffer & `write${BigIntKey}`;
-
-export type ReadFunction = (binaryBuffer: BinaryBuffer) => unknown;
-export type WriteFunction = (
-  binaryBuffer: BinaryBuffer,
-  value: unknown
-) => void;
-
-export interface ReadAndWrite {
-  read: ReadFunction;
-  write: WriteFunction;
-}
-
-export interface Step<T> extends ReadAndWrite {
-  name: keyof T;
-}
-
-export type EOF = 'eof';
-export type NT = 'nt';
-
-export type LengthOption = number | EOF | NT;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type CustomFormatter<T> = BinaryFormatter<Exclude<any, T>>;
-
-export type ChoiceOptions<T> = Record<string | number, CustomFormatter<T>>;
-
-export type ArrayLengthFunction = (params: ArrayLengthParams) => boolean;
-
-export type ArrayLengthParams = {
-  binaryBuffer: BinaryBuffer;
-  index: number;
-  array: Array<unknown>;
+export type Schema<T> = {
+  readonly kind?: string;
+  readonly decode: (context: DecodeContext) => DecodeResult<T>;
+  readonly encode: (context: EncodeContext) => EncodeResult;
 };
 
-export type ArrayLengthOption = number | 'eof' | ArrayLengthFunction;
+export type infer<TSchema> = TSchema extends Schema<infer TValue> ? TValue : never;
 
-export type ChoiceKeyFunction = ReadFunction;
-export type ChoiceKeyOrFunction<T> = keyof T | ReadFunction;
+export type DeepReadonly<T> = T extends (...args: readonly never[]) => unknown
+  ? T
+  : T extends ArrayBufferView
+    ? T
+    : T extends readonly (infer TValue)[]
+      ? readonly DeepReadonly<TValue>[]
+      : T extends object
+        ? { readonly [TKey in keyof T]: DeepReadonly<T[TKey]> }
+        : T;
+
+export type DecodeContext<
+  TRoot extends Record<PropertyKey, unknown> = Record<PropertyKey, unknown>,
+> = {
+  readonly buffer: Uint8Array;
+  readonly view: DataView;
+  readonly byteOffset: number;
+  readonly bitOffset: number;
+  readonly decodedObject: Partial<TRoot>;
+  readonly path: readonly PropertyKey[];
+  readonly root?: unknown;
+};
+
+export type EncodeContext<
+  TValue = unknown,
+  TRoot extends Record<PropertyKey, unknown> = Record<PropertyKey, unknown>,
+> = {
+  readonly value: TValue;
+  readonly byteOffset: number;
+  readonly bitOffset: number;
+  readonly encodedObject: Partial<TRoot>;
+  readonly path: readonly PropertyKey[];
+  readonly root?: TRoot;
+};
+
+export type DecodeResult<T> = {
+  readonly result: T;
+  readonly bytesDecoded: number;
+  readonly bitsDecoded: number;
+};
+
+export type EncodeResult = {
+  readonly result: Uint8Array;
+  readonly bytesEncoded: number;
+  readonly bitsEncoded: number;
+};
+
+export type DecodeOptions = {
+  readonly requireEOF?: boolean;
+};
+
+export type FieldOptions = {
+  readonly omitUndefined?: boolean;
+};

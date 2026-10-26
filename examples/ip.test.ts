@@ -1,11 +1,14 @@
-import { Buffer } from 'buffer';
-import { IpFormat } from './ip';
+import * as bf from '../src/index';
+
+import { expect, test } from 'vitest';
+import { IpSchema } from './ip';
 
 test('ip', () => {
-  const buffer = Buffer.from('450002c5939900002c06ef98adc24f6c850186d1', 'hex');
-  const r1 = IpFormat.read(buffer);
-  const r2 = IpFormat.write(r1);
-  expect(r1).toMatchInlineSnapshot(`
+  const bytes = bf.bytesFromHex('450002c5939900002c06ef98adc24f6c850186d1');
+  const decoded = bf.decode(IpSchema, bytes);
+  const encoded = bf.encode(IpSchema, decoded);
+
+  expect(decoded).toMatchInlineSnapshot(`
     {
       "checksum": 61336,
       "dst": [
@@ -31,8 +34,5 @@ test('ip', () => {
       "version": 4,
     }
   `);
-  expect(r2).toMatchInlineSnapshot(
-    `Buffer<45 00 02 c5 93 99 00 00 2c 06 ef 98 ad c2 4f 6c 85 01 86 d1>`
-  );
-  expect(r2).toEqual(buffer);
+  expect(encoded).toStrictEqual(bytes);
 });
