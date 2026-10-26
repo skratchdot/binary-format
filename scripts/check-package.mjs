@@ -10,15 +10,21 @@ const run = (command, args, cwd = temporary) =>
   execFileSync(command, args, { cwd, encoding: 'utf8', stdio: 'pipe' });
 
 try {
-  const [packed] = JSON.parse(
-    run('npm', ['pack', '--json', '--pack-destination', temporary], process.cwd())
+  const packed = JSON.parse(
+    run('pnpm', ['pack', '--json', '--pack-destination', temporary], process.cwd())
   );
   assert(packed.files.some(({ path }) => path === 'dist/index.d.ts'));
   assert(packed.files.some(({ path }) => path === 'dist/index.d.cts'));
   assert(!packed.files.some(({ path }) => /test\.|^src\//.test(path)));
   const packageDir = join(temporary, 'node_modules/@binary-format/binary-format');
   mkdirSync(packageDir, { recursive: true });
-  run('tar', ['-xzf', join(temporary, packed.filename), '--strip-components=1', '-C', packageDir]);
+  run('tar', [
+    '-xzf',
+    resolve(temporary, packed.filename),
+    '--strip-components=1',
+    '-C',
+    packageDir,
+  ]);
   const name = '@binary-format/binary-format';
   const assertion = `
     const schema = bf.object([['value', bf.uint16be()]]);

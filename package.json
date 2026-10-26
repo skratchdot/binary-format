@@ -64,9 +64,9 @@
     "test": "vitest run",
     "tsc": "tsc --noEmit",
     "watch": "vitest",
-    "test:package": "npm run build && node scripts/check-package.mjs",
-    "check": "npm run format:check && npm run lint && npm run tsc && npm run cover && npm run test:package",
-    "prepublishOnly": "npm run check",
+    "test:package": "pnpm run build && node scripts/check-package.mjs",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run tsc && pnpm run cover && pnpm run test:package",
+    "prepublishOnly": "pnpm run check",
     "format:check": "oxfmt --check ."
   },
   "devDependencies": {
@@ -81,5 +81,6 @@
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "packageManager": "pnpm@12.15.0"
 }

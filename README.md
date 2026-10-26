@@ -135,17 +135,18 @@ on Node 22 and 24.
 ## Development
 
 ```bash
-npm ci
-npm test
-npm run tsc
-npm run build
-npm run check
+corepack enable
+pnpm install --frozen-lockfile
+pnpm test
+pnpm run tsc
+pnpm run build
+pnpm run check
 ```
 
-`npm run format` formats with oxfmt; `npm run lint` checks code with oxlint.
-`npm run build` generates the package with tsdown.
+`pnpm run format` formats with oxfmt; `pnpm run lint` checks code with oxlint.
+`pnpm run build` generates the package with tsdown.
 
-`npm run check` checks formatting, linting, types, coverage, and the packed package's
+`pnpm run check` checks formatting, linting, types, coverage, and the packed package's
 ESM/CommonJS entry points, declarations, and browser tree shaking. No command
 above publishes a release.
 
