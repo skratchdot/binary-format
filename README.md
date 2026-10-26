@@ -102,8 +102,8 @@ const zeroByte = bf.custom<undefined>({
 
 ## v1 migration
 
-v1 replaces the v0 chaining API with composable schemas. This branch prepares
-version 1.0.0; it has not been published to npm yet. The package name remains
+v1 replaces the v0 chaining API with composable schemas. The repository contains
+the v1 implementation; it has not been published to npm yet. The package name remains
 `@binary-format/binary-format`.
 
 - Replace chained format definitions with `object([['field', schema], ...])`.
@@ -156,6 +156,8 @@ pnpm run check
 `pnpm run check` checks formatting, linting, types, coverage, and the packed package's
 ESM/CommonJS entry points, declarations, and browser tree shaking. No command
 above publishes a release.
+
+See the [development roadmap](docs/roadmap.md) for proposed follow-up work.
 
 ## See also
 

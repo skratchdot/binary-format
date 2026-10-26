@@ -22,12 +22,14 @@ const run = (command, args, cwd = temporary) =>
   execFileSync(command, args, { cwd, encoding: 'utf8', stdio: 'pipe' });
 
 try {
+  const sourceMetadata = JSON.parse(readFileSync('package.json', 'utf8'));
   /** Verify shipped files and unpack the tarball as a consumer dependency. */
   const packed = JSON.parse(
     run('pnpm', ['pack', '--json', '--pack-destination', temporary], process.cwd())
   );
   assert(packed.files.some(({ path }) => path === 'dist/index.d.ts'));
   assert(packed.files.some(({ path }) => path === 'dist/index.d.cts'));
+  assert(packed.files.some(({ path }) => path === 'LICENSE'));
   assert(!packed.files.some(({ path }) => /test\.|^src\//.test(path)));
   const packageDir = join(temporary, 'node_modules/@binary-format/binary-format');
   mkdirSync(packageDir, { recursive: true });
@@ -112,10 +114,13 @@ const invalid: Value = { value: 'wrong' };
     `data:text/javascript;base64,${Buffer.from(minimal).toString('base64')}`
   );
   assert.equal(value, 42);
-  /** Guard the v1 release metadata and the side-effect declaration used by bundlers. */
+  /** Check packed metadata against the source manifest so future version bumps work unchanged. */
   const metadata = JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8'));
   assert.equal(metadata.sideEffects, false);
-  assert.equal(metadata.version, '1.0.0');
+  assert.equal(metadata.name, sourceMetadata.name);
+  assert.equal(metadata.version, sourceMetadata.version);
+  assert.equal(metadata.license, sourceMetadata.license);
+  assert.equal(readFileSync(join(packageDir, 'LICENSE'), 'utf8'), readFileSync('LICENSE', 'utf8'));
   console.log(
     `Packed ESM, CommonJS, and declarations passed. Browser bundle: ${minimal.length} bytes vs ${full.length} bytes for all exports.`
   );
