@@ -58,16 +58,16 @@
   },
   "scripts": {
     "build": "tsdown",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run tsc && pnpm run cover && pnpm run test:package",
     "cover": "vitest run --coverage",
     "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
     "lint": "oxlint --deny-warnings",
-    "test": "vitest run",
-    "tsc": "tsc --noEmit",
-    "watch": "vitest",
-    "test:package": "pnpm run build && node scripts/check-package.mjs",
-    "check": "pnpm run format:check && pnpm run lint && pnpm run tsc && pnpm run cover && pnpm run test:package",
     "prepublishOnly": "pnpm run check",
-    "format:check": "oxfmt --check ."
+    "test": "vitest run",
+    "test:package": "pnpm run build && node scripts/check-package.mjs",
+    "tsc": "tsc --noEmit",
+    "watch": "vitest"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
