@@ -37,7 +37,7 @@ export const bytes = (length: LengthOption): Schema<Uint8Array> => ({
   },
 });
 
-export const uint8Array = bytes;
+export const uint8Array: typeof bytes = bytes;
 
 export const skip = (length: number): Schema<undefined> => ({
   kind: 'skip',

@@ -57,7 +57,7 @@ try {
     `const assert = require('node:assert/strict'); const bf = require('${name}'); ${assertion}`,
   ]);
 
-  /** Check both declaration entry points, including rejection of an invalid inferred value. */
+  /** Check shipped declarations with the project compiler, without skipping declaration validation. */
   for (const extension of ['mts', 'cts']) {
     const file = join(temporary, `consumer.${extension}`);
     writeFileSync(
@@ -67,6 +67,19 @@ const schema = bf.object([['value', bf.uint8()]]);
 type Value = bf.infer<typeof schema>;
 const value: Value = { value: 42 };
 bf.encode(schema, value);
+const nested = bf.object([
+  ['items', bf.array(schema, 1)],
+  ['reserved', bf.skip(1), { omitUndefined: true }],
+]);
+const nestedValue: bf.infer<typeof nested> = { items: [{ value: 42 }] };
+bf.encode(nested, nestedValue);
+const readonlyValue = { items: [{ value: 42 }] } as const;
+bf.encode(nested, readonlyValue);
+const union = bf.choice(() => 0, { 0: bf.uint8(), 1: bf.string(1) });
+const choiceValue: bf.infer<typeof union> = 'a';
+bf.encode(union, choiceValue);
+// @ts-expect-error choices infer a number/string union
+const invalidChoice: bf.infer<typeof union> = false;
 // @ts-expect-error inferred field must be a number
 const invalid: Value = { value: 'wrong' };
 `
@@ -75,7 +88,6 @@ const invalid: Value = { value: 'wrong' };
       resolve('node_modules/typescript/bin/tsc'),
       '--noEmit',
       '--strict',
-      '--skipLibCheck',
       '--target',
       'ES2022',
       '--module',
