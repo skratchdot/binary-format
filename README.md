@@ -44,6 +44,7 @@ console.log({ value, encoded });
 
 - [Public API reference](docs/api.md): schemas, contexts, errors, and limitations.
 - [Bit-field composition](docs/bit-fields.md): supported layouts and ordering.
+- [Release notes](CHANGELOG.md) and [release procedure](docs/releasing.md).
 - [Migration guide](docs/migration.md): v0 to v1 examples and behavior to audit.
 - [Executable examples](examples/schema-patterns.ts): checked against the packed package.
 

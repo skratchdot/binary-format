@@ -58,7 +58,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check": "pnpm run format:check && pnpm run lint && pnpm run tsc && pnpm run cover && pnpm run test:package",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run tsc && pnpm run test:release && pnpm run cover && pnpm run test:package",
     "cover": "vitest run --coverage",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
@@ -66,6 +66,7 @@
     "prepublishOnly": "pnpm run check",
     "test": "vitest run",
     "test:package": "pnpm run build && node scripts/check-package.mjs",
+    "test:release": "node --test scripts/release-policy.test.mjs",
     "tsc": "tsc --noEmit",
     "watch": "vitest"
   },

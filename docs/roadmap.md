@@ -1,12 +1,13 @@
 # Development roadmap
 
-The composable v1 implementation is merged. These are proposed follow-ups, in
-priority order; they are not promises of features or a release schedule.
+The composable v1 implementation is merged. The five-PR delivery plan below
+now covers all four goals. Publication and downstream migration remain separate
+work; this is not a release schedule.
 
 ## Delivery plan
 
-Plan for five focused PRs covering the four goals below. Add a separate fix PR
-only if the new tests expose a substantial behavioral issue.
+The work was divided into five focused PRs covering the four goals below.
+Goals 1–3 are merged; release preparation completes goal 4 in this PR.
 
 | PR  | Scope                                                                  | Roadmap goal  |
 | --- | ---------------------------------------------------------------------- | ------------- |
@@ -62,11 +63,12 @@ require byte-only results; root choices and custom wrappers also accept
 whole-byte bit results.
 Sharing partial bytes across these boundaries remains a future API decision.
 
-## 4. Prepare a release when requested
+## 4. Release preparation
 
-- Write release notes covering the breaking API and Node 22+ requirement.
-- Choose a version/tag policy and publishing workflow, including npm provenance.
-- Validate the tarball in a separate consumer project and run all package checks.
+- [Release notes](../CHANGELOG.md) cover the breaking API and Node 22+ requirement.
+- The [release procedure](releasing.md) defines version/tag policy, manual dry
+  runs, and explicit trusted publishing with npm provenance.
+- Release checks reuse the Node 22/24 CI matrix and isolated tarball consumers.
 - Update the README's unpublished status only after a successful release.
 
 Publishing and switching downstream consumers to the public npm package remain
