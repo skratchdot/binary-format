@@ -1,109 +1,127 @@
 # Changelog
 
-Entries for 0.0.1–0.0.16 were reconstructed from Git history and audited npm
-artifacts. Dates are the original npm publication dates (UTC).
+## [0.0.16](https://github.com/skratchdot/binary-format/compare/0.0.15...0.0.16) (2023-07-09)
 
-## 0.0.16 (2023-07-09)
+### Miscellaneous Chores
 
-- Vendor the bit-buffer and smart-buffer implementations, retain their license notices, and use explicit imports from the `buffer` package.
-- Replace deprecated Buffer construction and update tests, linting, and TypeScript checks.
-- Upgrade development dependencies.
+* Vendor the bit-buffer and smart-buffer implementations, retain their license notices, and use explicit imports from the `buffer` package.
+* Replace deprecated Buffer construction and update tests, linting, and TypeScript checks.
+* Upgrade development dependencies.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.15...0.0.16) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.16)
+## [0.0.15](https://github.com/skratchdot/binary-format/compare/0.0.14...0.0.15) (2023-02-05)
 
-## 0.0.15 (2023-02-05)
+### Miscellaneous Chores
 
-- Upgrade development dependencies.
+* Upgrade development dependencies.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.14...0.0.15) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.15)
+## [0.0.14](https://github.com/skratchdot/binary-format/compare/0.0.13...0.0.14) (2022-09-05)
 
-## 0.0.14 (2022-09-05)
+### Miscellaneous Chores
 
-- Upgrade development dependencies.
+* Upgrade development dependencies.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.13...0.0.14) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.14)
+## [0.0.13](https://github.com/skratchdot/binary-format/compare/0.0.12...0.0.13) (2022-02-22)
 
-## 0.0.13 (2022-02-22)
+### Bug Fixes
 
-- Rebuild the package to ship the buffer-input conversion introduced in the 0.0.12 source. The bundled version banner still reads 0.0.12.
+* Rebuild the package to ship the buffer-input conversion introduced in the 0.0.12 source. The bundled version banner still reads 0.0.12.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.12...0.0.13) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.13)
+## [0.0.12](https://github.com/skratchdot/binary-format/compare/0.0.11...0.0.12) (2022-02-22)
 
-## 0.0.12 (2022-02-22)
+### Bug Fixes
 
-- Add conversion of non-Buffer inputs with `Buffer.from()` in the tagged source. The published JavaScript still contains the previous behavior; the change ships in 0.0.13.
+* Add conversion of non-Buffer inputs with `Buffer.from()` in the tagged source. The published JavaScript still contains the previous behavior; the change ships in 0.0.13.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.11...0.0.12) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.12)
+## [0.0.11](https://github.com/skratchdot/binary-format/compare/0.0.10...0.0.11) (2022-02-22)
 
-## 0.0.11 (2022-02-22)
+### Bug Fixes
 
-- Clarify the error message for invalid buffer inputs.
+* Clarify the error message for invalid buffer inputs.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.10...0.0.11) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.11)
+## [0.0.10](https://github.com/skratchdot/binary-format/compare/0.0.9...0.0.10) (2022-01-15)
 
-## 0.0.10 (2022-01-15)
+### Miscellaneous Chores
 
-- Upgrade development dependencies.
-- Add byte-data to the related-library list.
+* Upgrade development dependencies.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.9...0.0.10) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.10)
+### Documentation
 
-## 0.0.9 (2021-10-17)
+* Add byte-data to the related-library list.
 
-- Upgrade development dependencies.
-- Add construct-js to the related-library list.
+## [0.0.9](https://github.com/skratchdot/binary-format/compare/0.0.8...0.0.9) (2021-10-17)
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.8...0.0.9) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.9)
+### Miscellaneous Chores
 
-## 0.0.8 (2021-07-25)
+* Upgrade development dependencies.
 
-- Add `plainArray()` for arrays of primitive values.
-- Reorganize buffer validation.
+### Documentation
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.7...0.0.8) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.8)
+* Add construct-js to the related-library list.
 
-## 0.0.7 (2021-07-24)
+## [0.0.8](https://github.com/skratchdot/binary-format/compare/0.0.7...0.0.8) (2021-07-25)
 
-- Allow the choice key to be a callback function.
+### Features
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.6...0.0.7) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.7)
+* Add `plainArray()` for arrays of primitive values.
 
-## 0.0.6 (2021-07-24)
+### Miscellaneous Chores
 
-- Allow `toArray()` counts to be numbers, `"eof"`, or callback functions.
-- Write fixed-length strings by encoded byte count, truncating or zero-padding to the requested length.
+* Reorganize buffer validation.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.5...0.0.6) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.6)
+## [0.0.7](https://github.com/skratchdot/binary-format/compare/0.0.6...0.0.7) (2021-07-24)
 
-## 0.0.5 (2021-07-19)
+### Features
 
-- Fix formats containing two nibbles (two four-bit fields).
+* Allow the choice key to be a callback function.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.4...0.0.5) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.5)
+## [0.0.6](https://github.com/skratchdot/binary-format/compare/0.0.5...0.0.6) (2021-07-24)
 
-## 0.0.4 (2021-07-18)
+### Features
 
-- Correct the TypeScript entry point to `dist/src/index.d.ts`, matching the published declarations.
+* Allow `toArray()` counts to be numbers, `"eof"`, or callback functions.
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.3...0.0.4) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.4)
+### Bug Fixes
 
-## 0.0.3 (2021-07-18)
+* Write fixed-length strings by encoded byte count, truncating or zero-padding to the requested length.
 
-- Adjust the JavaScript and declaration entry-point paths again.
-- Historical packaging issue: the declared TypeScript entry point was still absent; JavaScript entry points were extensionless while the tarball contained `.js` files.
+## [0.0.5](https://github.com/skratchdot/binary-format/compare/0.0.4...0.0.5) (2021-07-19)
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.2...0.0.3) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.3)
+### Bug Fixes
 
-## 0.0.2 (2021-07-18)
+* Fix formats containing two nibbles (two four-bit fields).
 
-- Adjust the package entry-point configuration in an attempt to fix declaration discovery.
-- Historical packaging issue: the declared TypeScript entry point was still absent from the npm tarball.
+## [0.0.4](https://github.com/skratchdot/binary-format/compare/0.0.3...0.0.4) (2021-07-18)
 
-[Changes](https://github.com/skratchdot/binary-format/compare/0.0.1...0.0.2) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.2)
+### Bug Fixes
 
-## 0.0.1 (2021-07-18)
+* Correct the TypeScript entry point to `dist/src/index.d.ts`, matching the published declarations.
 
-- Initial release of the chaining API for reading and writing binary data.
-- Historical packaging issue: the declared TypeScript entry point was absent from the npm tarball.
+## [0.0.3](https://github.com/skratchdot/binary-format/compare/0.0.2...0.0.3) (2021-07-18)
 
-[Changes](https://github.com/skratchdot/binary-format/commit/e8e97b5b7d6472b68f4497b48821686cbd53c3e3) · [Tag](https://github.com/skratchdot/binary-format/tree/0.0.1)
+### Bug Fixes
+
+* Adjust the JavaScript and declaration entry-point paths again.
+
+### Notes
+
+* Historical packaging issue: the declared TypeScript entry point was still absent; JavaScript entry points were extensionless while the tarball contained `.js` files.
+
+## [0.0.2](https://github.com/skratchdot/binary-format/compare/0.0.1...0.0.2) (2021-07-18)
+
+### Bug Fixes
+
+* Adjust the package entry-point configuration in an attempt to fix declaration discovery.
+
+### Notes
+
+* Historical packaging issue: the declared TypeScript entry point was still absent from the npm tarball.
+
+## [0.0.1](https://github.com/skratchdot/binary-format/commit/e8e97b5b7d6472b68f4497b48821686cbd53c3e3) (2021-07-18)
+
+### Features
+
+* Initial release of the chaining API for reading and writing binary data.
+
+### Notes
+
+* Historical packaging issue: the declared TypeScript entry point was absent from the npm tarball.
