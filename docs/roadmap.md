@@ -3,6 +3,27 @@
 The composable v1 implementation is merged. These are proposed follow-ups, in
 priority order; they are not promises of features or a release schedule.
 
+## Delivery plan
+
+Plan for five focused PRs covering the four goals below. Add a separate fix PR
+only if the new tests expose a substantial behavioral issue.
+
+| PR  | Scope                                                                  | Roadmap goal  |
+| --- | ---------------------------------------------------------------------- | ------------- |
+| 1   | Numeric wire-value tests and packed-consumer type-inference tests      | 1, first part |
+| 2   | Input boundaries, arrays, callbacks, object keys, and nested contexts  | 1, remainder  |
+| 3   | API reference, migration guide, and executable documentation examples  | 2             |
+| 4   | Define bit-field composition contracts and enforce unsupported cases   | 3             |
+| 5   | Release notes, version/tag policy, and publishing-workflow preparation | 4             |
+
+Reuse the existing Node 22/24 CI jobs and package-consumer fixture. Keep tests and
+documentation examples table-driven where that removes repetition. Build each
+PR on merged work to avoid maintaining a stack of overlapping changes.
+
+PR 4 should define and test the supported contract before adding composition
+features. PR 5 prepares a release; running a publish workflow and migrating
+downstream consumers still require separate requests.
+
 ## 1. Expand behavioral and type coverage
 
 - Turn the numeric smoke checks into permanent table-driven tests: signed and
