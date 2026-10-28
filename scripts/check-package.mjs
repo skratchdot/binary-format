@@ -75,6 +75,27 @@ try {
     ]);
   }
 
+  /** Type-check and execute the documented examples against both published entry points. */
+  for (const extension of ['mts', 'cts']) {
+    const file = join(temporary, `documentation.${extension}`);
+    writeFileSync(
+      file,
+      readFileSync('examples/documentation.ts', 'utf8') + '\nrunDocumentationExamples();\n'
+    );
+    run('node', [
+      resolve('node_modules/typescript/bin/tsc'),
+      '--strict',
+      '--target',
+      'ES2022',
+      '--module',
+      'NodeNext',
+      '--moduleResolution',
+      'NodeNext',
+      file,
+    ]);
+    run('node', [join(temporary, `documentation.${extension === 'mts' ? 'mjs' : 'cjs'}`)]);
+  }
+
   /** Bundle the installed package for browsers, without Node.js built-in polyfills. */
   const bundle = async (contents) => {
     const result = await build({
