@@ -4,5 +4,6 @@ export default defineConfig({
   singleQuote: true,
   trailingComma: 'es5',
   sortPackageJson: { sortScripts: true },
-  ignorePatterns: ['dist/**', 'coverage/**', 'node_modules/**'],
+  // Release Please owns changelog formatting; keep generated release PRs CI-clean.
+  ignorePatterns: ['dist/**', 'coverage/**', 'node_modules/**', 'CHANGELOG.md'],
 });

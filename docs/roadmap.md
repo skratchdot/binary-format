@@ -65,11 +65,11 @@ Sharing partial bytes across these boundaries remains a future API decision.
 
 ## 4. Release preparation
 
-- [Release notes](../CHANGELOG.md) cover the breaking API and Node 22+ requirement.
-- The [release procedure](releasing.md) defines version/tag policy, manual dry
+- [v1 release notes](v1-release-notes.md) cover the breaking API and Node 22+ requirement.
+- The [release procedure](releasing.md) defines version overrides, release PR review, manual dry
   runs, and explicit trusted publishing with npm provenance.
 - Release checks reuse the Node 22/24 CI matrix and isolated tarball consumers.
-- Update the README's unpublished status only after a successful release.
+- Update the README's unpublished status in the final release PR before packing.
 
 Publishing and switching downstream consumers to the public npm package remain
 separate tasks. Streaming, seek/pointer support, benchmarks, and separate

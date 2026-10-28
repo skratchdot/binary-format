@@ -1,9 +1,7 @@
-# Changelog
-
-## 1.0.0 — unreleased
+# v1 release notes (draft)
 
 This is the first stable API, replacing the v0 chaining API. The package remains
-`@binary-format/binary-format`. See the [migration guide](docs/migration.md).
+`@binary-format/binary-format`. See the [migration guide](migration.md).
 
 ### Breaking changes
 
@@ -14,7 +12,7 @@ This is the first stable API, replacing the v0 chaining API. The package remains
 - Encoding returns `Uint8Array`. Decoding accepts ArrayBuffer and bounded views,
   including DataView and Node Buffer, without a runtime Buffer dependency.
 - Custom schemas use explicit contexts and result counts rather than mutable
-  reader/writer cursors. See the [API reference](docs/api.md#custom-schemas).
+  reader/writer cursors. See the [API reference](api.md#custom-schemas).
 - Node.js 22 or later is required. Development uses TypeScript 7; emitted
   declarations are checked with the project compiler. Older TypeScript versions
   are not part of the compatibility test matrix.
@@ -31,7 +29,7 @@ This is the first stable API, replacing the v0 chaining API. The package remains
   root bytes are rejected. Object keys such as `__proto__` are own data fields.
 - Bit-field ordering and alignment checks reject unsafe shared-byte layouts.
   Whole-byte root choices and custom wrappers remain supported. See the
-  [composition contract](docs/bit-fields.md) for supported container layouts.
+  [composition contract](bit-fields.md) for supported container layouts.
 
 ### Migration notes
 
@@ -44,5 +42,5 @@ seek/pointer support, and separate encoder/decoder bundles are not included.
 
 CI covers Node 22 and 24, known-byte and round-trip behavior, inferred types,
 packed ESM/CommonJS consumers, executable examples, and browser tree shaking.
-The [release procedure](docs/releasing.md) prepares tarballs and supports an
+The [release procedure](releasing.md) prepares tarballs and supports an
 explicit trusted-publishing step. No v1 npm release has been performed yet.
