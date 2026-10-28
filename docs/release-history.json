@@ -1,0 +1,98 @@
+[
+  {
+    "version": "0.0.1",
+    "publishedAt": "2021-07-18T21:17:00.523Z",
+    "gitHead": "e8e97b5b7d6472b68f4497b48821686cbd53c3e3",
+    "integrity": "sha512-Yjsa2d3SZyksE4s9wA4LIbDf2OGrm5+SpVx3A0PJKPwm0P4ISjqBbPrCv1kuNaULC362h/3zQsYWnVD86/qTRA=="
+  },
+  {
+    "version": "0.0.2",
+    "publishedAt": "2021-07-18T21:48:26.382Z",
+    "gitHead": "672269419dca52af713ad057af80134b82765c3a",
+    "integrity": "sha512-HOSKCw/2GEr6y2D1/IekFM504X+d+Ta1jjUoTBie1uefGeQMAVTKasSL1osHU+sSlMra/0twzNiT6HC7wox77w=="
+  },
+  {
+    "version": "0.0.3",
+    "publishedAt": "2021-07-18T22:00:00.514Z",
+    "gitHead": "b40727a9a703a7990004446735ab5464c823528c",
+    "integrity": "sha512-ybqQsOJI0zqPFJ5yzVs+K29sQSS28eYqtbtKdpuC7K0Y+vDp40sv8eNd/yY4lrl3Sgt7tsFzg66aLHhQfZr5Qw=="
+  },
+  {
+    "version": "0.0.4",
+    "publishedAt": "2021-07-18T22:09:49.657Z",
+    "gitHead": "5f17d32b7dbc6091920a38c90c359bec293899f9",
+    "integrity": "sha512-JvFfA1HrhrLshWsQ8rbRC6mr5+3clgnhea43UOzBEh433TYgZgt89j3nL8Bz7W4b0bru0R9Ag+/+WRmzN4Y2ZA=="
+  },
+  {
+    "version": "0.0.5",
+    "publishedAt": "2021-07-19T03:13:19.091Z",
+    "gitHead": "b291492151ea5b6942c57e1aab4d92d9f5134cdf",
+    "integrity": "sha512-6/XQhZoaLrqxoXcBf+2PgyPbQbduJqQ9egjTvy0nCaKwjAvy1xzN8mtRODuwqFtHtUiC2M5UZJTjD1sf6Bsc2Q=="
+  },
+  {
+    "version": "0.0.6",
+    "publishedAt": "2021-07-24T14:07:39.344Z",
+    "gitHead": "0ce9af42c672a1076e94601ec80e00ff749a051c",
+    "integrity": "sha512-8MQ7W/mcNYfutx1+VyxsWPvLXki/eNuezkRWBE2aN1ECxyAjJR2aT07eTt8FsKZqr6HCXsQM0Q5RbwPAacDz6Q=="
+  },
+  {
+    "version": "0.0.7",
+    "publishedAt": "2021-07-24T21:15:52.639Z",
+    "gitHead": "07bc9b6dcb23f8a2cb9605242ef487b09d9a6054",
+    "integrity": "sha512-p6ibF+VHu/j3UsLGFAmrkB3ImC/FUr9HzRVf2jbmTf4ypcXdJytBI3ywWpy4IWSCoeuTLJyn5Un/EBWu62Uv+A=="
+  },
+  {
+    "version": "0.0.8",
+    "publishedAt": "2021-07-25T01:33:48.754Z",
+    "gitHead": "62dc757cc71dfb13c9106a5260077d45ab9444d1",
+    "integrity": "sha512-YiFk2H2lHveFK9HZ3Yz8YHQedSALMbynwHnpnL3qk8CorA3pbI9Fozlvqy9MVOAKEMNj2REcYkovkKCeISSdRA=="
+  },
+  {
+    "version": "0.0.9",
+    "publishedAt": "2021-10-17T17:24:00.658Z",
+    "gitHead": "83d690ae75cd9d49c84c4d4a09d2d7bff3cf36e2",
+    "integrity": "sha512-4/AOPFJVXyPTTLZeirAxc+4K5g2NGwbHPpMWHtFtYskiG0Y7P8v5nKXW09bwU6VCdQbG8B3aEb3/B7phGmYV4w=="
+  },
+  {
+    "version": "0.0.10",
+    "publishedAt": "2022-01-15T18:58:47.746Z",
+    "gitHead": "965beb6121d63c7445174371f347288108aa34a9",
+    "integrity": "sha512-abyFvA0v7dpwcrkViYAwYyoGAKPx+8aOlcjbpoC8ayyWQqwBpTvUwdiMVM2MZX0E9EMx9mU4s0DClQGjdGi7TA=="
+  },
+  {
+    "version": "0.0.11",
+    "publishedAt": "2022-02-22T22:37:24.321Z",
+    "gitHead": "be970aa67397219333bc9392e315bc7e4ddad85f",
+    "integrity": "sha512-CmKvrYVCgme8dHD90MygnGon58dwn+/EVUdLsVBcX0bI1DsMRBsmeYwNGbXkJIloz0uzgDCfQLwXD568TkTWAg=="
+  },
+  {
+    "version": "0.0.12",
+    "publishedAt": "2022-02-22T23:11:44.765Z",
+    "gitHead": "8724a8c0b4d5fe887ba1e1f79d3848ebb60484de",
+    "integrity": "sha512-n7F+nDvB+G4CUv85AyVW4UqRjUx+jSQA0cHXBsAP8LjwseezVe1JwCK7na5iSqlKKdms0qiyMPp0xqOXpfwYaQ=="
+  },
+  {
+    "version": "0.0.13",
+    "publishedAt": "2022-02-22T23:18:40.422Z",
+    "gitHead": "94c2de3f8d588a471fbfdbd4cabc236d81a3f9a4",
+    "integrity": "sha512-vBHNO1jzf4zSkQOROvBD8dUGy36Goqis2Sh6ELPnAmNzRi7mgT2ILF7VrJdN5wfvIag2wOvGRi62BhU7j5r7pg=="
+  },
+  {
+    "version": "0.0.14",
+    "publishedAt": "2022-09-05T19:32:40.074Z",
+    "gitHead": "a21ada4911e15e29b7e75da10e221119d4013d6e",
+    "integrity": "sha512-zlVDD9doKBR/Gxy4zKj0aRisi16ju5gu7WxA3nvEMiY62ky6ki2HzfqygmV8dg3nR+Snch5QSLj5vDfLiTJQhw=="
+  },
+  {
+    "version": "0.0.15",
+    "publishedAt": "2023-02-05T18:50:31.103Z",
+    "gitHead": "2c3f6bd0f4126fcaa6234bbbed804c2e380c1025",
+    "integrity": "sha512-j8p4ckgWxOCND9pyW9dslvfKzWG3kff0+I6LHncQmk33eNWsso7WYBepp3lukdNjVf1gC4Dfi0oQHbwBdKzsqA=="
+  },
+  {
+    "version": "0.0.16",
+    "publishedAt": "2023-07-09T18:29:06.835Z",
+    "gitHead": "54d432f4c1ab67a2c72a1c006926bdcf954b9786",
+    "integrity": "sha512-74yq5A1V9zvLHvDPd7L6tbb7cqiV0aj7s8WSoTCItxizoVaz/BzLI6Q5YlF16nOfJx8Kj+2vC74ZVRr8zbHilQ=="
+  }
+]
