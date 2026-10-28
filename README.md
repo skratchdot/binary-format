@@ -40,6 +40,12 @@ console.log({ value, encoded });
 */
 ```
 
+## Documentation
+
+- [Public API reference](docs/api.md): schemas, contexts, errors, and limitations.
+- [Migration guide](docs/migration.md): v0 to v1 examples and behavior to audit.
+- [Executable examples](examples/schema-patterns.ts): checked against the packed package.
+
 ## Concepts
 
 - Build schemas with primitives, objects, arrays, choices, bytes, text, and
