@@ -46,7 +46,7 @@ const bytes = bf.encode(greeting, value);
 ```
 
 The v1 schema and exact wire values are checked in the
-[executable examples](../examples/documentation.ts). The v0 block is historical
+[executable examples](../examples/schema-patterns.ts). The v0 block is historical
 syntax, not code run by the current test suite.
 
 ## Translate composition and extensions

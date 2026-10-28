@@ -75,16 +75,25 @@ try {
     ]);
   }
 
-  /** Type-check and execute the documented examples against both published entry points. */
+  /**
+   * Keep local examples pointed at source; only the isolated copy imports the package.
+   * Assert the import exists so a future edit cannot silently bypass this check.
+   */
+  const exampleSource = readFileSync('examples/schema-patterns.ts', 'utf8');
+  const sourceImport = "import * as bf from '../src/index';";
+  assert.equal(exampleSource.split(sourceImport).length, 2, 'expected one source import');
+  const consumerExample = exampleSource.replace(sourceImport, `import * as bf from '${name}';`);
+  /** Type-check and execute the examples against both published entry points. */
   for (const extension of ['mts', 'cts']) {
-    const file = join(temporary, `documentation.${extension}`);
-    writeFileSync(
-      file,
-      readFileSync('examples/documentation.ts', 'utf8') + '\nrunDocumentationExamples();\n'
-    );
+    const file = join(temporary, `schema-patterns.${extension}`);
+    writeFileSync(file, consumerExample + '\nrunSchemaExamples();\n');
     run('node', [
       resolve('node_modules/typescript/bin/tsc'),
       '--strict',
+      '--types',
+      'node',
+      '--typeRoots',
+      resolve('node_modules/@types'),
       '--target',
       'ES2022',
       '--module',
@@ -93,7 +102,7 @@ try {
       'NodeNext',
       file,
     ]);
-    run('node', [join(temporary, `documentation.${extension === 'mts' ? 'mjs' : 'cjs'}`)]);
+    run('node', [join(temporary, `schema-patterns.${extension === 'mts' ? 'mjs' : 'cjs'}`)]);
   }
 
   /** Bundle the installed package for browsers, without Node.js built-in polyfills. */

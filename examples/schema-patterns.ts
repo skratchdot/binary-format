@@ -1,5 +1,6 @@
 /** Executable companion to docs/api.md and docs/migration.md. */
-import * as bf from '@binary-format/binary-format';
+import assert from 'node:assert/strict';
+import * as bf from '../src/index';
 
 // Migration: replace the chained formatter with a reusable schema.
 export const greeting = bf.object([
@@ -59,7 +60,7 @@ export const flags = bf.object([
 ]);
 
 /** Throws on drift between the documented values and their wire representation. */
-export function runDocumentationExamples(): void {
+export function runSchemaExamples(): void {
   const greetingValue: Greeting = {
     hello: 'hello',
     space: 32,
@@ -79,33 +80,38 @@ export function runDocumentationExamples(): void {
   const input = Uint8Array.of(1, 2);
   const view = bf.decode(bf.bytes(2), input);
   input[0] = 9;
-  check(view[0] === 9, 'decoded bytes share input storage');
-  check(bf.decode(bf.string(3), bf.encode(bf.string(3), 'a')) === 'a\0\0', 'text padding');
-  check(bf.decode(bf.string(1), bf.encode(bf.string(1), 'é')) === '\ufffd', 'UTF-8 truncation');
-  try {
-    bf.decode(packet, bf.bytesFromHex('01 00'));
-    throw new Error('truncated packet should fail');
-  } catch (error) {
-    check(error instanceof bf.BinaryFormatError, 'structured field error');
-    if (error instanceof bf.BinaryFormatError) {
-      check(JSON.stringify(error.fieldPath) === '["items",0]', 'error path');
-      check(error.byteOffset === 1 && error.cause instanceof RangeError, 'error offset and cause');
+  assert(view[0] === 9, 'decoded bytes share input storage');
+  assert(bf.decode(bf.string(3), bf.encode(bf.string(3), 'a')) === 'a\0\0', 'text padding');
+  assert(bf.decode(bf.string(1), bf.encode(bf.string(1), 'é')) === '\ufffd', 'UTF-8 truncation');
+  assert.throws(
+    () => bf.decode(packet, bf.bytesFromHex('01 00')),
+    (error: unknown) => {
+      assert(error instanceof bf.BinaryFormatError);
+      assert.deepEqual(error.fieldPath, ['items', 0]);
+      assert.equal(error.byteOffset, 1);
+      assert.equal(error.bitOffset, 0);
+      assert(error.cause instanceof RangeError);
+      return true;
     }
-  }
-}
-
-function check(condition: boolean, message: string): void {
-  if (!condition) throw new Error(message);
+  );
+  roundTrip(booleanByte, false, Uint8Array.of(0));
+  assert.throws(() => bf.decode(booleanByte, Uint8Array.of(2)), RangeError);
+  assert.throws(() => bf.decode(booleanByte, new Uint8Array()), RangeError);
+  // Schema methods receive unknown values and must validate runtime input.
+  assert.throws(
+    () =>
+      booleanByte.encode({
+        value: 1,
+        byteOffset: 0,
+        bitOffset: 0,
+        encodedObject: {},
+        path: [],
+      }),
+    TypeError
+  );
 }
 
 function roundTrip<T>(schema: bf.Schema<T>, value: T, wire: Uint8Array): void {
-  check(
-    JSON.stringify(bf.decode(schema, wire, { requireEOF: true })) === JSON.stringify(value),
-    'decoded example value'
-  );
-  const encoded = bf.encode(schema, value);
-  check(
-    encoded.length === wire.length && encoded.every((byte, index) => byte === wire[index]),
-    'encoded example bytes'
-  );
+  assert.deepEqual(bf.decode(schema, wire, { requireEOF: true }), value);
+  assert.deepEqual(bf.encode(schema, value), wire);
 }

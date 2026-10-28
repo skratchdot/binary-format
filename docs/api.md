@@ -5,10 +5,13 @@ The repository contains the unpublished v1 API. Import from
 [migration guide](migration.md) for v0 and the [README](../README.md) for module
 formats and tree shaking.
 
-[Executable examples](../examples/documentation.ts) demonstrate a greeting,
+[Executable examples](../examples/schema-patterns.ts) demonstrate a greeting,
 a count-prefixed packet, tagged choices, a custom boolean, and packed flags.
 `pnpm run test:package` type-checks and runs that file against the packed package
 in ESM and CommonJS. Assertions cover exact bytes, decoded values, and errors.
+`pnpm test` also runs the assertions against source.
+The local file imports the source entry point; the package checker substitutes
+the package name in its temporary copy. The example harness uses Node assertions.
 
 ## Decode, encode, and types
 
@@ -59,7 +62,8 @@ All numeric schemas require byte alignment and reject truncated input.
 `LengthOption` is a non-negative safe integer, `'eof'`, or a callback returning
 either. Lengths count **bytes**, not characters. A callback receives a
 `DecodeContext | EncodeContext`. `'eof'` consumes the remaining input when
-decoding; encoding uses the supplied bytes or encoded text length. `skip` takes
+decoding, including inside nested objects (there is no implicit sub-buffer);
+encoding uses the supplied bytes or encoded text length. `skip` takes
 only a fixed numeric length. `constant` accepts an ArrayBuffer, view, or readonly
 number array and snapshots it when the schema is created.
 
@@ -70,7 +74,8 @@ operation. `plainArray` copies, but its encoder coerces numbers like
 `Uint8Array.from` rather than validating each integer. Use `array(uint8(), ...)`
 when strict element validation is needed.
 
-Text decoding preserves NUL padding. UTF-8 truncation can split a character,
+Text decoding preserves NUL padding. UTF-8 decoding uses the standard
+TextDecoder behavior, including removal of a leading UTF-8 BOM. UTF-8 truncation can split a character,
 which the decoder replaces with U+FFFD; malformed UTF-8 also uses replacement.
 Latin-1 maps byte values directly to U+0000–U+00FF. Its `outOfRange` option is
 `'throw'` (default), `'replace'` (write `?`), or `'truncate'` (keep the low eight
@@ -89,7 +94,7 @@ for example, an omitted `skip(2)` field still writes two zero bytes. Extra input
 object properties are not encoded.
 
 Nested objects start and finish on byte boundaries. See `flags` in the
-[examples](../examples/documentation.ts) for reserved bytes and direct bit fields.
+[examples](../examples/schema-patterns.ts) for reserved bytes and direct bit fields.
 
 ## Arrays
 

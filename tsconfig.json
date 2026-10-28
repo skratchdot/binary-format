@@ -4,7 +4,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "paths": { "@binary-format/binary-format": ["./src/index.ts"] },
     "strict": true,
     "skipLibCheck": true,
     "moduleDetection": "force",
