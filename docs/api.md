@@ -126,9 +126,10 @@ when no default exists. It does not try alternatives based on the value's type.
 The inferred value is the union of option values and any default value.
 
 The `tagged` example selects a number or string using an earlier tag field.
-Supply a matching tag and value when encoding. Choices start on byte boundaries
-and branches must return zero bit counts. Direct bit-schema branches, including
-`bit8()`, are rejected; select a whole-byte object containing bit fields instead.
+Supply a matching tag and value when encoding. Choices must start and finish
+on byte boundaries. Whole-byte bit branches, such as `bit8()`, work at the root.
+Inside arrays or objects, branches must return zero bit counts; select a
+whole-byte object containing bit fields instead.
 
 ## Contexts and errors
 
@@ -169,8 +170,9 @@ Place bit fields directly in an object, use one ordering within each byte,
 and finish a whole byte before a byte-based or nested schema. For example,
 `version: bit4()` = 4 followed by `kind: bit4()` = 5 produces `45` hex.
 Root bit schemas must also finish whole bytes. Mixed ordering within a byte,
-non-bit fields at partial-byte offsets, direct bit schemas in arrays or choices,
-and custom results with nonzero bit counts are rejected in both directions.
+non-bit fields at partial-byte offsets, and partial-byte choice branches are
+rejected in both directions. Arrays and non-bit object fields require zero bit
+counts. Root choices and custom wrappers can forward whole-byte bit results.
 See the [bit-field composition contract](bit-fields.md) for supported layouts,
 exact bytes, error behavior, and migration alternatives.
 

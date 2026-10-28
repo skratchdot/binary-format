@@ -21,6 +21,17 @@ An ordering change is allowed at a byte boundary, including immediately after
 another bit field. A field spanning multiple bytes uses its selected ordering
 throughout.
 
+Whole-byte root wrappers remain supported: a root `choice()` may select
+`bit8()`, `bit16()`, `bit24()`, or `bit32()`, and a root custom schema may
+forward those schemas' results unchanged. Nested choices work too. Choices
+require byte-aligned entry and exit; root operations still reject partial bytes.
+
+This root support does not make bit-count results safe as array items or
+non-bit object fields. Those containers require zero bit counts. A bit encoder
+reports both emitted bytes and consumed bits; treating both as additional
+length can double-count offsets. Wrap bit fields in a complete object when
+composing them inside containers.
+
 ## Ordering and known bytes
 
 With `littleEndian = false` (default), bits are visited high to low within each
@@ -50,12 +61,12 @@ flags followed by reserved bytes and a custom byte schema. The
   consumes no bytes. Finish the byte with direct bit fields first.
 - Direct bit-schema array items are rejected, including `bit8()`. Use `uint8()`
   for byte values or wrap a complete group of bit fields in an object.
-- Choice branches must return byte-only results, including the default branch.
-  A direct `bit8()` branch is rejected too. Select `uint8()`, a numeric byte
-  schema, or an object whose bit fields complete whole bytes.
-- A custom wrapper cannot forward a bit schema's nonzero bit counts into a
-  root operation, object, array, or choice. Delegate to a complete object or
-  implement a byte-based conversion, reporting bytes and zero bits.
+- Choice branches, including the default, cannot finish on partial bytes.
+  Whole-byte bit branches work at the root. Inside objects or arrays, select
+  a byte-based schema or an object whose bit fields complete whole bytes.
+- A custom wrapper cannot forward nonzero bit counts into an object field or
+  array item. Delegate to a complete object or implement a byte-based conversion,
+  reporting bytes and zero bits. Whole-byte wrappers remain valid at the root.
 - Root bit schemas and object bit groups cannot end on a partial byte. Padding
   is explicit: add a direct bit field and supply its value when encoding.
 
@@ -65,8 +76,9 @@ A schema that is never visited, such as the item of an empty array, does not fai
 merely because it is present in the definition.
 
 Alignment is checked before invoking a non-bit object field or a choice selector.
-Result bit counts are checked after invoking an array item, choice branch, or
-custom schema, since those counts are returned by the schema. Custom code must
+Result bit counts are checked after invoking the schema: choices and roots
+check for complete bytes; array items and non-bit object fields require zero
+bit counts. Custom code must
 still validate its own byte counts, bounds, and values; these checks are not
 transactional and cannot undo callback side effects.
 
@@ -78,9 +90,8 @@ ordinary Error. See [contexts and errors](api.md#contexts-and-errors).
 
 This contract tightens the unpublished v1 implementation: mixed bit ordering
 and some wrapped bit schemas previously decoded without rejection even though
-encoding could lose data or count offsets incorrectly. Direct whole-byte choices
-and custom wrappers that forwarded bit counts are now rejected consistently,
-including cases that happened to work at the root. Byte-based schemas and
+encoding could lose data or count offsets incorrectly. Whole-byte root choices
+and custom wrappers retain their previous behavior. Byte-based schemas and
 complete bit-field objects keep their wire representation.
 
 Supporting shared partial bytes across arrays, choices, or custom schemas would

@@ -31,6 +31,23 @@ function rejects<T>(
 }
 
 describe('supported bit composition', () => {
+  it.each([8, 16, 24, 32])('preserves whole-byte root wrappers (%i bits)', (width) => {
+    const inner = bf.bit(width);
+    for (const schema of [
+      wrappedBit(width),
+      bf.choice(() => 1, { 1: inner }),
+      bf.choice(() => undefined, {}, inner),
+      bf.choice(() => 1, { 1: wrappedBit(width) }),
+      bf.choice(() => 1, { 1: bf.choice(() => 1, { 1: inner }) }),
+    ]) {
+      const wire = Array.from({ length: width / 8 }, () => 0xff);
+      roundTrip(schema, 2 ** width - 1, wire);
+      expect(() => bf.decode(schema, new Uint8Array(width / 8 + 1), { requireEOF: true })).toThrow(
+        'expected EOF'
+      );
+    }
+  });
+
   it.each([
     { littleEndian: false, wire: [0xab, 0xcd] },
     { littleEndian: true, wire: [0xbc, 0xda] },
@@ -130,6 +147,27 @@ describe('supported bit composition', () => {
 });
 
 describe('unsupported bit composition', () => {
+  it.each([1, 4, 7, 9, 31])('rejects partial-byte custom root wrappers (%i bits)', (width) => {
+    expect(() => bf.decode(wrappedBit(width), new Uint8Array(4))).toThrow(
+      'schema decoded a partial byte'
+    );
+    expect(() => bf.encode(wrappedBit(width), 1)).toThrow('schema encoded a partial byte');
+  });
+
+  it('does not treat whole-byte choice bit counts as byte-only container results', () => {
+    const schema = bf.choice(() => 1, { 1: bf.bit8() });
+    rejects(bf.array(schema, 1), [1], [1], 'array items must return byte-only results');
+    rejects(
+      bf.object([
+        ['value', schema],
+        ['tail', bf.uint8()],
+      ]),
+      { value: 1, tail: 2 },
+      [1, 2],
+      'non-bit object fields must return byte-only results'
+    );
+  });
+
   it.each([false, true])('rejects ordering changes inside a byte (%s)', (littleEndian) => {
     rejects(
       bf.object([
@@ -175,18 +213,17 @@ describe('unsupported bit composition', () => {
     }
   });
 
-  it.each([4, 8])('rejects selected and default %i-bit choices', (width) => {
+  it.each([1, 4, 7, 9, 31])('rejects selected and default %i-bit choices', (width) => {
     for (const schema of [
       bf.choice(() => 1, { 1: bf.bit(width) }),
       bf.choice(() => undefined, {}, bf.bit(width)),
       bf.choice(() => 1, { 1: wrappedBit(width) }),
     ]) {
-      rejects(schema, 1, [0x10], 'choice branches must return byte-only results');
+      rejects(schema, 1, [0x10, 0, 0, 0], 'choice branches must end on a byte boundary');
     }
   });
 
-  it.each([4, 8])('rejects custom bit counts at the root and in object fields (%i)', (width) => {
-    rejects(wrappedBit(width), 1, [0x10], 'root schemas must return byte-only results');
+  it.each([4, 8])('rejects custom bit counts in object fields (%i)', (width) => {
     rejects(
       bf.object([['value', wrappedBit(width)]]),
       { value: 1 },

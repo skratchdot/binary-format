@@ -1,4 +1,4 @@
-import { assertByteAligned, assertByteResult } from '../helpers/context';
+import { assertByteAligned } from '../helpers/context';
 import type { DecodeContext, DecodeResult, EncodeContext, Schema } from '../types';
 
 type ChoiceOptionMap = Readonly<Record<string | number, Schema<unknown>>>;
@@ -21,7 +21,7 @@ export const choice = <
     assertByteAligned(context, 'decode choice');
     const schema = selectChoiceSchema(selector(context), options, defaultSchema);
     const result = schema.decode(context);
-    assertByteResult(result.bitsDecoded, 'choice branches');
+    assertCompleteBytes(result.bitsDecoded);
     return result as DecodeResult<
       ChoiceValue<TOptions> | (TDefault extends Schema<infer TValue> ? TValue : never)
     >;
@@ -30,7 +30,7 @@ export const choice = <
     assertByteAligned(context, 'encode choice');
     const schema = selectChoiceSchema(selector(context), options, defaultSchema);
     const result = schema.encode(context);
-    assertByteResult(result.bitsEncoded, 'choice branches');
+    assertCompleteBytes(result.bitsEncoded);
     return result;
   },
 });
@@ -50,4 +50,12 @@ const selectChoiceSchema = <
     return defaultSchema;
   }
   throw new Error(`no choice schema found for value "${String(choiceValue)}"`);
+};
+
+// Preserve a whole-byte branch's original counts for root callers. Containers
+// still require byte-only results because bit encoders also count emitted bytes.
+const assertCompleteBytes = (bits: number): void => {
+  if (bits % 8 !== 0) {
+    throw new Error('choice branches must end on a byte boundary');
+  }
 };

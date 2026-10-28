@@ -1,6 +1,5 @@
-import { isBitSchema } from '../schemas/bit';
 import type { DecodeOptions, DeepReadonly, Schema } from '../types';
-import { advanceOffset, assertByteResult, emptyObject } from './context';
+import { advanceOffset, emptyObject } from './context';
 import { toDataView, toUint8Array } from './bytes';
 
 export const decode = <T>(
@@ -17,7 +16,6 @@ export const decode = <T>(
     decodedObject: emptyObject,
     path: [],
   });
-  if (!isBitSchema(schema)) assertByteResult(result.bitsDecoded, 'root schemas');
   const finalOffset = advanceOffset(0, 0, result);
   if (options.requireEOF && finalOffset.byteOffset !== buffer.byteLength) {
     throw new RangeError(
@@ -38,7 +36,6 @@ export const encode = <T>(schema: Schema<T>, value: T | DeepReadonly<T>): Uint8A
     encodedObject: emptyObject,
     path: [],
   });
-  if (!isBitSchema(schema)) assertByteResult(result.bitsEncoded, 'root schemas');
   const finalBitOffset = result.bitsEncoded % 8;
   if (finalBitOffset !== 0) {
     throw new Error(`schema encoded a partial byte ending at bit offset ${finalBitOffset}`);

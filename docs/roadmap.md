@@ -57,8 +57,9 @@ Bit schemas in arrays are unsupported, and fields within a byte must use the sam
 bit ordering.
 
 The [bit-field composition contract](bit-fields.md) defines the supported layouts
-and rejection behavior, backed by round-trip and known-byte tests. Arrays and
-choices compose whole-byte results; custom schemas report zero bit counts.
+and rejection behavior, backed by round-trip and known-byte tests. Containers
+require byte-only results; root choices and custom wrappers also accept
+whole-byte bit results.
 Sharing partial bytes across these boundaries remains a future API decision.
 
 ## 4. Prepare a release when requested

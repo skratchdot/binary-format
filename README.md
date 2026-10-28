@@ -83,8 +83,9 @@ schemas with an appropriate polyfill or package.
 
 Group bit fields directly inside `bf.object()` so their widths add up to whole
 bytes. Use the same bit ordering within each byte. Root encoding and decoding
-also require whole bytes. Direct bit schemas inside arrays or choices are rejected;
-use whole-byte objects containing bit fields instead. See the
+also require whole bytes. Whole-byte bit schemas can be wrapped in root choices
+or custom schemas. Inside arrays or non-bit object fields, use whole-byte objects
+containing bit fields instead. See the
 [composition contract](docs/bit-fields.md) for details.
 
 ### Custom schemas
