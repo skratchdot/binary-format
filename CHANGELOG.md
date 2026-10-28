@@ -1,8 +1,7 @@
 # Changelog
 
 Entries for 0.0.1–0.0.16 were reconstructed from Git history and audited npm
-artifacts. Dates are the original npm publication dates (UTC). See the
-[historical release audit](docs/release-history.md) for evidence and limitations.
+artifacts. Dates are the original npm publication dates (UTC).
 
 ## 0.0.16 (2023-07-09)
 
