@@ -64,7 +64,7 @@ export const object = <const TFields extends readonly ObjectField[]>(
         schema.kind
       );
       if (!(options?.omitUndefined && field.result === undefined)) {
-        output[name] = field.result;
+        setOwnField(output, name, field.result);
       }
       const nextOffset = advanceOffset(byteOffset, bitOffset, field);
       byteOffset = nextOffset.byteOffset;
@@ -123,7 +123,7 @@ export const object = <const TFields extends readonly ObjectField[]>(
         schema.kind
       );
       chunks.push(field.result);
-      encodedObject[name] = value;
+      setOwnField(encodedObject, name, value);
       const nextOffset = fieldIsBitSchema
         ? advanceOffset(byteOffset, bitOffset, {
             bytesDecoded: 0,
@@ -152,3 +152,17 @@ export const object = <const TFields extends readonly ObjectField[]>(
 
 const isRecord = (value: unknown): value is Record<PropertyKey, unknown> =>
   (typeof value === 'object' || typeof value === 'function') && value !== null;
+
+/** Store schema fields as data properties without invoking inherited setters. */
+const setOwnField = (
+  object: Record<PropertyKey, unknown>,
+  name: PropertyKey,
+  value: unknown
+): void => {
+  Object.defineProperty(object, name, {
+    value,
+    enumerable: true,
+    writable: true,
+    configurable: true,
+  });
+};
