@@ -1,9 +1,14 @@
 # Releases
 
-Release Please proposes a version and changelog in a pull request. You review and
+[Release Please](https://github.com/googleapis/release-please) proposes a version
+and changelog in a pull request. You review and
 squash-merge that PR when ready. It then creates the matching GitHub release and
 tag and starts the **Release** workflow. Publishing waits for approval in the
 protected GitHub `npm` environment. No permanent npm token is needed.
+
+For upstream setup and configuration details, see the
+[GitHub Action documentation](https://github.com/googleapis/release-please-action)
+and [manifest configuration guide](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md).
 
 ## Review and control
 
@@ -44,7 +49,8 @@ END_COMMIT_OVERRIDE
 
 This changes Release Please's interpretation without rewriting Git history. It
 can also correct a missing breaking-change marker. See the upstream documentation
-for [version and note overrides](https://github.com/googleapis/release-please#how-do-i-change-the-version-number).
+for [version overrides](https://github.com/googleapis/release-please#how-do-i-change-the-version-number)
+and [release-note corrections](https://github.com/googleapis/release-please#how-can-i-fix-release-notes).
 
 You can edit `CHANGELOG.md` directly in the open release PR to improve its prose.
 Do this after the final automated refresh, and review the diff again if additional
