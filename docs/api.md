@@ -1,6 +1,6 @@
 # Public API reference
 
-The repository contains the unpublished v1 API. Import from
+This reference describes the v1 API. Import from
 `@binary-format/binary-format`; Node.js 22+ is supported. See the
 [migration guide](migration.md) for v0 and the [README](../README.md) for module
 formats and tree shaking.

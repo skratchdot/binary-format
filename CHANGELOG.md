@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.0.0](https://github.com/skratchdot/binary-format/compare/0.0.16...v1.0.0) (2026-10-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove the v0 chaining API. Define formats with composable schemas, call decode(schema, bytes) and encode(schema, value), and use infer<typeof schema> for value types. Encoding returns Uint8Array. Node.js 22 or later is required.
+
+### Features
+
+* introduce composable binary schemas for v1 ([#1](https://github.com/skratchdot/binary-format/issues/1)) ([b947ecf](https://github.com/skratchdot/binary-format/commit/b947ecf9e079eceef84d09a2893af4131748e522))
+
+
+### Bug Fixes
+
+* enforce bit-field composition contracts ([#8](https://github.com/skratchdot/binary-format/issues/8)) ([978ac7a](https://github.com/skratchdot/binary-format/commit/978ac7a759561de4b4738625e9afc6a959871d05))
+* handle unchanged release proposals ([#14](https://github.com/skratchdot/binary-format/issues/14)) ([9492f1d](https://github.com/skratchdot/binary-format/commit/9492f1da50ee16d120cf16f36799c7e673a7c831))
+* preserve object fields and cover input boundaries ([#6](https://github.com/skratchdot/binary-format/issues/6)) ([d98e3bf](https://github.com/skratchdot/binary-format/commit/d98e3bff7344e39cbaa97ac9a9740481495c958b))
+
+
+### Miscellaneous Chores
+
+* automate reviewed releases ([#9](https://github.com/skratchdot/binary-format/issues/9)) ([3f7557d](https://github.com/skratchdot/binary-format/commit/3f7557d5b772388895b82647ac4e75474a1bc7f5))
+
+### Documentation
+
+* See the [v1 release notes](docs/v1-release-notes.md) for the full compatibility changes and limitations, and the [migration guide](docs/migration.md) for v0-to-v1 examples.
+
 ## [0.0.16](https://github.com/skratchdot/binary-format/compare/0.0.15...0.0.16) (2023-07-09)
 
 ### Miscellaneous Chores
