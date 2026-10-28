@@ -1,0 +1,120 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish to npm (requires a matching version tag)
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  plan:
+    name: Validate release ref
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      npm-tag: ${{ steps.plan.outputs.npmTag }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+      - id: plan
+        env:
+          PUBLISH: ${{ inputs.publish }}
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          import { releasePlan } from './scripts/release-policy.mjs';
+          const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
+          const plan = releasePlan({ version, ref: process.env.GITHUB_REF, publish: process.env.PUBLISH === 'true' });
+          for (const [key, value] of Object.entries(plan)) appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
+          JS
+      - name: Require tagged releases to come from main
+        if: github.ref_type == 'tag'
+        run: git merge-base --is-ancestor HEAD origin/main
+  checks:
+    name: Release checks
+    needs: plan
+    uses: ./.github/workflows/ci.yml
+  package:
+    name: Prepare tarball
+    needs: [plan, checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: dist
+          path: dist/
+      - name: Pack the validated build
+        run: |
+          mkdir release
+          pnpm pack --pack-destination release
+          cd release
+          sha256sum ./*.tgz > SHA256SUMS
+      - name: Preview npm package contents
+        run: npm publish ./release/*.tgz --dry-run --ignore-scripts --access public
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-package
+          path: release/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Write release summary
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
+          NPM_TAG: ${{ needs.plan.outputs.npm-tag }}
+          PUBLISH: ${{ inputs.publish }}
+        run: |
+          {
+            echo "Version: $VERSION"
+            echo "Commit: $GITHUB_SHA"
+            echo "npm dist-tag: $NPM_TAG"
+            echo "Publishing requested: $PUBLISH"
+            echo 'Tarball and SHA256SUMS are in the release-package artifact.'
+          } >> "$GITHUB_STEP_SUMMARY"
+  publish:
+    name: Publish validated tarball
+    if: inputs.publish && github.ref_type == 'tag'
+    needs: [plan, package]
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+      - name: Check npm supports trusted publishing
+        run: |
+          node --input-type=module <<'JS'
+          import { execFileSync } from 'node:child_process';
+          const [major, minor, patch] = execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim().split('.').map(Number);
+          if (!(major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1))))) throw new Error('npm >=11.5.1 is required');
+          JS
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-package
+          path: release/
+      - name: Verify and publish
+        working-directory: release
+        env:
+          NPM_TAG: ${{ needs.plan.outputs.npm-tag }}
+        run: |
+          sha256sum --check SHA256SUMS
+          npm publish ./*.tgz --ignore-scripts --access public --provenance --tag "$NPM_TAG" --registry https://registry.npmjs.org
