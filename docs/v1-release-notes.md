@@ -1,4 +1,4 @@
-# v1 release notes (draft)
+# v1 release notes
 
 This is the first stable API, replacing the v0 chaining API. The package remains
 `@binary-format/binary-format`. See the [migration guide](migration.md).
@@ -38,9 +38,9 @@ truncates bytes, including potentially splitting a UTF-8 character. Count,
 length, tag, and checksum fields are supplied by the caller. Streaming,
 seek/pointer support, and separate encoder/decoder bundles are not included.
 
-### Validation and release status
+### Validation
 
 CI covers Node 22 and 24, known-byte and round-trip behavior, inferred types,
 packed ESM/CommonJS consumers, executable examples, and browser tree shaking.
 The [release procedure](releasing.md) prepares tarballs and supports an
-explicit trusted-publishing step. No v1 npm release has been performed yet.
+explicit trusted-publishing step.
