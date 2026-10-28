@@ -65,3 +65,10 @@ const resolveLengthValue = (
   length: LengthOption,
   context: DecodeContext | EncodeContext
 ): number | 'eof' => (typeof length === 'function' ? length(context) : length);
+
+/** Containers compose byte results; only direct bit fields share an object's bit writer. */
+export const assertByteResult = (bits: number, label: string): void => {
+  if (bits !== 0) {
+    throw new Error(`${label} must return byte-only results (bit count must be zero)`);
+  }
+};

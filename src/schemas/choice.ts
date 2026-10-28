@@ -1,3 +1,4 @@
+import { assertByteAligned, assertByteResult } from '../helpers/context';
 import type { DecodeContext, DecodeResult, EncodeContext, Schema } from '../types';
 
 type ChoiceOptionMap = Readonly<Record<string | number, Schema<unknown>>>;
@@ -17,14 +18,20 @@ export const choice = <
 ): Schema<ChoiceValue<TOptions> | (TDefault extends Schema<infer TValue> ? TValue : never)> => ({
   kind: 'choice',
   decode: (context) => {
+    assertByteAligned(context, 'decode choice');
     const schema = selectChoiceSchema(selector(context), options, defaultSchema);
-    return schema.decode(context) as DecodeResult<
+    const result = schema.decode(context);
+    assertByteResult(result.bitsDecoded, 'choice branches');
+    return result as DecodeResult<
       ChoiceValue<TOptions> | (TDefault extends Schema<infer TValue> ? TValue : never)
     >;
   },
   encode: (context) => {
+    assertByteAligned(context, 'encode choice');
     const schema = selectChoiceSchema(selector(context), options, defaultSchema);
-    return schema.encode(context);
+    const result = schema.encode(context);
+    assertByteResult(result.bitsEncoded, 'choice branches');
+    return result;
   },
 });
 

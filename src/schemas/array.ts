@@ -1,5 +1,5 @@
 import type { DecodeContext, DecodeResult, EncodeContext, EncodeResult, Schema } from '../types';
-import { assertByteAligned, assertLength } from '../helpers/context';
+import { assertByteAligned, assertByteResult, assertLength } from '../helpers/context';
 import { concat } from '../helpers/bytes';
 import { withBinaryFormatError } from '../helpers/errors';
 
@@ -26,7 +26,11 @@ export const array = <T>(itemSchema: Schema<T>, length: ArrayLengthOption<T>): S
         path: [...context.path, index],
       };
       const item = withBinaryFormatError(
-        () => itemSchema.decode(itemContext),
+        () => {
+          const result = itemSchema.decode(itemContext);
+          assertByteResult(result.bitsDecoded, 'array items');
+          return result;
+        },
         itemContext,
         itemSchema.kind
       );
@@ -35,9 +39,6 @@ export const array = <T>(itemSchema: Schema<T>, length: ArrayLengthOption<T>): S
         throw new Error('array item schema must consume bytes before eof');
       }
       byteOffset += item.bytesDecoded;
-      if (item.bitsDecoded !== 0) {
-        throw new Error('bit schemas are not implemented in array() yet');
-      }
       index++;
     }
 
@@ -66,15 +67,16 @@ export const array = <T>(itemSchema: Schema<T>, length: ArrayLengthOption<T>): S
         root: context.root,
       };
       const item = withBinaryFormatError(
-        () => itemSchema.encode(itemContext),
+        () => {
+          const result = itemSchema.encode(itemContext);
+          assertByteResult(result.bitsEncoded, 'array items');
+          return result;
+        },
         itemContext,
         itemSchema.kind
       );
       chunks.push(item.result);
       byteOffset += item.bytesEncoded;
-      if (item.bitsEncoded !== 0) {
-        throw new Error('bit schemas are not implemented in array() yet');
-      }
       index++;
     }
 

@@ -1,5 +1,12 @@
-import type { DecodeResult, EncodeResult, FieldOptions, Schema } from '../types';
-import { advanceOffset, assertByteAligned } from '../helpers/context';
+import type {
+  DecodeContext,
+  DecodeResult,
+  EncodeContext,
+  EncodeResult,
+  FieldOptions,
+  Schema,
+} from '../types';
+import { advanceOffset, assertByteAligned, assertByteResult } from '../helpers/context';
 import { encodeBitField, isBitSchema } from './bit';
 import type { BitEncodeState } from './bit';
 import { concat } from '../helpers/bytes';
@@ -48,6 +55,7 @@ export const object = <const TFields extends readonly ObjectField[]>(
     const output: Record<PropertyKey, unknown> = {};
     let byteOffset = context.byteOffset;
     let bitOffset = context.bitOffset;
+    let previousBitOrder: boolean | undefined;
 
     for (const [name, schema, options] of fields) {
       const fieldContext = {
@@ -59,10 +67,18 @@ export const object = <const TFields extends readonly ObjectField[]>(
         root: context.root ?? output,
       };
       const field = withBinaryFormatError(
-        () => schema.decode(fieldContext),
+        () => {
+          validateFieldAlignment(schema, fieldContext, previousBitOrder);
+          const decoded = schema.decode(fieldContext);
+          if (!isBitSchema(schema)) {
+            assertByteResult(decoded.bitsDecoded, 'non-bit object fields');
+          }
+          return decoded;
+        },
         fieldContext,
         schema.kind
       );
+      if (isBitSchema(schema)) previousBitOrder = schema.littleEndian;
       if (!(options?.omitUndefined && field.result === undefined)) {
         setOwnField(output, name, field.result);
       }
@@ -91,6 +107,7 @@ export const object = <const TFields extends readonly ObjectField[]>(
     const encodedObject: Record<PropertyKey, unknown> = {};
     let byteOffset = context.byteOffset;
     let bitOffset = context.bitOffset;
+    let previousBitOrder: boolean | undefined;
     const bitState: BitEncodeState = {
       currentByte: 0,
       bitOffset,
@@ -108,20 +125,20 @@ export const object = <const TFields extends readonly ObjectField[]>(
         root,
       };
       const field = withBinaryFormatError(
-        () =>
-          fieldIsBitSchema
+        () => {
+          validateFieldAlignment(schema, fieldContext, previousBitOrder);
+          const encoded = fieldIsBitSchema
             ? encodeBitField(schema, value, bitState)
-            : schema.encode({
-                value,
-                byteOffset,
-                bitOffset,
-                encodedObject,
-                path: fieldContext.path,
-                root,
-              }),
+            : schema.encode(fieldContext);
+          if (!fieldIsBitSchema) {
+            assertByteResult(encoded.bitsEncoded, 'non-bit object fields');
+          }
+          return encoded;
+        },
         fieldContext,
         schema.kind
       );
+      if (fieldIsBitSchema) previousBitOrder = schema.littleEndian;
       chunks.push(field.result);
       setOwnField(encodedObject, name, value);
       const nextOffset = fieldIsBitSchema
@@ -165,4 +182,17 @@ const setOwnField = (
     writable: true,
     configurable: true,
   });
+};
+
+/** Reject layouts that cannot share the current byte safely in both directions. */
+const validateFieldAlignment = (
+  schema: Schema<unknown>,
+  context: DecodeContext | EncodeContext,
+  previousBitOrder: boolean | undefined
+): void => {
+  if (!isBitSchema(schema)) {
+    assertByteAligned(context, 'process non-bit object field');
+  } else if (context.bitOffset !== 0 && previousBitOrder !== schema.littleEndian) {
+    throw new Error('bit ordering cannot change within a byte');
+  }
 };

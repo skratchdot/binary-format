@@ -43,6 +43,7 @@ console.log({ value, encoded });
 ## Documentation
 
 - [Public API reference](docs/api.md): schemas, contexts, errors, and limitations.
+- [Bit-field composition](docs/bit-fields.md): supported layouts and ordering.
 - [Migration guide](docs/migration.md): v0 to v1 examples and behavior to audit.
 - [Executable examples](examples/schema-patterns.ts): checked against the packed package.
 
@@ -82,7 +83,9 @@ schemas with an appropriate polyfill or package.
 
 Group bit fields directly inside `bf.object()` so their widths add up to whole
 bytes. Use the same bit ordering within each byte. Root encoding and decoding
-also require whole bytes. Bit schemas inside `bf.array()` are not supported yet.
+also require whole bytes. Direct bit schemas inside arrays or choices are rejected;
+use whole-byte objects containing bit fields instead. See the
+[composition contract](docs/bit-fields.md) for details.
 
 ### Custom schemas
 
