@@ -1,4 +1,6 @@
-# Releases
+# Release procedure
+
+Maintainer documentation. For published changes, see the [changelog](../CHANGELOG.md).
 
 [Release Please](https://github.com/googleapis/release-please) proposes a version
 and changelog in a pull request. You review and
@@ -9,6 +11,28 @@ protected GitHub `npm` environment. No permanent npm token is needed.
 For upstream setup and configuration details, see the
 [GitHub Action documentation](https://github.com/googleapis/release-please-action)
 and [manifest configuration guide](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md).
+
+- [Release checklist](#release-checklist)
+- [Review and control](#review-and-control)
+- [Version and tag policy](#version-and-tag-policy)
+- [Automation](#automation)
+- [One-time account setup](#one-time-account-setup)
+- [Preview and recovery](#preview-and-recovery)
+
+## Release checklist
+
+1. Review the release PR's compatibility impact, version, changelog, and CI.
+   Link breaking changes to the migration guide where applicable.
+2. Confirm the [account settings](#one-time-account-setup) before publishing for the first time or
+   after changes to repository or npm publishing configuration.
+3. Preview the release PR branch with **Actions → Release → Run workflow**, with
+   publishing unchecked. Review the checks, summary, and tarball, including the
+   packaged README.
+4. Squash-merge the release PR. Release Please creates the matching tag and GitHub
+   release, then starts the publishing workflow at that tag.
+5. Review and approve the pending `npm` deployment. Confirm the npm version,
+   dist-tag, and provenance link. A GitHub release may exist before npm publishing
+   succeeds; the npm registry is the source of truth for availability.
 
 ## Review and control
 
@@ -79,10 +103,8 @@ be edited separately.
   review any release-candidate version and notes before creating its tag.
 - Release tags must be reachable from `main`. Do not move a release tag to retry
   different source code. Versions with build metadata or leading zeroes fail.
-- The initial manifest is `0.0.16`; `bootstrap-sha` points to that existing tag's
-  commit. Pre-v1 history is backfilled manually, without requiring Conventional
-  Commits. The v1 breaking changes propose `1.0.0`; review the
-  [curated v1 notes](v1-release-notes.md) alongside the generated entry.
+- Pre-v1 history was backfilled manually. `bootstrap-sha` records the historical
+  starting point; the manifest advances with each managed release.
 
 ## Automation
 
@@ -147,22 +169,6 @@ npm verifies GitHub's short-lived workflow identity rather than using your npm
 password or a stored publishing token. PR checks do not receive that identity.
 Keep account 2FA enabled. After trusted publishing works, remove unused legacy
 publishing tokens and consider npm's setting to disallow token publishing.
-
-## First v1 release
-
-1. Merge the automation preparation PR and finish the historical release audit
-   and changelog backfill. Review v0 GitHub releases against their existing tags;
-   do not republish old npm versions or mark historical releases as latest.
-2. Confirm the account settings above. Review the v1 release PR, incorporate the
-   curated migration notes, and remove unpublished wording in the README and
-   documentation as part of that PR, so npm receives the final README.
-3. Preview the release PR branch with **Actions → Release → Run workflow**, with
-   publishing unchecked. Review the checks, summary, and tarball.
-4. Squash-merge the release PR. Release Please creates `v1.0.0` and its GitHub
-   release, then starts the validated publishing workflow at that exact tag.
-5. Review the pending `npm` deployment and approve it. Confirm the npm version,
-   `latest` dist-tag, and provenance link. A GitHub release may exist before npm
-   publishing succeeds; the npm registry is the source of truth for availability.
 
 ## Preview and recovery
 

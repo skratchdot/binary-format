@@ -4,6 +4,29 @@ Bit fields share a byte only when they are direct fields of the same `object`.
 An object owns the shared writer and returns a complete byte sequence to its
 parent. Containers do not pass partially written bytes to one another.
 
+- [Example](#example)
+- [Supported layouts](#supported-layouts)
+- [Ordering and known bytes](#ordering-and-known-bytes)
+- [Rejected layouts and alternatives](#rejected-layouts-and-alternatives)
+- [Errors and limitations](#errors-and-limitations)
+
+## Example
+
+```typescript
+import * as bf from '@binary-format/binary-format';
+
+const flags = bf.object([
+  ['version', bf.bit4()],
+  ['kind', bf.bit4()],
+]);
+
+bf.encode(flags, { version: 4, kind: 5 }); // Uint8Array [0x45]
+bf.decode(flags, Uint8Array.of(0x45)); // { version: 4, kind: 5 }
+```
+
+Each field uses four bits, so together they fill one byte. For arrays or choices,
+wrap a complete group like this in an object.
+
 ## Supported layouts
 
 | Layout                             | Contract                                                             |
@@ -82,17 +105,11 @@ bit counts. Custom code must
 still validate its own byte counts, bounds, and values; these checks are not
 transactional and cannot undo callback side effects.
 
-## Errors and compatibility
+## Errors and limitations
 
 Errors inside object fields and array items carry `BinaryFormatError` locations,
 including nested paths and absolute byte/bit offsets. Root checks can throw an
-ordinary Error. See [contexts and errors](api.md#contexts-and-errors).
-
-This contract tightens the unpublished v1 implementation: mixed bit ordering
-and some wrapped bit schemas previously decoded without rejection even though
-encoding could lose data or count offsets incorrectly. Whole-byte root choices
-and custom wrappers retain their previous behavior. Byte-based schemas and
-complete bit-field objects keep their wire representation.
+ordinary Error. See [errors](api.md#errors).
 
 Supporting shared partial bytes across arrays, choices, or custom schemas would
 require a shared read/write cursor contract. That is outside the current API.

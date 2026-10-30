@@ -5,7 +5,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-* remove the v0 chaining API. Define formats with composable schemas, call decode(schema, bytes) and encode(schema, value), and use infer<typeof schema> for value types. Encoding returns Uint8Array. Node.js 22 or later is required.
+* remove the v0 chaining API. Define formats with composable schemas, call decode(schema, bytes) and encode(schema, value), and use infer<typeof schema> for value types. Encoding returns Uint8Array. Node.js 22 or later is required. See the [migration guide](docs/migration.md) for upgrading.
 
 ### Features
 
@@ -22,10 +22,6 @@
 ### Miscellaneous Chores
 
 * automate reviewed releases ([#9](https://github.com/skratchdot/binary-format/issues/9)) ([3f7557d](https://github.com/skratchdot/binary-format/commit/3f7557d5b772388895b82647ac4e75474a1bc7f5))
-
-### Documentation
-
-* See the [v1 release notes](docs/v1-release-notes.md) for the full compatibility changes and limitations, and the [migration guide](docs/migration.md) for v0-to-v1 examples.
 
 ## [0.0.16](https://github.com/skratchdot/binary-format/compare/0.0.15...0.0.16) (2023-07-09)
 
