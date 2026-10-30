@@ -1,37 +1,75 @@
-# Public API reference
+# API reference
 
-This reference describes the v1 API. Import from
-`@binary-format/binary-format`; Node.js 22+ is supported. See the
-[migration guide](migration.md) for v0 and the [README](../README.md) for module
-formats and tree shaking.
+Import public functions and types from `@binary-format/binary-format`.
+For a walkthrough, start with the [usage guide](guide.md). For upgrades, see the
+[migration guide](migration.md).
 
-[Executable examples](../examples/schema-patterns.ts) demonstrate a greeting,
-a count-prefixed packet, tagged choices, a custom boolean, and packed flags.
-`pnpm run test:package` type-checks and runs that file against the packed package
-in ESM and CommonJS. Assertions cover exact bytes, decoded values, and errors.
-`pnpm test` also runs the assertions against source.
-The local file imports the source entry point; the package checker substitutes
-the package name in its temporary copy. The example harness uses Node assertions.
+Examples below use `import * as bf from '@binary-format/binary-format'`.
+Signatures are summaries; the package declarations provide full generic types.
 
-## Decode, encode, and types
+- [Decode and encode](#decode-and-encode)
+- [Numeric schemas](#numeric-schemas)
+- [Bytes and text](#bytes-and-text)
+- [Objects](#objects)
+- [Arrays](#arrays)
+- [Choices](#choices)
+- [Contexts](#contexts)
+- [Errors](#errors)
+- [Bit fields](#bit-fields)
+- [Custom schemas](#custom-schemas)
+- [Types](#types)
+- [Hexadecimal helper](#hexadecimal-helper)
 
-- `decode(schema, input, { requireEOF?: boolean })` returns the schema's value.
-  Input may be an `ArrayBuffer` or view, including `DataView` and Node `Buffer`.
+## Decode and encode
+
+### `decode`
+
+```text
+decode(schema, input, options?): T
+```
+
+Decode input using a schema and return its inferred value.
+
+- `schema`: a `Schema<T>`.
+- `input`: an `ArrayBuffer` or view, including `DataView` and Node.js `Buffer`.
   A view's offset and length bound the input; offsets start at zero within it.
-  Trailing bytes are allowed by default; `requireEOF: true` rejects them.
-- `encode(schema, value)` returns a `Uint8Array` and accepts the inferred value
-  or its `DeepReadonly` form. It does not calculate count, size, or checksum
-  fields for you. Supply values consistent with the format.
-- `Schema<T>` has `decode`, `encode`, and an optional diagnostic `kind`.
-  `infer<typeof schema>` extracts `T`. `DeepReadonly<T>` recursively describes
-  readonly objects and arrays, leaving typed-array types intact.
-- `bytesFromHex(text)` accepts pairs of hex digits, ignoring whitespace.
-  Odd digit counts and invalid characters throw; `0x` prefixes are not accepted.
+- `options.requireEOF`: defaults to `false`. Set to `true` to reject trailing bytes.
 
-Root operations must finish on a byte boundary. They return the value or bytes,
-not a consumed-length record; schema methods expose those records for extensions.
+```typescript
+bf.decode(bf.uint16be(), bf.bytesFromHex('01 02'), { requireEOF: true }); // 258
+```
+
+Root operations must finish on a byte boundary. Truncated input, invalid values,
+and alignment failures throw; see [errors](#errors). Root operations return
+values or bytes, not consumed-length records.
+
+### `encode`
+
+```text
+encode(schema, value): Uint8Array
+```
+
+Encode a value using a schema. `value` accepts the schema's inferred type or its
+`DeepReadonly` form.
+
+```typescript
+bf.encode(bf.uint16be(), 258); // Uint8Array [1, 2]
+```
+
+Supply consistent count, size, tag, and checksum fields yourself; encoding does
+not derive them. Root operations must finish on a byte boundary. Encoding is not
+a general copy operation: a root byte schema can return the supplied storage.
+Schema-specific validation and [errors](#errors) apply.
 
 ## Numeric schemas
+
+Numeric factories return `Schema<number>`, except 64-bit integers, which return
+`Schema<bigint>`.
+
+```typescript
+bf.decode(bf.uint16le(), bf.bytesFromHex('02 01')); // 258
+bf.encode(bf.uint64be(), 258n); // 00 00 00 00 00 00 01 02
+```
 
 | Factories                | Value    | Width and range                        |
 | ------------------------ | -------- | -------------------------------------- |
@@ -45,45 +83,147 @@ Every multi-byte factory accepts `littleEndian = false` and has explicit `be`
 and `le` variants, such as `uint16be()` and `uint16le()`. The default is big
 endian. Integer encoders reject fractional or out-of-range values. Signed n-bit
 ranges are −2^(n−1) through 2^(n−1)−1; unsigned ranges are 0 through 2^n−1.
+64-bit values are `bigint`; convert explicitly when serializing to JSON.
 Floats use DataView conversion, so float32 can round or overflow to infinity.
 All numeric schemas require byte alignment and reject truncated input.
 
 ## Bytes and text
 
-| Factory                                     | Decoded value            | Encoding behavior                                                      |
-| ------------------------------------------- | ------------------------ | ---------------------------------------------------------------------- |
-| `bytes(length)`, alias `uint8Array(length)` | `Uint8Array` view        | Requires exactly the resolved length, unless `'eof'`                   |
-| `plainArray(length)`                        | Copied `number[]`        | Converts with `Uint8Array.from`, then checks length                    |
-| `string(length)`                            | UTF-8 `string`           | Zero-pads or truncates encoded bytes                                   |
-| `latin1(length, options?)`                  | One code unit per byte   | Zero-pads or truncates bytes                                           |
-| `skip(length)`                              | `undefined`              | Writes `length` zero bytes                                             |
-| `constant(expected)`                        | Matching input byte view | Writes a fresh copy of the expected bytes, ignoring the supplied value |
+### `bytes` and `uint8Array`
+
+```text
+bytes(length): Schema<Uint8Array>
+uint8Array(length): Schema<Uint8Array> // Alias of bytes
+```
+
+Decode a view of the next bytes. Encoding requires exactly the resolved length,
+unless it is `'eof'`. See [length options](#length-options).
+
+```typescript
+bf.decode(bf.bytes(2), bf.bytesFromHex('01 02')); // Uint8Array [1, 2]
+```
+
+Decoded values share storage with the input. Copy with `Uint8Array.from(value)`
+when mutations must be independent. A root encode can return the supplied
+storage too. Truncated input and fixed-length mismatches throw.
+
+### `plainArray`
+
+```text
+plainArray(length): Schema<number[]>
+```
+
+Decode bytes into a copied number array. Length follows the same rules as
+[bytes](#bytes-and-uint8array).
+
+```typescript
+bf.decode(bf.plainArray(2), bf.bytesFromHex('01 02')); // [1, 2]
+```
+
+Encoding converts with `Uint8Array.from`, then checks length. It coerces numbers
+rather than validating each integer. Use `array(uint8(), count)` for strict
+integer validation.
+
+### `string`
+
+```text
+string(length): Schema<string>
+```
+
+Decode UTF-8 text. Encoding zero-pads or truncates encoded bytes to the resolved
+length. Lengths count bytes, not characters; see [text behavior](#text-behavior).
+
+```typescript
+bf.decode(bf.string(3), bf.encode(bf.string(3), 'a')); // 'a\0\0'
+```
+
+### `latin1`
+
+```text
+latin1(length, options?): Schema<string>
+```
+
+Map each byte directly to a U+0000–U+00FF code unit. Encoding zero-pads or
+truncates to the resolved byte length. `options.outOfRange` controls code units
+above 255: `'throw'` (default), `'replace'` (write `?`), or `'truncate'` (keep the
+low eight bits of each UTF-16 code unit). This encoding is not Windows-1252.
+
+```typescript
+bf.encode(bf.latin1(1, { outOfRange: 'replace' }), '€'); // Uint8Array [63]
+```
+
+### `skip`
+
+```text
+skip(length): Schema<undefined>
+```
+
+Consume a fixed number of bytes and decode to `undefined`. Encoding writes that
+many zero bytes, ignoring the supplied value. `length` must be a non-negative
+safe integer; callbacks and `'eof'` are unsupported. Truncated input throws.
+
+```typescript
+bf.decode(bf.skip(2), bf.bytesFromHex('ab cd')); // undefined
+bf.encode(bf.skip(2), undefined); // Uint8Array [0, 0]
+```
+
+Use [omitUndefined](#objects) to leave a reserved field out of decoded objects.
+
+### `constant`
+
+```text
+constant(expected): Schema<Uint8Array>
+```
+
+Match an expected byte sequence when decoding; a mismatch or truncated input
+throws. `expected` accepts an ArrayBuffer, view, or readonly number array and is
+snapshotted when the schema is created.
+
+```typescript
+const magic = bf.constant([0x42, 0x46]);
+bf.decode(magic, bf.bytesFromHex('42 46')); // Uint8Array [66, 70]
+```
+
+Decoded values share input storage. Encoding writes a fresh copy of the expected
+bytes, ignoring the supplied value.
+
+### Length options
 
 `LengthOption` is a non-negative safe integer, `'eof'`, or a callback returning
 either. Lengths count **bytes**, not characters. A callback receives a
 `DecodeContext | EncodeContext`. `'eof'` consumes the remaining input when
 decoding, including inside nested objects (there is no implicit sub-buffer);
-encoding uses the supplied bytes or encoded text length. `skip` takes
-only a fixed numeric length. `constant` accepts an ArrayBuffer, view, or readonly
-number array and snapshots it when the schema is created.
+encoding uses the supplied bytes or encoded text length.
+These options apply to `bytes`, `uint8Array`, `plainArray`, `string`, and `latin1`.
+Arrays use a different [length contract](#arrays).
 
-Decoded `bytes` and `constant` values share storage with the input. Copy with
-`Uint8Array.from(value)` when mutations must be independent. A root `bytes`
-encode can also return the supplied storage; encoding is not a general copy
-operation. `plainArray` copies, but its encoder coerces numbers like
-`Uint8Array.from` rather than validating each integer. Use `array(uint8(), ...)`
-when strict element validation is needed.
+### Text behavior
 
 Text decoding preserves NUL padding. UTF-8 decoding uses the standard
 TextDecoder behavior, including removal of a leading UTF-8 BOM. UTF-8 truncation can split a character,
 which the decoder replaces with U+FFFD; malformed UTF-8 also uses replacement.
-Latin-1 maps byte values directly to U+0000–U+00FF. Its `outOfRange` option is
-`'throw'` (default), `'replace'` (write `?`), or `'truncate'` (keep the low eight
-bits of each UTF-16 code unit). It is not Windows-1252.
+Both `string` and `latin1` reject truncated input. Other encodings require a
+custom schema with an appropriate polyfill or package.
 
 ## Objects
 
-`object(fields)` takes ordered tuples `[name, schema, options?]`. Wire order is
+### `object`
+
+```text
+object(fields): Schema<InferredObject>
+```
+
+Compose ordered fields into an object schema.
+
+```typescript
+const header = bf.object([
+  ['kind', bf.uint8()],
+  ['reserved', bf.skip(1), { omitUndefined: true }],
+]);
+bf.decode(header, bf.bytesFromHex('01 00')); // { kind: 1 }
+```
+
+`fields` takes ordered tuples `[name, schema, options?]`. Wire order is
 tuple order, independent of JavaScript property enumeration. Names may be
 strings, numbers, or symbols, including `__proto__`; decoded fields are own data
 properties on an ordinary object. Use distinct names to avoid overwriting values.
@@ -98,8 +238,19 @@ Nested objects start and finish on byte boundaries. See `flags` in the
 
 ## Arrays
 
-`array(itemSchema, length)` returns an array of item values. Its length argument
-is an item count, `'eof'`, or a **predicate**, not a byte-length callback.
+### `array`
+
+```text
+array(itemSchema, length): Schema<Item[]>
+```
+
+Repeat an item schema and return an array of its values.
+
+```typescript
+bf.decode(bf.array(bf.uint16be(), 2), bf.bytesFromHex('01 02 03 04')); // [258, 772]
+```
+
+`length` is a non-negative safe integer item count, `'eof'`, or a **predicate**, not a byte-length callback.
 
 - A numeric count processes exactly that many items. Encoding does not check
   that the supplied array has the same length: extra values are ignored and
@@ -113,25 +264,38 @@ is an item count, `'eof'`, or a **predicate**, not a byte-length callback.
 
 The predicate's `context` is the array's entry context, not an updated per-item
 cursor. Item schemas receive their own advancing offsets and indexed paths.
-The `packet` example uses earlier sibling `count` in both directions.
+The [counted-list example](guide.md#read-a-counted-list) uses earlier sibling
+`count` in both directions.
 Direct bit-schema items are unsupported, even `bit8()`. An object item that
 contains direct bit fields and finishes on a byte boundary is supported.
 
 ## Choices
 
-`choice(selector, options, defaultSchema?)` selects an own key of the options
-map. The selector receives the current decode or encode context and returns a
+### `choice`
+
+```text
+choice(selector, options, defaultSchema?): Schema<OptionValues | DefaultValue>
+```
+
+Select one schema from an options map using the current context.
+
+```typescript
+const selected = bf.choice(() => 1, { 1: bf.uint16be(), 2: bf.string(2) });
+bf.decode(selected, bf.bytesFromHex('01 02')); // 258
+```
+
+`options` maps own keys to schemas. The selector receives the current decode or encode context and returns a
 string, number, or `undefined`. Missing keys use the default schema, or throw
 when no default exists. It does not try alternatives based on the value's type.
 The inferred value is the union of option values and any default value.
 
-The `tagged` example selects a number or string using an earlier tag field.
+The [tagged-value example](guide.md#select-a-tagged-value) uses an earlier tag field.
 Supply a matching tag and value when encoding. Choices must start and finish
 on byte boundaries. Whole-byte bit branches, such as `bit8()`, work at the root.
 Inside arrays or objects, branches must return zero bit counts; select a
 whole-byte object containing bit fields instead.
 
-## Contexts and errors
+## Contexts
 
 | Context field             | Meaning                                                                                 |
 | ------------------------- | --------------------------------------------------------------------------------------- |
@@ -152,6 +316,10 @@ as read-only. Narrow the union with `'decodedObject' in context` (or
 `'buffer' in context`) before reading direction-specific fields. Dynamic
 sibling/root values may need runtime checks or type narrowing.
 
+## Errors
+
+### `BinaryFormatError`
+
 Failures inside object fields and array items are wrapped in `BinaryFormatError`
 with `fieldPath`, `byteOffset`, `bitOffset`, optional `schemaKind`, and original
 `cause`. An existing BinaryFormatError keeps its deeper location. Root primitive
@@ -159,6 +327,21 @@ errors and container-level checks may throw ordinary errors instead; do not
 assume every failure is wrapped. Use the structured fields, not message parsing.
 
 ## Bit fields
+
+### `bit` and `bit1` through `bit32`
+
+```text
+bit(width, littleEndian = false): Schema<number>
+bit4(littleEndian = false): Schema<number> // Also bit1() through bit32()
+```
+
+```typescript
+const flags = bf.object([
+  ['version', bf.bit4()],
+  ['kind', bf.bit4()],
+]);
+bf.encode(flags, { version: 4, kind: 5 }); // Uint8Array [0x45]
+```
 
 `bit(width, littleEndian = false)` and `bit1()` through `bit32()` encode unsigned
 numbers. Width must be 1–32, and values must be integers in 0 through 2^width−1.
@@ -178,6 +361,15 @@ exact bytes, error behavior, and migration alternatives.
 
 ## Custom schemas
 
+### `custom`
+
+```text
+custom<T>(schema: Schema<T>): Schema<T>
+```
+
+See the [custom boolean walkthrough](guide.md#create-a-custom-schema) for a
+complete extension that delegates byte access and validates values.
+
 `custom<T>(schema)` returns the supplied `Schema<T>` unchanged. A structurally
 compatible object also works without this helper. `kind` improves diagnostics.
 
@@ -189,8 +381,38 @@ encoded bytes, not a prefix padded to `context.byteOffset`.
 
 Custom code must validate input bounds, values, alignment, and its reported
 counts. `custom` does not add validation or advance a mutable cursor. Delegating
-to a built-in schema retains its checks; see `booleanByte` in the examples.
+to a built-in schema retains its checks; see the
+[custom boolean example](guide.md#create-a-custom-schema).
 `EncodeContext.value` is `unknown` by default, so validate it before conversion.
 Use whole-byte extensions for composition; the internal bit writer's shared
 state is not a public custom-schema API. Zero-byte schemas can be useful with a
 fixed item count but cannot advance an EOF array.
+
+## Types
+
+| Export                            | Purpose                                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------- |
+| `Schema<T>`                       | Structural interface with `decode`, `encode`, and optional diagnostic `kind` |
+| `infer<typeof schema>`            | Extract the schema's value type                                              |
+| `DeepReadonly<T>`                 | Recursively readonly objects and arrays; typed-array types remain intact     |
+| `DecodeOptions`                   | Root decoding options, including `requireEOF`                                |
+| `FieldOptions`                    | Object field options, including `omitUndefined`                              |
+| `LengthOption`, `LengthFunction`  | Byte/text lengths and callbacks; see [length options](#length-options)       |
+| `DecodeContext`, `EncodeContext`  | Schema and callback inputs; see [contexts](#contexts)                        |
+| `DecodeResult<T>`, `EncodeResult` | Schema method results and counts; see [custom schemas](#custom-schemas)      |
+
+## Hexadecimal helper
+
+### `bytesFromHex`
+
+```text
+bytesFromHex(text: string): Uint8Array
+```
+
+Convert pairs of hexadecimal digits to bytes, ignoring whitespace.
+
+```typescript
+bf.bytesFromHex('01 ab CD'); // Uint8Array [1, 171, 205]
+```
+
+Odd digit counts and invalid characters throw. `0x` prefixes are not accepted.

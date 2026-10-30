@@ -25,7 +25,17 @@
 
 ### Documentation
 
-* See the [v1 release notes](docs/v1-release-notes.md) for the full compatibility changes and limitations, and the [migration guide](docs/migration.md) for v0-to-v1 examples.
+* See the [migration guide](docs/migration.md) for v0-to-v1 examples and the [API reference](docs/api.md) for current contracts and limitations.
+
+### Compatibility notes
+
+* v1 is the first stable API. The package name remains `@binary-format/binary-format`; there is no compatibility wrapper for the removed default export.
+* Custom schemas use explicit contexts and result counts instead of mutable reader/writer cursors. Encoding accepts readonly values and returns `Uint8Array`; decoding accepts bounded ArrayBuffer views, including DataView and Node Buffer.
+* ESM and CommonJS builds include declarations and have no runtime dependencies. ESM supports tree shaking; schemas include both encoding and decoding methods.
+* Development uses TypeScript 7, and emitted declarations are checked with the project compiler. Older TypeScript versions are outside the compatibility test matrix.
+* Byte fields can share input storage. Fixed-length text pads or truncates bytes, potentially splitting UTF-8 characters. Callers supply count, length, tag, and checksum values.
+* Bit-field composition enforces ordering and alignment. Whole-byte root choices and custom wrappers are supported; see the [bit-field guide](docs/bit-fields.md).
+* Streaming, seek/pointer support, and separate encoder/decoder bundles are not included.
 
 ## [0.0.16](https://github.com/skratchdot/binary-format/compare/0.0.15...0.0.16) (2023-07-09)
 

@@ -1,182 +1,84 @@
 # `@binary-format/binary-format`
 
-`@binary-format/binary-format` is a schema-first TypeScript library for decoding
-binary files into plain JavaScript objects and encoding them again. It favors
-serializable, immutable-data-friendly values over a lowest-level byte API, with a composable, Valibot-style API.
+Define a binary format once, decode it into plain JavaScript objects, and encode
+those objects back into bytes. This TypeScript library uses composable schemas
+with inferred value types, ESM and CommonJS builds, and no runtime dependencies.
+It favors plain objects that work well with immutable-data tools such as Immer.
 
-Many binary libraries make different tradeoffs around speed, generated parsers,
-or mutable data structures. This package intentionally favors plain objects
-that work well with serializing and immutable-data tools such as Immer.
+## Install
+
+```bash
+npm install @binary-format/binary-format
+```
+
+Node.js 22 or later is supported. Browser usage relies on standard typed arrays,
+DataView, TextEncoder, and TextDecoder.
 
 ## Quick start
 
 ```typescript
 import * as bf from '@binary-format/binary-format';
 
-const helloWorldSchema = bf.object([
+const greeting = bf.object([
   ['hello', bf.string(5)],
-  ['asciiSpace', bf.uint8()],
+  ['space', bf.uint8()],
   ['world', bf.string(5)],
-  ['asciiExclamation', bf.uint8()],
+  ['exclamation', bf.uint8()],
 ]);
 
-type HelloWorld = bf.infer<typeof helloWorldSchema>;
+type Greeting = bf.infer<typeof greeting>;
 
-const bytes = new TextEncoder().encode('hello world!');
-const value: HelloWorld = bf.decode(helloWorldSchema, bytes);
-const encoded = bf.encode(helloWorldSchema, value);
+const input = new TextEncoder().encode('hello world!');
+const value: Greeting = bf.decode(greeting, input);
+// { hello: 'hello', space: 32, world: 'world', exclamation: 33 }
 
-console.log({ value, encoded });
-/*
-{
-  value: {
-    hello: 'hello',
-    asciiSpace: 32,
-    world: 'world',
-    asciiExclamation: 33
-  },
-  encoded: Uint8Array(12) [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33]
-}
-*/
+const output = bf.encode(greeting, value);
+// Uint8Array containing the same bytes as input
 ```
+
+An object schema reads and writes fields in tuple order. Compose schemas with
+objects, arrays, and tagged choices; use `bf.infer` to derive their value types.
+Encoding returns `Uint8Array`; decoding accepts `ArrayBuffer` and bounded views,
+including Node.js `Buffer`.
+
+Schemas describe the wire format. Supply consistent count, length, tag, and
+checksum fields yourself when encoding. Text lengths are measured in bytes.
 
 ## Documentation
 
-- [Public API reference](docs/api.md): schemas, contexts, errors, and limitations.
-- [Bit-field composition](docs/bit-fields.md): supported layouts and ordering.
-- [v1 release notes](docs/v1-release-notes.md) and [release procedure](docs/releasing.md).
-- [Migration guide](docs/migration.md): v0 to v1 examples and behavior to audit.
-- [Executable examples](examples/schema-patterns.ts): checked against the packed package.
+| I want to…                     | Read                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------ |
+| Learn to build a format        | [Usage guide](https://github.com/skratchdot/binary-format/blob/main/docs/guide.md)         |
+| Look up a function or behavior | [API reference](https://github.com/skratchdot/binary-format/blob/main/docs/api.md)         |
+| Pack fields into bits          | [Bit fields](https://github.com/skratchdot/binary-format/blob/main/docs/bit-fields.md)     |
+| Upgrade from v0                | [Migration guide](https://github.com/skratchdot/binary-format/blob/main/docs/migration.md) |
+| See what changed               | [Changelog](https://github.com/skratchdot/binary-format/blob/main/CHANGELOG.md)            |
+| Contribute or run checks       | [Contributing](https://github.com/skratchdot/binary-format/blob/main/CONTRIBUTING.md)      |
 
-## Concepts
-
-- Build schemas with primitives, objects, arrays, choices, bytes, text, and
-  bit fields.
-- Use `bf.infer<typeof schema>` to derive the decoded TypeScript value.
-- Use `bf.decode(schema, bytes)` and `bf.encode(schema, value)` at format
-  boundaries.
-- Implement custom schemas with `decode(context)` and `encode(context)` when a
-  format needs behavior beyond the built-in schema types.
-
-### Objects and arrays
-
-```typescript
-const schema = bf.object([
-  ['count', bf.uint8()],
-  ['items', bf.array(bf.uint16be(), 4)],
-]);
-```
-
-Object fields can include options as a third tuple value. For example,
-`{ omitUndefined: true }` skips an `undefined` decoded field while still
-letting the field encode reserved bytes.
-
-### Text
-
-`bf.string(length)` reads UTF-8 text. `bf.latin1(length)` reads one-byte
-Latin-1 text and supports explicit out-of-range handling through its second
-argument, for example `bf.latin1(16, { outOfRange: 'replace' })` or
-`bf.latin1(16, { outOfRange: 'truncate' })`. The default is `'throw'`.
-Other encodings can be implemented as custom
-schemas with an appropriate polyfill or package.
-
-### Bit fields
-
-Group bit fields directly inside `bf.object()` so their widths add up to whole
-bytes. Use the same bit ordering within each byte. Root encoding and decoding
-also require whole bytes. Whole-byte bit schemas can be wrapped in root choices
-or custom schemas. Inside arrays or non-bit object fields, use whole-byte objects
-containing bit fields instead. See the
-[composition contract](docs/bit-fields.md) for details.
-
-### Custom schemas
-
-Any object with `decode(context)` and `encode(context)` methods can be used as
-a schema.
-
-```typescript
-const zeroByte = bf.custom<undefined>({
-  kind: 'zeroByte',
-  decode: (context) => {
-    if (context.buffer[context.byteOffset] !== 0) {
-      throw new Error('expected zero byte');
-    }
-    return { result: undefined, bytesDecoded: 1, bitsDecoded: 0 };
-  },
-  encode: () => ({
-    result: Uint8Array.of(0),
-    bytesEncoded: 1,
-    bitsEncoded: 0,
-  }),
-});
-```
-
-## v1 migration
-
-v1 replaces the v0 chaining API with composable schemas. The package name remains
-`@binary-format/binary-format`.
-
-- Replace chained format definitions with `object([['field', schema], ...])`.
-- Replace formatter methods with `decode(schema, bytes)` and
-  `encode(schema, value)`.
-- Encoding returns `Uint8Array`. Decoding accepts `ArrayBuffer` and views,
-  including Node.js `Buffer`, without a runtime buffer dependency.
-- Use `infer<typeof schema>` for value types and `custom()` for extensions.
-- See the [BMP](examples/bmp.ts), [IP](examples/ip.ts), and
-  [TCP](examples/tcp.ts) schemas for complete examples.
-
-This is a breaking release; the v0 chaining API is no longer exported.
+Runnable examples cover [schema patterns](https://github.com/skratchdot/binary-format/blob/main/examples/schema-patterns.ts)
+and larger [BMP](https://github.com/skratchdot/binary-format/blob/main/examples/bmp.ts),
+[IP](https://github.com/skratchdot/binary-format/blob/main/examples/ip.ts), and
+[TCP](https://github.com/skratchdot/binary-format/blob/main/examples/tcp.ts) formats.
 
 ## Modules and tree shaking
 
-The package provides ESM and CommonJS builds with TypeScript declarations.
-Development uses TypeScript 7. Package checks validate the emitted declarations,
-ESM/CommonJS imports, and schema inference with the project compiler.
-
-Use ESM imports with a tree-shaking bundler to omit unused schema factories:
+Use ESM imports with a tree-shaking bundler to omit unused factories:
 
 ```typescript
 import { decode, uint8 } from '@binary-format/binary-format';
 
-const value = decode(uint8(), Uint8Array.of(42));
+const value = decode(uint8(), Uint8Array.of(42)); // 42
 ```
 
-Static namespace imports (as in the quick start) also work with modern bundlers.
-Dynamic property access can retain additional exports. CommonJS consumers can
-use `require('@binary-format/binary-format')`, but should use ESM for tree shaking.
-Each schema includes its encode and decode methods; this does not promise
-separate decoder-only and encoder-only bundles.
+Static namespace imports also work with modern bundlers. Dynamic property access
+can retain additional exports. CommonJS consumers can use
+`require('@binary-format/binary-format')`; use ESM for tree shaking.
+Each schema includes both encode and decode methods.
 
-The runtime uses standard typed arrays, DataView, TextEncoder, and TextDecoder.
-Node.js usage requires Node.js 22 or later. Development uses Node.js 24.11+
-(or 22.18+) for tsdown. CI builds once on Node 24 and tests the built package
-on Node 22 and 24.
+## Related libraries
 
-## Development
-
-```bash
-corepack enable
-pnpm install --frozen-lockfile
-pnpm test
-pnpm run tsc
-pnpm run build
-pnpm run check
-```
-
-`pnpm run format` formats with oxfmt; `pnpm run lint` checks code with oxlint.
-`pnpm run build` generates the package with tsdown.
-Declaration generation uses Oxc because TypeScript 7 no longer exposes the
-classic compiler API.
-
-`pnpm run check` checks formatting, linting, types, coverage, and the packed package's
-ESM/CommonJS entry points, declarations, and browser tree shaking. No command
-above publishes a release.
-
-See the [development roadmap](docs/roadmap.md) for proposed follow-up work.
-
-## See also
-
-Related libraries for exploring other approaches to binary formats.
+<details>
+<summary>Other approaches to binary parsing and byte manipulation</summary>
 
 ### Parsing libraries
 
@@ -206,3 +108,5 @@ Related libraries for exploring other approaches to binary formats.
 - [bits-bytes](https://www.npmjs.com/package/bits-bytes)
 - [construct-js](https://github.com/francisrstokes/construct-js)
 - [byte-data](https://github.com/rochars/byte-data)
+
+</details>

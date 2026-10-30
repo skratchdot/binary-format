@@ -2,7 +2,12 @@
 
 v1 replaces the chaining API with composable schemas. The package name remains
 `@binary-format/binary-format`; Node.js 22+ is required. There is no compatibility
-wrapper for v0's default export.
+wrapper for v0's default export. For the release summary, see the
+[changelog](../CHANGELOG.md). For current behavior, see the [API reference](api.md).
+
+- [Replace the formatter](#replace-the-formatter)
+- [Translate composition and extensions](#translate-composition-and-extensions)
+- [Audit behavior at format boundaries](#audit-behavior-at-format-boundaries)
 
 ## Replace the formatter
 
@@ -59,13 +64,13 @@ syntax, not code run by the current test suite.
 | Custom `read`/`write` callbacks using mutable buffer cursors         | `custom<T>` with explicit decode/encode contexts and consumed/produced counts |
 | Buffer output                                                        | Uint8Array output; convert explicitly with `Buffer.from(bytes)` when needed   |
 
-For a custom byte conversion, start with the `booleanByte` example. It delegates
+For a custom byte conversion, start with the [custom boolean example](guide.md#create-a-custom-schema). It delegates
 to `uint8().decode(context)` and `uint8().encode(context)`, validates 0/1 or a
 boolean, and preserves the returned counts. It does not mutate a cursor.
 
 For counted lists, use an array predicate that reads the earlier sibling count
-in both directions; see `packet`. For a tagged union, use `choice` with a selector
-that reads the tag; see `tagged`. Byte-length callbacks return a number or
+in both directions; see the [counted-list example](guide.md#read-a-counted-list). For a tagged union, use `choice` with a selector
+that reads the tag; see the [tagged-value example](guide.md#select-a-tagged-value). Byte-length callbacks return a number or
 `'eof'`, while array predicates return a boolean. These are different contracts.
 
 ## Audit behavior at format boundaries
