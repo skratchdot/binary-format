@@ -5,7 +5,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-* remove the v0 chaining API. Define formats with composable schemas, call decode(schema, bytes) and encode(schema, value), and use infer<typeof schema> for value types. Encoding returns Uint8Array. Node.js 22 or later is required.
+* remove the v0 chaining API. Define formats with composable schemas, call decode(schema, bytes) and encode(schema, value), and use infer<typeof schema> for value types. Encoding returns Uint8Array. Node.js 22 or later is required. See the [migration guide](docs/migration.md) for upgrading.
 
 ### Features
 
@@ -22,20 +22,6 @@
 ### Miscellaneous Chores
 
 * automate reviewed releases ([#9](https://github.com/skratchdot/binary-format/issues/9)) ([3f7557d](https://github.com/skratchdot/binary-format/commit/3f7557d5b772388895b82647ac4e75474a1bc7f5))
-
-### Documentation
-
-* See the [migration guide](docs/migration.md) for v0-to-v1 examples and the [API reference](docs/api.md) for current contracts and limitations.
-
-### Compatibility notes
-
-* v1 is the first stable API. The package name remains `@binary-format/binary-format`; there is no compatibility wrapper for the removed default export.
-* Custom schemas use explicit contexts and result counts instead of mutable reader/writer cursors. Encoding accepts readonly values and returns `Uint8Array`; decoding accepts bounded ArrayBuffer views, including DataView and Node Buffer.
-* ESM and CommonJS builds include declarations and have no runtime dependencies. ESM supports tree shaking; schemas include both encoding and decoding methods.
-* Development uses TypeScript 7, and emitted declarations are checked with the project compiler. Older TypeScript versions are outside the compatibility test matrix.
-* Byte fields can share input storage. Fixed-length text pads or truncates bytes, potentially splitting UTF-8 characters. Callers supply count, length, tag, and checksum values.
-* Bit-field composition enforces ordering and alignment. Whole-byte root choices and custom wrappers are supported; see the [bit-field guide](docs/bit-fields.md).
-* Streaming, seek/pointer support, and separate encoder/decoder bundles are not included.
 
 ## [0.0.16](https://github.com/skratchdot/binary-format/compare/0.0.15...0.0.16) (2023-07-09)
 
