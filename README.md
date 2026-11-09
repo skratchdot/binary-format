@@ -11,8 +11,8 @@ It favors plain objects that work well with immutable-data tools such as Immer.
 npm install @binary-format/binary-format
 ```
 
-Node.js 22 or later is supported. Browser usage relies on standard typed arrays,
-DataView, TextEncoder, and TextDecoder.
+Tested against the latest Node.js LTS release. Browser usage relies on standard
+typed arrays, DataView, TextEncoder, and TextDecoder.
 
 ## Quick start
 

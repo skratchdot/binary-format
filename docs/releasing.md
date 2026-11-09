@@ -121,8 +121,8 @@ handoff and manual dispatch. The manual `publish` checkbox defaults to false:
 
 1. Validate the version/ref pairing. Branches are allowed only for previews;
    tag refs must match the package version even during a dry run.
-2. Run CI at the selected commit: quality/build on Node 24, tests and packed
-   ESM/CommonJS consumer checks on Node 22 and 24.
+2. Run CI at the selected commit: quality/build, tests, and packed
+   ESM/CommonJS consumer checks on the latest Node.js LTS release.
 3. Pack the validated build with pnpm, preview it with `npm publish --dry-run`,
    and upload a `release-package` artifact with the tarball and `SHA256SUMS`.
    Artifacts expire after 14 days.

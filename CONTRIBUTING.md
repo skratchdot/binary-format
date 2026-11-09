@@ -1,8 +1,7 @@
 # Contributing
 
-Use Node.js 24.11+ (or 22.18+) and the pnpm version pinned in `package.json`.
-These development requirements come from tsdown; supported consumer runtimes
-are described in the [README](README.md).
+Use the latest Node.js LTS release and the pnpm version pinned in `package.json`.
+Runtime test coverage is described in the [README](README.md).
 
 ## Set up and check a change
 
@@ -28,8 +27,10 @@ None of these commands publishes a release.
 | `pnpm run test:release` | Check release-policy behavior       |
 
 Development uses TypeScript 7. Declaration generation uses Oxc because
-TypeScript 7 no longer exposes the classic compiler API. CI builds on Node 24
-and runs source and packed-package checks on Node 22 and 24.
+TypeScript 7 no longer exposes the classic compiler API. CI builds and runs source
+and packed-package checks on the latest Node.js LTS release (`lts/*`). All runner jobs have a 10-minute timeout, including the jobs
+in the reusable CI workflow called during releases. GitHub Actions does not
+support a workflow-wide timeout; sequential jobs each have their own limit.
 
 ## Documentation and examples
 
