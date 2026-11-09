@@ -1,7 +1,8 @@
 # Migrating from v0 to v1
 
 v1 replaces the chaining API with composable schemas. The package name remains
-`@binary-format/binary-format`; Node.js 22+ is required. There is no compatibility
+`@binary-format/binary-format`. For current Node.js test coverage, see the
+[README](../README.md). There is no compatibility
 wrapper for v0's default export. For the release summary, see the
 [changelog](../CHANGELOG.md). For current behavior, see the [API reference](api.md).
 
